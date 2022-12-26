@@ -1,0 +1,53 @@
+﻿@model Agency
+
+<div class="container mt-5">
+
+    <form id="form" method="Post" asp-controller="Owner" asp-action="@(Model?.Id > 0 ? "EditAgency" : "AddAgency")">
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model?.Id > 0)
+        {
+            <input type="hidden" asp-for="Id" />
+            <div class="form-outline mb-3">
+                <input class="form-control" asp-for="Name" readonly />
+                <label class="form-label" asp-for="Name"></label>
+                <span asp-validation-for="Name"></span>
+            </div>
+        }
+        else
+        {
+            <div class="form-outline mb-3">
+                <input class="form-control" asp-for="Name" />
+                <label class="form-label" asp-for="Name"></label>
+                <span asp-validation-for="Name"></span>
+            </div>
+        }
+
+        <div class="form-outline mb-3">
+            <input class="form-control" asp-for="Password" />
+            <label class="form-label" asp-for="Password"></label>
+            <span asp-validation-for="Password"></span>
+        </div>
+
+        <div class="form-outline mb-3">
+            <input class="form-control" asp-for="ConfirmPassowrd" />
+            <label class="form-label" asp-for="ConfirmPassowrd"></label>
+            <span asp-validation-for="ConfirmPassowrd"></span>
+        </div>
+
+        <a class="btn btn-sm btn-danger" asp-controller="Owner" asp-action="Index">Cancel</a>
+        <button type="submit" class="btn btn-sm btn-success">@(ViewData["Title"].ToString() == "Add Agency" ? "Add" : "Save")</button>
+    </form>
+
+</div>
+
+@section Scripts{
+<partial name="_ValidationScriptsPartial" />
+}

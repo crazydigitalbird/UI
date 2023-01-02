@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using UI.Infrastructure.API;
 using UI.Models;
 
@@ -33,9 +31,10 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn(LoginModel loginModel)
         {
+            ModelState.Remove("ConfirmPassowrd");
             if (ModelState.IsValid)
             {
-                var user = await AuthenticateUser(loginModel.UserName, loginModel.Password);
+                var user = await AuthenticateUser(loginModel.Email, loginModel.Password);
 
                 if (user == null)
                 {
@@ -84,6 +83,20 @@ namespace UI.Controllers
             }
 
             return View("LogIn", loginModel);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(LoginModel loginModel, string referralCode)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["referralCode"] = referralCode;
+                ViewData["register"] = true;
+                return View("LogIn", loginModel);
+            }
+            return LocalRedirect("/");
         }
 
         public async Task<IActionResult> LogOut()

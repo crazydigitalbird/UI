@@ -1,68 +1,123 @@
 ﻿@model LoginModel
 
 @{
-    Layout = null;
+
+    bool register = false;
+    if(ViewData["register"] != null)
+    {
+        register = (bool)ViewData["register"];
+    }
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign In</title>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/css/mdb.min.css" />
-</head>
-<body>
+<div class="d-flex align-items-center justify-content-center">
 
-    <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
+    <div class="col-md-4 col-xl-3 mt-5">
 
-            <div class="col-md-4 mt-5">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="alert alert-success">Logged in.</div>
+        }
+        else
+        {
+            <!--- Pills navs -->
+            <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link @(register ? "" : "active")" id="tab-login" data-mdb-toggle="pill" href="#pills-login" role="tab" aria-controls="pills-login" aria-selected="true">
+                        Login
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link  @(register ? "active" : "")" id="tab-register" data-mdb-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register" aria-selected="false">
+                        Register
+                    </a>
+                </li>
+            </ul>
+            <!--- Pills navs -->
 
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <div class="alert alert-success">Logged in.</div>
-                }
-                else
-                {
-                    <div class="alert alert-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="alert alert-danger" asp-validation-summary="ModelOnly"></div>
 
+            <!--- Pills content -->
+            <div class="tab-content">
+                <div class="tab-pane fade @(register ? "" : "show active")" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
                     <form method="post" asp-action="LogIn">
 
-                        <div class="form-outline mb-4">
-                            <input type="text" class="form-control" asp-for="UserName" />
-                            <label class="form-label" asp-for="UserName"></label>
-                            <span asp-validation-for="UserName"></span>
+                        <!-- Email input -->
+                    <div class="form-outline mb-4">
+                            <input type="text" class="form-control" asp-for="Email" />
+                            <label class="form-label" asp-for="Email"></label>
+                            <span asp-validation-for="Email"></span>
                         </div>
 
-                        <div class="form-outline mb-4">
+                        <!-- Password input -->
+                    <div class="form-outline mb-4">
                             <input type="password" class="form-control" asp-for="Password" />
                             <label class="form-label" asp-for="Password"></label>
                             <span asp-validation-for="Password"></span>
                         </div>
 
-@*                        <div class="row mb-4">
-                            <div class="col d-flex justify-content-left">
+                        <div class="row mb-4">
+@*                            <div class="col-md-6 d-flex justify-content-left">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" asp-for="RememberMe" />
                                     <label class="form-check-label" asp-for="RememberMe">Remember me</label>
                                 </div>
+                            </div>*@
+
+                            <div class="col-md-12 d-flex justify-content-end">
+                                <a href="#!">Forgot password</a>
                             </div>
-                        </div>*@
+                        </div>
 
+                        <!-- Submit button -->
                         <button type="submit" class="btn btn-primary btn-block mb-4">SIGN IN</button>
+
+@*                        <div class="text-center">
+                            <p>Not a member? <a href="#!">Register</a></p>
+                        </div>*@
                     </form>
-                }
+                </div>
+                <div class="tab-pane fade @(register ? "show active" : "")" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                    <form method="post" asp-action="Register">
 
+                        <!-- Email input -->
+                        <div class="form-outline mb-4">
+                            <input type="email" class="form-control" asp-for="Email" />
+                            <label class="form-label" asp-for="Email"></label>
+                            <span asp-validation-for="Email"></span>
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="form-outline mb-4">
+                            <input type="password" class="form-control" asp-for=Password />
+                            <label class="form-label" asp-for="Password"></label>
+                            <span asp-validation-for="Password"></span>
+                        </div>
+
+                        <!-- Repeat Passoerd input -->
+                        <div class="form-outline mb-4">
+                            <input type="password" class="form-control" asp-for="ConfirmPassowrd" />
+                            <label class="form-label" asp-for="ConfirmPassowrd">Repeat password</label>
+                            <span asp-validation-for="ConfirmPassowrd"></span>
+                        </div>
+                        
+                        <!-- Referral Code input -->
+                        <div class="form-outline mb-4">
+                            <input type="text" class="form-control" id="referralCode" name="referralCode" value="@ViewData["referralCode"]" autocomplete="off" />
+                            <label class="form-label" for="referralCode">Referral Code</label>
+                        </div>
+
+                        <!-- Submit button -->
+                        <button type="submit" class="btn btn-primary btn-block mb-3">Register</button>
+
+                    </form>
+                </div>
             </div>
-
-        </div>
-
+            <!--- Pills content -->
+        }
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js"></script>
-    <partial name="_ValidationScriptsPartial" />
-</body>
-</html>
+</div>
+
+@section Scripts{
+<partial name="_ValidationScriptsPartial" />
+}

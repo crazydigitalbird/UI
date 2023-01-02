@@ -1,0 +1,27 @@
+﻿<div class="modal" id="modalPopover" tabindex="-1" role="dialog"  data-mdb-modal-non-invasive="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Operators</h5>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formPopover" asp-action="AddGroup" method="post" data-ajax="true" data-ajax-success="successAddGroup" data-ajax-failure="failureAddGroup" data-ajax-loading="#spinnerAddGroup" novalidate="novalidate">
+                <div class="modal-body"> 
+                    <div class="form-outline">
+                        <input id="nameGroup" name="nameGroup" type="text" class="form-control" autocomplete="off" data-val="true" data-val-required="The New group name field is requird." />
+                        <label class="form-label" for="namgeGroup">New group name</label>
+                        <span class="field-validation-valid" data-valmsg-for="nameGroup" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button id="btnSaveGroup" type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-save"></i>
+                        Save
+                        <span id="spinnerAddGroup" class="spinner-border spinner-border-sm" style="display: none;"></span> 
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

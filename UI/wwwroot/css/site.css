@@ -18,15 +18,68 @@ html {
     font-size: smaller;
 }
 
+/*---- Bold text ----*/
 .text-bold {
     font-weight: bold !important;
 }
 
-/*----- bootstrab-table offset checkbox header -----*/
-.sticky-header-container table thead tr .th-inner {
+/*----- Bootstrab-table offset checkbox header -----*/
+/*.sticky-header-container table thead tr .th-inner {
     padding-right: 10px !important;
+}*/
+
+/*---- Setting the popover width for content placement ----*/
+.popover {
+    max-width: 100%;
+    background-color: #ecedf0;
 }
 
+    /*---- Setting bckground color for input ----*/
+    .popover input {
+        background-color: #ecedf0;
+    }
+
+.popover-header {
+    background-color: lightgray;
+    border: 0px;
+}
+
+.dropdown-menu {
+    background-color: #ecedf0;
+}
+
+/*---- Maximum height of the div containing the table ----*/
+.dropdown-table-max-height {
+    max-height: 160px;
+}
+
+.popover .dropdown-table-max-height tr:hover {
+    cursor: pointer;
+}
+
+.tr-placeholder {
+    visibility: collapse;
+    display: none;
+}
+
+
+    .tr-placeholder:only-child {
+        visibility: visible;
+        display: table-row;
+    }
+
+/*    .dropdown-scroll::-webkit-scrollbar {
+        width: 10px;
+        border-radius: 7px;
+        background-color: #d4d5d8;
+    }
+
+    .dropdown-scroll::-webkit-scrollbar-thumb {
+        background-color: darkgrey;
+        border-radius: 7px;
+    }*/
+
+/*---- Setting the gradien for the icon fa-signal ----*/
 .fa-signal-gradient {
     background: -moz-linear-gradient(left, red 0%, orange 70%, #00ff90 100%);
     background: -webkit-linear-gradient(left, red 0%, orange 70%, #00ff90 100%);

@@ -35,7 +35,7 @@ namespace UI.Controllers
         public async Task<IActionResult> DeleteProfiles(int[] profilesId)
         {
             var response = await _superAdminClient.DeleteProfiles(profilesId);
-            if (response.IsSuccessStatusCode)
+            if (response?.IsSuccessStatusCode ?? false)
             {
                 return Ok();
             }
@@ -46,7 +46,7 @@ namespace UI.Controllers
         public async Task<IActionResult> ChangeGroup(int profileId, int groupId)
         {
             var response = await _superAdminClient.ChangeGroup(profileId, groupId);
-            if (response.IsSuccessStatusCode)
+            if (response?.IsSuccessStatusCode ?? false)
             {
                 return Ok();
             }
@@ -59,7 +59,7 @@ namespace UI.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _superAdminClient.AddGroup(nameGroup);
-                if (response.IsSuccessStatusCode)
+                if (response?.IsSuccessStatusCode ?? false)
                 {
                     return Ok(await response.Content.ReadAsStringAsync());
                 }
@@ -71,7 +71,7 @@ namespace UI.Controllers
         public async Task<IActionResult> ChangeShift(int profileId, int shiftId)
         {
             var response = await _superAdminClient.ChangeShift(profileId, shiftId);
-            if (response.IsSuccessStatusCode)
+            if (response?.IsSuccessStatusCode ?? false)
             {
                 return Ok();
             }
@@ -82,11 +82,39 @@ namespace UI.Controllers
         public async Task<IActionResult> ChangeCabinet(int profileId, int cabinetId)
         {
             var response = await _superAdminClient.ChangeCabinet(profileId, cabinetId);
-            if (response.IsSuccessStatusCode)
+            if (response?.IsSuccessStatusCode ?? false)
             {
                 return Ok();
             }
             return StatusCode(500, $"For profile id: {profileId}, the cabinet value has not been changed");
+        }
+
+        [HttpPost]
+        public IActionResult GetOperators(int profileId)
+        {
+            return ViewComponent("Operators", profileId);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteOperatorFromProfile(int operatorId, int profileId)
+        {
+            var response = await _superAdminClient.DeleteOperatorFromProfile(operatorId, profileId);
+            if (response?.IsSuccessStatusCode ?? false)
+            {
+                return Ok();
+            }
+            return StatusCode(500, $"For profile id: {profileId}, the operator id: {operatorId} has not been deleted");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOperatorFromProfile(int operatorId, int profileId)
+        {
+            var response = await _superAdminClient.AddOperatorFromProfile(operatorId, profileId);
+            if (response?.IsSuccessStatusCode ?? false)
+            {
+                return Ok("superAdmin");
+            }
+            return StatusCode(500, $"For profile id: {profileId}, the operator id: {operatorId} has not been added");
         }
     }
 }

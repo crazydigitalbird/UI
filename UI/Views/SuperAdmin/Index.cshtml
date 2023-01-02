@@ -13,10 +13,9 @@
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
 <div id="tableDiv" class="d-none">
-
     <div id="toolbar" class="ms-2">
         <button id="deleteBtn" class="btn btn-danger">
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-solid fa-trash fa-xl"></i>
         </button>
         <button id="addGroup" class="btn btn-primary">
             <i class="fa-solid fa-plus"></i>
@@ -130,7 +129,7 @@
                                     @profile.Operators
                                 </div>
                                 <div class="col-6 text-start pe-0">
-                                    <a onclick="showPopover(@profile.Id)">
+                                    <a role="button" title="@($"<div class='row'><div name='popoverProfileId' class='d-none'>{profile.Id}</div><div class='col'>{profile.FirstName} {profile.LastName}</div><div class='col text-end'><a href='#' role='button' class='btn-close' aria-label='Close' onclick='popoverClose(event)'></a></div></div>")" data-mdb-toggle="popover" data-id-field="@profile.Id">
                                         <i class="fa-solid fa-circle-info text-primary"></i>
                                     </a>
                                 </div>
@@ -164,7 +163,7 @@
 <partial name="_AddGroup" />
 <partial name="_AddWorkSchedule" />
 <partial name="_AddProfile" />
-
+<partial name="_Popover" />
 
 @section Scripts{
 <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
@@ -176,6 +175,7 @@
 <script src="~/js/SuperAdmin/cabinet.js"></script>
 <script src="~/js/SuperAdmin/profile.js"></script>
 <script src="~/js/SuperAdmin/filters.js"></script>
+<script src="~/js/SuperAdmin/popovers.js"></script>
 <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 <partial name="_ValidationScriptsPartial" />
 }

@@ -139,6 +139,48 @@ namespace UI.Infrastructure.API
                 return null;
             }
         }
+
+        public async Task<IEnumerable<Operator>> GetOperatorsProfile(int profileId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            try
+            {
+                return await httpClient.GetFromJsonAsync<IEnumerable<Operator>>($"GetOperatorsProfile?profileId={profileId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting profile: {profileId} operators .", profileId);
+                return null;
+            }
+        }
+
+        public async Task<HttpResponseMessage> DeleteOperatorFromProfile(int operatorId, int profileId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            try
+            {
+                return await httpClient.PostAsJsonAsync<int>("DeleteOperatorFromProfile", profileId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "For profile id: {profileId}, the operator id: {operatorId} has not been deleted.", profileId, operatorId);
+                return null;
+            }
+        }
+
+        public async Task<HttpResponseMessage> AddOperatorFromProfile(int operatorId, int profileId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            try
+            {
+                return await httpClient.PostAsJsonAsync("AddOperatorFromProfile", new { operatorId = operatorId, profileId = profileId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "");
+                return null;
+            }
+        }
     }
 
     public interface ISuperAdminClient
@@ -152,5 +194,8 @@ namespace UI.Infrastructure.API
         Task<HttpResponseMessage> ChangeGroup(int profileId, int groupId);
         Task<HttpResponseMessage> ChangeShift(int profileId, int shiftId);
         Task<HttpResponseMessage> ChangeCabinet(int profileId, int cabinetId);
+        Task<IEnumerable<Operator>> GetOperatorsProfile(int profileId);
+        Task<HttpResponseMessage> DeleteOperatorFromProfile(int operatorId, int profileId);
+        Task<HttpResponseMessage> AddOperatorFromProfile(int operatorId, int profileId);
     }
 }

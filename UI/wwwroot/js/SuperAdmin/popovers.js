@@ -71,6 +71,15 @@ $('#superAdminTable').on('reset-view.bs.table', function (e) {
         }
     }).on('shown.bs.popover', function (event) {
         $(event.target).attr('popover-show', '1');
+    }).on('hide.bs.popover', function (event) {
+        var profileId = $('input[name=popoverProfileId]').val();
+        var operators = $('table[name=operators] tbody tr:not(.tr-placeholder)').length;
+        $('#superAdminTable').bootstrapTable('updateCellByUniqueId', {
+            id: profileId,
+            field: 'operators',
+            value: operators,
+            reinit: false
+            });
     }).on('hidden.bs.popover', function (event) {
         $(event.target).attr('popover-show', '0');
     });

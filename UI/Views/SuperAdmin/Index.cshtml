@@ -36,6 +36,7 @@
            data-sticky-header="true"
            data-checkbox-header="true"
            data-id-field="state"
+           data-unique-id="id"
            data-search="true"
            data-toolbar="#toolbar"
            data-toolbar-align="right"
@@ -50,7 +51,7 @@
                 <th data-field="id" data-sortable="true">Profile ID</th>
                 <th data-field="balance" class="text-center">Balance</th>
                 <th data-field="media" class="text-center">Media materials</th>
-                <th data-field="operators" class="text-center">Operators</th>
+                <th data-field="operators" data-formatter="operatorsFormatter" class="text-center">Operators</th>
                 <th data-field="group" data-formatter="groupFormatter" data-width="200">
                     <select id="groupsSelect" name="groupHeader" class="form-select form-select-sm" asp-items="@groups" onchange="filterGroup(event)">
                         <option value="0">All Groups</option>
@@ -123,18 +124,7 @@
                             </div>
                         </td>
 
-                        <td>
-                            <div class="row justify-content-center">
-                                <div class="col-6 text-end pe-0">
-                                    @profile.Operators
-                                </div>
-                                <div class="col-6 text-start pe-0">
-                                    <a role="button" title="@($"<div class='row'><div name='popoverProfileId' class='d-none'>{profile.Id}</div><div class='col'>{profile.FirstName} {profile.LastName}</div><div class='col text-end'><a href='#' role='button' class='btn-close' aria-label='Close' onclick='popoverClose(event)'></a></div></div>")" data-mdb-toggle="popover" data-id-field="@profile.Id">
-                                        <i class="fa-solid fa-circle-info text-primary"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
+                        <td>@profile.Operators</td>
 
                         <td>@profile.Group.Id</td>
 

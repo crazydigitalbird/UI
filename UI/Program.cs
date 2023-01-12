@@ -14,31 +14,29 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 builder.Services.AddSingleton<IAuthenticationClient, ApiAuthenticationClient>();
-
 builder.Services.AddSingleton<IOwnerClient, ApiOwnerClient>();
-
 builder.Services.AddSingleton<ISuperAdminClient, ApiSuperAdminClient>();
+builder.Services.AddSingleton<IOperatorClient, ApiOperatorClient>();
 
-builder.Services
-    .AddHttpClient("authenticationapi", client =>
-    {
-        client.BaseAddress = new Uri($"{uriApi}/Authentication");
-    })
-    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
+builder.Services.AddHttpClient("authenticationapi", client =>
+{
+    client.BaseAddress = new Uri($"{uriApi}/Authentication");
+}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
-builder.Services
-    .AddHttpClient("ownerapi", client =>
-    {
-        client.BaseAddress = new Uri($"{uriApi}/Owner/");
-    })
-    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
+builder.Services.AddHttpClient("ownerapi", client =>
+{
+    client.BaseAddress = new Uri($"{uriApi}/Owner/");
+}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
-builder.Services
-    .AddHttpClient("superadminapi", client =>
-    {
-        client.BaseAddress = new Uri($"{uriApi}/SuperAdmin/");
-    })
-    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
+builder.Services.AddHttpClient("superadminapi", client =>
+{
+    client.BaseAddress = new Uri($"{uriApi}/SuperAdmin/");
+}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
+
+builder.Services.AddHttpClient("operatorapi", client =>
+{
+    client.BaseAddress = new Uri($"{uriApi}/Operator/");
+}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
 var app = builder.Build();
 
@@ -62,4 +60,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    app.Run();
+app.Run();

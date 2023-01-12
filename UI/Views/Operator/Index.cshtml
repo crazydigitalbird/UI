@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Profile>
+
+@{
+    ViewData["Title"] = "Operator";
+    int counter = 1;
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" />
+<link rel="stylesheet" href="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" />
+
+<table id="operatorTable" class="table table-sm table-hover table-bordered"
+       data-toggle="true"
+       data-sticky-header="true"
+       data-unique-id="id"
+       style="min-width: 1535px;">
+    <thead>
+        <tr>
+            <th data-field="number" data-width="60" data-sortable="true" data-align="center">№</th>
+            <th data-field="status" data-width="60"></th>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="lastName" data-sortable="true">Last name</th>
+            <th data-field="id" data-width="120" data-sortable="true">Profile ID</th>
+            <th data-field="balance" data-width="120" data-formatter="balanceFormatter" class="text-center">
+                <div class="dropdown">
+                    Balance
+                    <a class="dropdown-toggle dropdown-toggle-split p-0" href="#" role="button" id="dropDownMenuBalance" data-mdb-toggle="dropdown" aria-expanded="false">
+                    </a>
+                    <ul id="dropdownMenuBalanceUl" class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropDownMenuBalance">
+                        @*                        <input class="btn-check" type="radio" name="radioBalance" id="radionBalanceToday" autocomplete="off"  />
+                        <label class="btn btn-sm btn-block btn-outline-primary" for="radionBalanceToday">
+                        Today
+                        </label>
+                        <input class="btn-check" type="radio" name="radioBalance" id="radioBalanceWeek" autocomplete="off" />
+                        <label class="btn btn-sm btn-block btn-outline-primary" for="radioBalanceWeek">
+                        Week
+                        </label>
+                        <input class="btn-check" type="radio" name="radioBalance" id="radioBalanceMonth" autocomplete="off" checked />
+                        <label class="btn btn-sm btn-block btn-outline-primary" for="radioBalanceMonth">
+                        Month
+                        </label>
+                        <input class="btn-check" type="radio" name="radioBalance" id="radioBalanceLastMonth" autocomplete="off" />
+                        <label class="btn btn-sm btn-block btn-outline-primary" for="radioBalanceLastMonth">
+                        Last Month
+                        </label>*@
+                        <li><a class="dropdown-item active" href="#" onclick="updateBalance(event, 'today')">Today</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateBalance(event, 'week')">Week</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateBalance(event, 'month')">Month</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateBalance(event, 'lastMonth')">Last Month</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th data-field="media" data-width="250" class="text-center">Media materials</th>
+            <th data-field="detailedBalance" class="text-center">Detailed balance</th>
+            <th data-field="top" class="text-center">Top man</th>
+            <th data-field="notes" data-align="center" data-formatter="notesFormatter">Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model?.Count() > 0)
+        {
+            @foreach (var profile in Model)
+            {
+                <tr>
+
+                    <td>@counter</td>
+
+                    <td class="text-center">
+                        @switch (profile.Status)
+                        {
+                            case Status.Online:
+                                <i class="fa-solid fa-circle text-success"></i>
+                                break;
+
+                            case Status.Offline:
+                                <i class="fa-solid fa-circle text-danger"></i>
+                                break;
+
+                            default:
+                                <i class="fa-solid fa-circle text-warning"></i>
+                                break;
+                        }
+                    </td>
+
+                    <td>@profile.FirstName</td>
+
+                    <td>@profile.LastName</td>
+
+                    <td>@profile.Id</td>
+
+                    <td>@profile.Balance</td>
+
+                    <td>
+                        <div class="row text-start">
+                            <div class="col-4 pe-0">
+                                <i class="fa-solid fa-paperclip fa-fw pe-1"></i>
+                                @profile.Photo
+                            </div>
+                            <div class="col-4 pe-0">
+                                <i class="fa-solid fa-video fa-fw pe-1"></i>
+                                @profile.Video
+                            </div>
+                            <div class="col-4">
+                                <i class="fa-solid fa-volume-high fa-fw pe-1"></i>
+                                @profile.Audio
+                            </div>
+                        </div>
+                    </td>
+
+                    <td></td>
+
+                    <td></td>
+
+                    <td>@(counter % 2 == 0 ? true: false)</td>
+                </tr>
+                counter++;
+            }
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modalNotes" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content gradient-custom">
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+    <div id="toast" class="toast text-white" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-mdb-delay="5000">
+        <div class="d-flex">
+            <div id="toastBody" class="toast-body text-wrap">
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-mdb-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+    <script asp-src-include="/js/Operator/operator.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

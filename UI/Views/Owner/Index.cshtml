@@ -21,7 +21,8 @@
         <thead>
             <tr>
                 <th class="text-bold">Name</th>
-                <th class="text-bold text-center" class="text-center">Actions</th>
+                <th class="text-bold">Description</th>
+                <th class="text-bold text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -30,10 +31,11 @@
                 foreach (var agency in Model)
                 {
                     <tr>
-                        <td class="col-sm-8">@agency.Name</td>
-                        <td class="col-sm-4 text-center">
+                        <td class="col-sm-3">@agency.Name</td>
+                        <td class="col-sm-7">@agency.Description</td>
+                        <td class="col-sm-2 text-center">
                             <a class="btn btn-sm btn-primary" asp-controller="Owner" asp-action="EditAgency" asp-route-id="@agency.Id">Edit</a>
-                            <a class="btn btn-sm btn-danger" asp-controller="Owner" asp-action="DeleteAgency" asp-route-id="@agency.Id">Delete</a>
+                            <a class="btn btn-sm btn-danger" onclick="confirm(@agency.Id, '@agency.Name')">Delete</a>
                         </td>
                     </tr>
                 }
@@ -41,7 +43,7 @@
             else
             {
                 <tr>
-                    <td class="text-center" colspan="2">No Data</td>
+                    <td class="text-center" colspan="3">No Data</td>
                 </tr>
             }
         </tbody>
@@ -51,3 +53,8 @@
 
 </div>
 
+<partial name="_Confirm" />
+
+@section Scripts{
+    <script src="~/js/Owner/owner.js"></script>
+}

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+//using System.Text.Json.Serialization;
+//using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace UI.Models
 {
@@ -11,19 +11,21 @@ namespace UI.Models
         [Required]
         public string Name { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        [JsonIgnore]
-        public string Password { get; set; }
+        public string Description { get; set; }
 
-        [Required]
-        [Compare("Password", ErrorMessage = "Confirm password not match")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm Password")]
-        [JsonIgnore]
-        public string ConfirmPassowrd { get; set; }
+        //[Required]
+        //[DataType(DataType.Password)]
+        //[JsonIgnore]
+        //public string Password { get; set; }
 
-        [BindNever]
-        public string HashPassword { get { return Hash.HashPassword(Password); } }
+        //[Required]
+        //[Compare("Password", ErrorMessage = "Confirm password not match")]
+        //[DataType(DataType.Password)]
+        //[Display(Name = "Confirm Password")]
+        //[JsonIgnore]
+        //public string ConfirmPassowrd { get; set; }
+
+        //[BindNever]
+        //public string HashPassword { get { return Hash.HashPassword(Password); } }
     }
 }

@@ -1,13 +1,16 @@
-﻿<ul class="navbar-nav align-items-center">
-@if (User.Identity.IsAuthenticated)
+﻿@if (User.Identity.IsAuthenticated)
 {
-    <li class="nav-item">
-        <a  class="nav-link" @*asp-controller="Account" asp-action="Manage"*@ title="Manage">Hello @User.Identity?.Name</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="btn btn-sm btn-primary" title="Logout">Logout</button>
-        </form>
-    </li>
+    <ul class="navbar-nav align-items-center">
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarAccount" role="button" data-mdb-toggle="dropdown" aria-expanded="false">@User.Identity?.Name</a>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarAccount">
+                <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change password</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="btn btn-sm btn-primary" title="Logout">Logout</button>
+            </form>
+        </li>
+    </ul>
 }
-</ul>

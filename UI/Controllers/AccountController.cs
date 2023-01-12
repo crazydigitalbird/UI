@@ -85,14 +85,31 @@ namespace UI.Controllers
             return View("LogIn", loginModel);
         }
 
+        public IActionResult ChangePassword(string returnUrl)
+        {
+            return View();
+        }
+
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(LoginModel loginModel, string referralCode)
+        public async Task<IActionResult> ChangePassword(ChangePassworViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                ViewData["referralCode"] = referralCode;
+                return View();
+            }
+            TempData["Message"] = "Password changed successfully";
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(LoginModel loginModel/*, string referralCode*/)
+        {
+            if (!ModelState.IsValid)
+            {
+                //ViewData["referralCode"] = referralCode;
                 ViewData["register"] = true;
                 return View("LogIn", loginModel);
             }

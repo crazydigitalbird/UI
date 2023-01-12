@@ -44,7 +44,7 @@ html {
     border: 0px;
 }
 
-.dropdown-menu {
+.dropdown-menu-gray {
     background-color: #ecedf0;
 }
 
@@ -98,7 +98,7 @@ html {
 
 
 
-/* ----- bootstrab-table offset checkbox header -----*/
+/*----- bootstrab-table offset checkbox header -----*/
 
 /*.bg-blue {
     background-color: #163749;    

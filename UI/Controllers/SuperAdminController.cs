@@ -112,7 +112,7 @@ namespace UI.Controllers
             var response = await _superAdminClient.AddOperatorFromProfile(operatorId, profileId);
             if (response?.IsSuccessStatusCode ?? false)
             {
-                return Ok("superAdmin");
+                return Ok(User.Identity.Name);
             }
             return StatusCode(500, $"For profile id: {profileId}, the operator id: {operatorId} has not been added");
         }

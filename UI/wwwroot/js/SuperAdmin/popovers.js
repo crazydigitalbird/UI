@@ -25,7 +25,7 @@ $(document).on('click', function (e) {
     $('[data-mdb-toggle="popover"],[data-original-title]').each(function () {
         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
             if ($(this).attr('popover-show') == 1) {
-                $(this).popover('toggle');
+                $(this).popover('hide');
             }
         }
     })

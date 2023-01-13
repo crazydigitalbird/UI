@@ -40,7 +40,7 @@ namespace UI.Controllers
             HttpResponseMessage response = await _operatorClient.CreateNoteAsync(User.Identity.Name, profileId, text);
             if (response?.IsSuccessStatusCode ?? false)
             {
-                return Ok(new { name = User.Identity.Name, date = DateTime.Now });
+                return Ok(new { name = User.Identity.Name, date = DateTime.Now.ToString("HH:mm dd.MM.yyy") });
             }
             return StatusCode(500, $"Error creating note for profile with id: {profileId}");
         }

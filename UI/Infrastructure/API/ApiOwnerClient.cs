@@ -18,10 +18,10 @@ namespace UI.Infrastructure.API
 
         public async Task<List<Agency>> GetAgencies()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("ownerapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<List<Agency>>("Agencies");
+                return await httpClient.GetFromJsonAsync<List<Agency>>("/Owner/Agencies");
             }
             catch (Exception ex)
             {
@@ -32,10 +32,10 @@ namespace UI.Infrastructure.API
 
         public async Task<Agency> GetAgencyById(int id)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("ownerapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                Agency agency = await httpClient.GetFromJsonAsync<Agency>($"Agency/{id}");
+                Agency agency = await httpClient.GetFromJsonAsync<Agency>($"/Owner/Agency/{id}");
                 return agency;
             }
             catch (Exception ex)
@@ -47,11 +47,11 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> AddAgency(Agency agency)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("ownerapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             HttpContent content = JsonContent.Create(agency);
             try
             {
-                var response = await httpClient.PostAsync("AddAgency", content);
+                var response = await httpClient.PostAsync("/Owner/AddAgency", content);
                 return response;
             }
             catch (Exception ex)
@@ -63,11 +63,11 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> UpdateAgency(Agency agency)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("ownerapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             HttpContent content = JsonContent.Create(agency);
             try
             {
-                var response = await httpClient.PatchAsync("UpdateAgency", content);
+                var response = await httpClient.PatchAsync("/Owner/UpdateAgency", content);
                 return response;
             }
             catch (Exception ex)
@@ -79,10 +79,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> DeleteAgency(int id)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("ownerapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                var response = await httpClient.DeleteAsync($"DeleteAgency/{id}");
+                var response = await httpClient.DeleteAsync($"/Owner/DeleteAgency/{id}");
                 return response;
             }
             catch (Exception ex)

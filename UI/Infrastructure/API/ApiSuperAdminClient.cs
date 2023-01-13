@@ -16,10 +16,10 @@ namespace UI.Infrastructure.API
 
         public async Task<IEnumerable<Profile>> GetProfiles()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<Profile>>("Profiles");
+                return await httpClient.GetFromJsonAsync<IEnumerable<Profile>>("/Superadmin/Profiles");
             }
             catch (Exception ex)
             {
@@ -30,10 +30,10 @@ namespace UI.Infrastructure.API
 
         public async Task<IEnumerable<string>> GetGroups()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<string>>("Groups");
+                return await httpClient.GetFromJsonAsync<IEnumerable<string>>("/Superadmin/Groups");
             }
             catch (Exception ex)
             {
@@ -44,10 +44,10 @@ namespace UI.Infrastructure.API
 
         public async Task<IEnumerable<string>> GetShifts()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<string>>("Shifts");
+                return await httpClient.GetFromJsonAsync<IEnumerable<string>>("/Superadmin/Shifts");
             }
             catch (Exception ex)
             {
@@ -58,10 +58,10 @@ namespace UI.Infrastructure.API
 
         public async Task<IEnumerable<string>> GetCabinets()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<string>>("Cabinets");
+                return await httpClient.GetFromJsonAsync<IEnumerable<string>>("/Superadmin/Cabinets");
             }
             catch (Exception ex)
             {
@@ -72,10 +72,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> DeleteProfiles(int[] profilesId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync<IEnumerable<int>>("DeleteProfiles", profilesId);
+                return await httpClient.PostAsJsonAsync<IEnumerable<int>>("/Superadmin/DeleteProfiles", profilesId);
             }
             catch (Exception ex)
             {
@@ -86,10 +86,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> AddGroup(string nameGroup)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync<string>("AddGroup", nameGroup);
+                return await httpClient.PostAsJsonAsync<string>("/Superadmin/AddGroup", nameGroup);
             }
             catch (Exception ex)
             {
@@ -100,10 +100,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> ChangeGroup(int profileId, int groupId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync("ChangeGroup", new { profileId = profileId, groupId = groupId });
+                return await httpClient.PostAsJsonAsync("/Superadmin/ChangeGroup", new { profileId = profileId, groupId = groupId });
             }
             catch (Exception ex)
             {
@@ -114,10 +114,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> ChangeShift(int profileId, int shiftId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync("ChangeShift", new { profileId = profileId, shiftId = shiftId });
+                return await httpClient.PostAsJsonAsync("/Superadmin/ChangeShift", new { profileId = profileId, shiftId = shiftId });
             }
             catch (Exception ex)
             {
@@ -128,10 +128,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> ChangeCabinet(int profileId, int cabinetId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync("ChangeCabinet", new { profileId = profileId, cabinetId = cabinetId });
+                return await httpClient.PostAsJsonAsync("/Superadmin/ChangeCabinet", new { profileId = profileId, cabinetId = cabinetId });
             }
             catch (Exception ex)
             {
@@ -142,10 +142,10 @@ namespace UI.Infrastructure.API
 
         public async Task<IEnumerable<Operator>> GetOperatorsProfile(int profileId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<Operator>>($"GetOperatorsProfile?profileId={profileId}");
+                return await httpClient.GetFromJsonAsync<IEnumerable<Operator>>($"/Superadmin/GetOperatorsProfile?profileId={profileId}");
             }
             catch (Exception ex)
             {
@@ -156,10 +156,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> DeleteOperatorFromProfile(int operatorId, int profileId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync<int>("DeleteOperatorFromProfile", profileId);
+                return await httpClient.PostAsJsonAsync<int>("/Superadmin/DeleteOperatorFromProfile", profileId);
             }
             catch (Exception ex)
             {
@@ -170,10 +170,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> AddOperatorFromProfile(int operatorId, int profileId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("superadminapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync("AddOperatorFromProfile", new { operatorId = operatorId, profileId = profileId });
+                return await httpClient.PostAsJsonAsync("/Superadmin/AddOperatorFromProfile", new { operatorId = operatorId, profileId = profileId });
             }
             catch (Exception ex)
             {

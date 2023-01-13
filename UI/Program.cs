@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using UI.Infrastructure.API;
-using UI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,24 +17,9 @@ builder.Services.AddSingleton<IOwnerClient, ApiOwnerClient>();
 builder.Services.AddSingleton<ISuperAdminClient, ApiSuperAdminClient>();
 builder.Services.AddSingleton<IOperatorClient, ApiOperatorClient>();
 
-builder.Services.AddHttpClient("authenticationapi", client =>
+builder.Services.AddHttpClient("api", client =>
 {
-    client.BaseAddress = new Uri($"{uriApi}/Authentication");
-}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
-
-builder.Services.AddHttpClient("ownerapi", client =>
-{
-    client.BaseAddress = new Uri($"{uriApi}/Owner/");
-}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
-
-builder.Services.AddHttpClient("superadminapi", client =>
-{
-    client.BaseAddress = new Uri($"{uriApi}/SuperAdmin/");
-}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
-
-builder.Services.AddHttpClient("operatorapi", client =>
-{
-    client.BaseAddress = new Uri($"{uriApi}/Operator/");
+    client.BaseAddress = new Uri(uriApi);
 }).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
 var app = builder.Build();

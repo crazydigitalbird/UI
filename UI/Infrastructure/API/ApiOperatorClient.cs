@@ -1,5 +1,4 @@
-﻿
-using UI.Models;
+﻿using UI.Models;
 
 namespace UI.Infrastructure.API
 {
@@ -16,10 +15,10 @@ namespace UI.Infrastructure.API
 
         public async Task<IEnumerable<Profile>> GetProfilesAsync()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("operatorapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<Profile>>("Profiles");
+                return await httpClient.GetFromJsonAsync<IEnumerable<Profile>>("/Operator/Profiles");
             }
             catch (Exception ex)
             {
@@ -30,10 +29,10 @@ namespace UI.Infrastructure.API
 
         public async Task<Dictionary<int, int>> GetBalanceAsync(string name, Interval interval)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("operatorapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                var url = $"Balance?operator={name}&interval={interval}";
+                var url = $"/Operator/Balance?operator={name}&interval={interval}";
                 return await httpClient.GetFromJsonAsync<Dictionary<int, int>>(url);
             }
             catch(Exception ex)
@@ -45,10 +44,10 @@ namespace UI.Infrastructure.API
 
         public async Task<List<Note>> Notes(string name, int profileId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("operatorapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.GetFromJsonAsync<List<Note>>($"Notes?operator={name}&&profileId={profileId}");
+                return await httpClient.GetFromJsonAsync<List<Note>>($"/Operator/Notes?operator={name}&&profileId={profileId}");
             }
             catch (Exception ex)
             {
@@ -59,10 +58,10 @@ namespace UI.Infrastructure.API
 
         public async Task<HttpResponseMessage> CreateNoteAsync(string name, int profileId, string text)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("operatorapi");
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                return await httpClient.PostAsJsonAsync("CreateNote", new { profileId = profileId, text = text});
+                return await httpClient.PostAsJsonAsync("/Operator/CreateNote", new { profileId = profileId, text = text});
             }
             catch (Exception ex)
             {

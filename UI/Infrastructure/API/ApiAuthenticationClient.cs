@@ -15,11 +15,10 @@ namespace UI.Infrastructure.API
 
         public async Task<ApplicationUser> LogIn(string login, string hashPassowrd)
         {
-            var client = _httpClientFactory.CreateClient("authenticationapi");
-
+            var client = _httpClientFactory.CreateClient("api");
             try
             {
-                return await client.GetFromJsonAsync<ApplicationUser>($"?login={login}&hash={hashPassowrd}");
+                return await client.GetFromJsonAsync<ApplicationUser>($"/Authentication/?login={login}&hash={hashPassowrd}");
             }
             catch (Exception ex)
             {

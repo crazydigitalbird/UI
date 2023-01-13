@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using UI.Infrastructure.API;
 using UI.Models;
@@ -99,6 +100,25 @@ namespace UI.Controllers
                 return View();
             }
             TempData["Message"] = "Password changed successfully";
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult PasswordRecovery()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> PasswordRecovery([EmailAddress][Required] string email)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            TempData["Error"] = "";
+            TempData["Message"] = "An email with instructions for changing the password has been sent to the specified email address";
             return View();
         }
 

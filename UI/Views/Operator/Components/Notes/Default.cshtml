@@ -1,8 +1,8 @@
 ﻿@model List<Note>
 
-<div class="modal-header">
-    <h5 class="modal-tittle text-white"></h5>
-    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+<div class="modal-header" style="border-bottom: solid white;">
+    <h5 class="modal-tittle text-black"></h5>
+    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" style="filter: none;"></button>
 </div>
 <div class="modal-body">
     <ul class="list-unstyled text-white">
@@ -24,7 +24,7 @@
         }
         @if (Model.Any(n => !n.IsRead))
         {
-            <li class="dropdown-divider my-4">New message</li>
+            <li class="dropdown-divider my-4" style="border-color: white !important;">New message</li>
             @foreach (var note in Model.Where(n => !n.IsRead))
             {
                 <li classs="d-flex justify-content-between mb-4">
@@ -44,7 +44,7 @@
         }
     </ul>
 </div>
-<div class="modal-footer">
+<div class="modal-footer" style="border-top: solid white;">
     <div class="form-outline">
         <textarea id="textAreaNote" class="form-control mask-custom text-white" rows="4" style="background: rgba(24, 24, 16, .2)"></textarea>
         <label class="form-label text-white" for="textAreaNote">Note</label>

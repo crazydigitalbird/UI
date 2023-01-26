@@ -1,0 +1,173 @@
+﻿@model List<Profile>
+
+@{
+    ViewData["Title"] = "Profiles";
+    var groups = (IEnumerable<SelectListItem>)ViewData["Groups"];
+    var shifts = (IEnumerable<SelectListItem>)ViewData["Shifts"];
+    var cabinets = (IEnumerable<SelectListItem>)ViewData["Cabinets"];
+    int counter = 1;
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" />
+<link rel="stylesheet" href="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+<partial name="_AlertsPartial" />
+
+<div id="tableDiv" class="d-none">
+    <div id="toolbar" class="ms-2">
+        <button id="deleteBtn" class="btn btn-danger">
+            <i class="fa-solid fa-trash fa-xl"></i>
+        </button>
+        <button id="addGroup" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i>
+            Add Group
+        </button>
+        <button id="addworkSchedule" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i>
+            Add Work Schedule
+        </button>
+        <button id="addProfiles" class="btn btn-success">
+            <i class="fa-solid fa-plus"></i>
+            Add Profiles
+        </button>
+    </div>
+
+    <table id="adminAgencyTable" class="table table-sm table-hover table-bordered"
+           data-toggle="true"
+           data-sticky-header="true"
+           data-checkbox-header="true"
+           data-id-field="state"
+           data-unique-id="id"
+           data-search="true"
+           data-toolbar="#toolbar"
+           data-toolbar-align="right"
+           style="min-width: 1535px;">
+        <thead>
+            <tr>
+                <th data-field="state" data-checkbox="true"></th>
+                <th data-field="number" data-sortable="true" data-align="center">№</th>
+                <th data-field="status"></th>
+                <th data-field="name" data-sortable="true">Name</th>
+                <th data-field="lastName" data-sortable="true">Last name</th>
+                <th data-field="id" data-sortable="true">Profile ID</th>
+                <th data-field="balance" class="text-center">Balance</th>
+                <th data-field="media" class="text-center">Media materials</th>
+                <th data-field="operators" data-formatter="operatorsFormatter" class="text-center">Operators</th>
+                <th data-field="group" data-formatter="groupFormatter" data-width="200">
+                    <select id="groupsSelect" name="groupHeader" class="form-select form-select-sm" asp-items="@groups" onchange="filterGroup(event)">
+                        <option value="0">All Groups</option>
+                    </select>
+                </th>
+                <th data-field="shift" data-formatter="shiftFormatter" data-width="200">
+                    <select id="shiftsSelect" name="shiftHeader" class="form-select form-select-sm" asp-items="@shifts" onchange="filterShift(event)">
+                        <option selected value="0">All Work Shifts</option>
+                    </select>
+                </th>
+                <th data-field="cabinet" data-formatter="cabinetFormatter" data-width="200">
+                    <select id="cabinetsSelect" name="cabinetHeader" class="form-select form-select-sm" asp-items="@cabinets" onchange="filterCabinet(event)">
+                        <option selected value="0">All Cabinets</option>
+                    </select>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model?.Count > 0)
+            {
+                @foreach (var profile in Model)
+                {
+                    <tr>
+                        <td>@*@profile.Id*@</td>
+
+                        <td>@counter</td>
+
+                        <td class="text-center">
+                            @if (profile.Status == Status.Online)
+                            {
+                                <i class="fa-solid fa-circle text-success"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-solid fa-circle text-danger"></i>
+                            }
+                        </td>
+
+                        <td>@profile.FirstName</td>
+
+                        <td>@profile.LastName</td>
+
+                        <td>@profile.Id</td>
+
+                        <td>
+                            <div class="row justify-content-center">
+                                <div class="col-6 text-end">
+                                    @($"{profile.Balance}$ ")
+                                </div>
+                                <div class="col-auto ps-0">
+                                    <i class="fa-solid fa-signal fa-signal-gradient"></i>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="row text-start">
+                                <div class="col-4 pe-0">
+                                    <i class="fa-solid fa-paperclip fa-fw pe-1"></i>
+                                    @profile.Photo
+                                </div>
+                                <div class="col-4 pe-0">
+                                    <i class="fa-solid fa-video fa-fw pe-1"></i>
+                                    @profile.Video
+                                </div>
+                                <div class="col-4">
+                                    <i class="fa-solid fa-volume-high fa-fw pe-1"></i>
+                                    @profile.Audio
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>@profile.Operators</td>
+
+                        <td>@profile.Group.Id</td>
+
+                        <td>@profile.Shift.Id</td>
+
+                        <td>@profile.Cabinet.Id</td>
+                    </tr>
+                    counter++;
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+    <div id="toast" class="toast text-white" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-mdb-delay="5000">
+        <div class="d-flex">
+            <div id="toastBody" class="toast-body">
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-mdb-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<partial name="_DeleteProfiles" />
+<partial name="_AddGroup" />
+<partial name="_AddWorkSchedule" />
+<partial name="_AddProfile" />
+<partial name="_Popover" />
+
+@section Scripts{
+<script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+<script src="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+@*<script src="~/lib/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>*@
+<script src="~/js/AdminAgency/dataTable.js"></script>
+<script src="~/js/AdminAgency/group.js"></script>
+<script src="~/js/AdminAgency/shift.js"></script>
+<script src="~/js/AdminAgency/cabinet.js"></script>
+<script src="~/js/AdminAgency/profile.js"></script>
+<script src="~/js/AdminAgency/filters.js"></script>
+<script src="~/js/AdminAgency/popovers.js"></script>
+<script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+<partial name="_ValidationScriptsPartial" />
+}

@@ -30,6 +30,10 @@ function initTable() {
 
 function getHeight() {
     var freeAreaHeight = $(window).height() - $('#navMenu').outerHeight(true) - 16;
+    var opetatorTableHeight = $('#operatorTable').outerHeight(true) + 2;
+    if (freeAreaHeight > opetatorTableHeight) {
+        return opetatorTableHeight;
+    }
     return freeAreaHeight;
 }
 

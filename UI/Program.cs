@@ -13,9 +13,10 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 builder.Services.AddSingleton<IAuthenticationClient, ApiAuthenticationClient>();
-builder.Services.AddSingleton<IOwnerClient, ApiOwnerClient>();
-builder.Services.AddSingleton<ISuperAdminClient, ApiSuperAdminClient>();
+builder.Services.AddSingleton<IAdminClient, ApiAdminClient>();
+builder.Services.AddSingleton<IAdminAgencyClient, ApiAdminAgencyClient>();
 builder.Services.AddSingleton<IOperatorClient, ApiOperatorClient>();
+builder.Services.AddSingleton<IUserClient, ApiUserClient>();
 
 builder.Services.AddHttpClient("api", client =>
 {

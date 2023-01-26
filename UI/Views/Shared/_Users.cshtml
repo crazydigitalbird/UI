@@ -1,0 +1,64 @@
+﻿@model IEnumerable<ApplicationUser>
+
+@{
+    var roles = (List<SelectListItem>)ViewData["Roles"];
+    var freeUsers = (List<ApplicationUser>)ViewData["FreeUsers"];
+}
+
+<div class="input-group mb-3">
+    <input type="email" class="form-control" id="newUser" placeholder="Add user" list="users" autocomplete="off" />
+    <datalist id="users">
+        @if (freeUsers != null)
+        {
+            foreach (var user in freeUsers)
+            {
+                <option value="@user.Email" data-userid="@user.Id">@user.Email</option>
+            }
+        }
+    </datalist>
+    <button type="button" class="btn btn-sm btn-success" onclick="addUser(event)">Add user</button>
+</div>
+
+@if (Model != null)
+{
+    int counter = 0;
+    foreach (var user in Model)
+    {
+        <input type="hidden" name="originalUsers[@counter].Id" value="@user.Id" />
+        <input type="hidden" name="originalUsers[@counter].Role" value="@user.Role" />
+        counter++;
+    }
+}
+
+<table class="table table-sm table-hover">
+    <thead>
+        <tr>
+            <th class="text-bold">Email</th>
+            <th class="text-bold text-center">Role</th>
+            <th class="text-bold text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            int counter = 0;
+            foreach (var user in Model.OrderBy(u => u.Role).ThenBy(u => u.Email))
+            {
+                <tr>
+                    <input type="hidden" name="Users[@counter].Id" value="@user.Id" />
+                    <td name="email">@user.Email</td>
+                    <td class="w-25">
+                        <select class="form-select form-select-sm" name="Users[@counter].Role" asp-items="@roles.Select(r => new SelectListItem(r.Text, r.Value, user.Role.ToString() == r.Text))"></select>
+                    </td>
+                    <td class="text-center" style="width: 80px;">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(event, @user.Id)">Delete</button>
+                    </td>
+                </tr>
+                counter++;
+            }
+        }
+        <tr class="tr-placeholder text-center">
+            <td colspan="3">No users</td>
+        </tr>
+    </tbody>
+</table>

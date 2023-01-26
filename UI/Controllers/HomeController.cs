@@ -17,21 +17,21 @@ namespace UI.Controllers
 
         public IActionResult Index()
         {
-            if (User.IsInRole(Role.Owner.ToString()))
-            {
-                return RedirectToAction("Index", "Owner");
-            }
-            if (User.IsInRole(Role.SuperAdmin.ToString()))
-            {
-                return RedirectToAction("Index", "SuperAdmin");
-            }
             if (User.IsInRole(Role.Admin.ToString()))
             {
-                RedirectToAction("Index", "Admin");
+                return RedirectToAction("Index", "Admin");
             }
-            if (User.IsInRole(Role.Interpreter.ToString()))
+            if (User.IsInRole(Role.AdminAgency.ToString()))
             {
-                RedirectToAction("Index", "Interpreter");
+                return RedirectToAction("Index", "AdminAgency");
+            }
+            if (User.IsInRole(Role.Operator.ToString()))
+            {
+                return RedirectToAction("Index", "Operator");
+            }
+            if (User.IsInRole(Role.User.ToString()))
+            {
+                return RedirectToAction("Index", "User");
             }
             return NotFound();
         }

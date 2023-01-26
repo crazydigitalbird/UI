@@ -13,6 +13,8 @@ namespace UI.Models
 
         public string Description { get; set; }
 
+        public virtual ICollection<ApplicationUser> Users { get; set; }
+
         //[Required]
         //[DataType(DataType.Password)]
         //[JsonIgnore]

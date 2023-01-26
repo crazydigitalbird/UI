@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Agency>
+
+<div class="container">
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th class="text-bold">Name</th>
+                <th class="text-bold">Description</th>
+                <th class="text-bold text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model?.Count() > 0)
+            {
+                foreach (var agency in Model.OrderBy(a => a.Name))
+                {
+                    <tr>
+                        <td class="col-sm-3">@agency.Name</td>
+                        <td class="col-sm-6">@agency.Description</td>
+                        <td class="col-sm-3 text-center align-middle">
+                            <div class="d-grid gap-2 d-xl-block">
+                                <a class="btn btn-sm btn-info" asp-controller="AdminAgency" asp-action="Index" asp-route-agencyId="@agency.Id">Profiles</a>
+                                <a class="btn btn-sm btn-primary" asp-controller="Admin" asp-action="EditAgency" asp-route-agencyId="@agency.Id">Edit</a>
+                                <a class="btn btn-sm btn-danger" onclick="confirm(@agency.Id, '@agency.Name')">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-center" colspan="3">No Data</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a class="btn btn-sm btn-success" asp-controller="Admin" asp-action="AddAgency">Add Agency</a>
+
+</div>
+
+<partial name="_Confirm" />
+
+@section Scripts{
+    <script src="~/js/Admin/admin.js"></script>
+}

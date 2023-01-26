@@ -1,0 +1,25 @@
+﻿@model Agency
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="container mt-5">
+
+    <partial name="_AlertsPartial" />
+
+    <form method="post" asp-controller="AdminAgency" asp-action="Users">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Name" />
+
+        <partial name="_Users" model="Model.Users" />
+
+        <a class="btn btn-sm btn-danger" asp-controller="AdminAgency" asp-action="Index">Cancel</a>
+        <button type="submit" class="btn btn-sm btn-success">Save</button>
+    </form>
+</div>
+
+@section Scripts{
+    <partial name="_validationScriptsPartial" />
+    <script src="~/js/users.js"></script>
+}

@@ -1,16 +1,31 @@
 ﻿@if (User.Identity.IsAuthenticated)
 {
-    <ul class="navbar-nav align-items-center">
-        <li class="nav-item dropdown me-3">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarAccount" role="button" data-mdb-toggle="dropdown" aria-expanded="false">@User.Identity?.Name</a>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarAccount">
-                <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change password</a></li>
-            </ul>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="btn btn-sm btn-primary" title="Logout">Logout</button>
-            </form>
-        </li>
-    </ul>
+<ul class="navbar-nav align-items-center">
+    <li class="nav-item dropdown me-3">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarAccount" role="button" data-mdb-toggle="dropdown" aria-expanded="false">@User.Identity?.Name</a>
+        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarAccount">
+            <li>
+                <div class="dropdown-item">
+                    <div class="form-check form-switch form-switch-sm">
+                        @if (string.IsNullOrWhiteSpace(Context.Request.Cookies["dark"]))
+                        {
+                            <input id="switchTheme" type="checkbox" class="form-check-input" role="switch" onchange="setTheme(event)" />
+                        }
+                        else
+                        {
+                            <input id="switchTheme" type="checkbox" class="form-check-input" role="switch" onchange="setTheme(event)" checked/>
+                        }                        
+                        <label for="switchTheme" class="form-check-label">Dark Mode</label>
+                    </div>
+                </div>
+            </li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change password</a></li>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <form class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="btn btn-sm btn-primary" title="Logout">Logout</button>
+        </form>
+    </li>
+</ul>
 }

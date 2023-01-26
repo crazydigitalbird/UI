@@ -115,9 +115,9 @@ namespace UI.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Error"] = string.Join(". ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 return View();
             }
-            TempData["Error"] = "";
             TempData["Message"] = "An email with instructions for changing the password has been sent to the specified email address";
             return View();
         }

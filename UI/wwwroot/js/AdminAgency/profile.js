@@ -35,7 +35,8 @@ function deleteProfiles() {
         $("#adminAgencyTable").bootstrapTable('remove', {
             field: 'id',
             values: profilesId
-        })
+        });
+        setHeight();
     }).fail(function () {
         console.log("fail");
     })

@@ -1,40 +1,43 @@
-﻿var $table = $('#adminAgencyTable');
+﻿$("body").css('overflow', 'hidden');
+var $table = $('#adminAgencyTable');
 
 $(function () {
     initTable();
 
     $(window).resize(function () {
-        setTimeout(() => {
-            $('#adminAgencyTable').bootstrapTable("refreshOptions", {
-                stickyHeaderOffsetY: $('#navMenu').outerHeight(),
-                height: getHeight()
-            })
-        }, 100);
+        setHeight();
     });
-})
+});
 
 function initTable() {
     $("#tableDiv").removeClass('d-none');
 
     $table.bootstrapTable();
 
-    setTimeout(() => {
-        $table.bootstrapTable("refreshOptions", {
-            stickyHeaderOffsetY: $('#navMenu').outerHeight(),
-            height: getHeight()
-        })
-    }, 10);
+    setHeight();
 
     //$table.bootstrapTable('uncheckAll');
 }
 
-function getHeight() {
+function setHeight() {
     var freeAreaHeight = $(window).height() - $('#navMenu').outerHeight() - $('#toolbar').outerHeight();
-    var adminAgencyTableHeight = $('.fixed-table-toolbar').outerHeight(true) + $('#adminAgencyTable').outerHeight(true) + 2;
-    if (freeAreaHeight > adminAgencyTableHeight) {
-        return adminAgencyTableHeight;
+    var adminAgencyTableHeight = $('.fixed-table-toolbar').outerHeight() + $('#adminAgencyTable').outerHeight();
+    if (adminAgencyTableHeight > freeAreaHeight) {
+        setTimeout(() => {
+            $table.bootstrapTable("refreshOptions", {
+                stickyHeaderOffsetY: $('#navMenu').outerHeight(),
+                height: freeAreaHeight
+            })
+        }, 10);
     }
-    return freeAreaHeight;
+    else {
+        setTimeout(() => {
+            $table.bootstrapTable("refreshOptions", {
+                stickyHeaderOffsetY: $('#navMenu').outerHeight(),
+                height: 0
+            })
+        }, 10);
+    }
     //var initialTableHeight = $('#tableDiv').outerHeight() + 2;
 }
 

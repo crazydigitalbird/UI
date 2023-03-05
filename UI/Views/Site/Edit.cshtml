@@ -1,0 +1,50 @@
+﻿@model SheetSite
+
+@{
+    ViewData["Title"] = Model?.Id > 0 ? $"Edit {Model?.Name}" : "Add new site";
+}
+
+<div class="container mt-5">
+
+    <partial name="_AlertsPartial" />
+
+    <form id="form" method="Post" asp-controller="Site" asp-action="@(Model?.Id > 0 ? "Edit" : "Add")">
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model?.Id > 0)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+
+        <div class="form-outline mb-3">
+            <input class="form-control" asp-for="Name" required />
+            <label class="form-label" asp-for="Name"></label>
+            <span asp-validation-for="Name"></span>
+        </div>
+
+        <div class="form-outline mb-3">
+            <input class="form-control" asp-for="Description" />
+            <label class="form-label" asp-for="Description"></label>
+        </div>
+
+        <div class="form-outline mb-3">
+            <input class="form-control" asp-for="Configuration" required />
+            <label class="form-label" asp-for="Configuration"></label>
+        </div>
+
+        <a class="btn btn-sm btn-danger" asp-controller="Site" asp-action="Index">Cancel</a>
+        <button type="submit" class="btn btn-sm btn-success">@(Model?.Id > 0 ? "Save" : "Add")</button>
+    </form>
+
+</div>
+
+@*@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}*@

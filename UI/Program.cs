@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using UI.Infrastructure.API;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,16 +15,34 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddSingleton<IAuthenticationClient, ApiAuthenticationClient>();
 builder.Services.AddSingleton<IAdminClient, ApiAdminClient>();
 builder.Services.AddSingleton<IAdminAgencyClient, ApiAdminAgencyClient>();
 builder.Services.AddSingleton<IOperatorClient, ApiOperatorClient>();
 builder.Services.AddSingleton<IUserClient, ApiUserClient>();
+builder.Services.AddSingleton<ICabinetClient, ApiCabinetClient>();
+builder.Services.AddSingleton<IChatClient, ApiChatClient>();
+builder.Services.AddSingleton<ISiteClient, ApiSiteClient>();
 
 builder.Services.AddHttpClient("api", client =>
 {
     client.BaseAddress = new Uri(uriApi);
-}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    if (builder.Environment.IsDevelopment())
+    {
+        handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
+    }
+    return handler;
+}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
+
+bool ValidateServerCetification(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)
+{
+    return true;
+}
 
 var app = builder.Build();
 
@@ -33,6 +54,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -40,6 +62,15 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+    {
+        response.Redirect("/Account/LogOut");
+    }
+});
 
 app.MapControllerRoute(
     name: "default",

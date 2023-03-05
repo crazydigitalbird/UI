@@ -210,7 +210,7 @@ namespace UI.Infrastructure.API
             }
         }
 
-        public async Task<HttpResponseMessage> UpdateAgency(Agency agency)
+        public async Task<HttpResponseMessage> UpdateAgency(AgencyView agency)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             HttpContent content = JsonContent.Create(agency);
@@ -226,12 +226,12 @@ namespace UI.Infrastructure.API
             }
         }
 
-        public async Task<Agency> GetAgency()
+        public async Task<AgencyView> GetAgency()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                Agency agency = await httpClient.GetFromJsonAsync<Agency>($"/Owner/Agency/1");
+                AgencyView agency = await httpClient.GetFromJsonAsync<AgencyView>($"/Owner/Agency/1");
                 return agency;
             }
             catch (Exception ex)
@@ -258,7 +258,7 @@ namespace UI.Infrastructure.API
         Task<HttpResponseMessage> AddOperatorFromProfile(int operatorId, int profileId);
         Task<IEnumerable<ApplicationUser>> GetAgencyUsers(int agensyId);
         Task<IEnumerable<ApplicationUser>> GetFreeUsers();
-        Task<HttpResponseMessage> UpdateAgency(Agency agency);
-        Task<Agency> GetAgency();
+        Task<HttpResponseMessage> UpdateAgency(AgencyView agency);
+        Task<AgencyView> GetAgency();
     }
 }

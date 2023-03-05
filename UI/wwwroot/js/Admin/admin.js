@@ -5,5 +5,5 @@
 }
 
 function deleteAgency(agencyId) {
-    window.location.href = `/Admin/DeleteAgency/${agencyId}`;
+    window.location.href = `/Admin/DeleteAgency?agencyId=${agencyId}`;
 }

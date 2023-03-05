@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI.Infrastructure.API;
-using UI.Models;
+using UI.Infrastructure.Filters;
 
 namespace UI.Controllers
 {
     [Authorize]
+    [APIAuthorize]
     public class UserController : Controller
     {
         private readonly IUserClient _userClient;
@@ -21,37 +22,46 @@ namespace UI.Controllers
          // GET: UserController
         public async Task<ActionResult> Index()
         {
-            return View(await _userClient.GetProfiles());
+            ViewData["Sites"] = (await _userClient.GetSites()).Where(s => s.IsActive).ToList();
+            return View(await _userClient.GetSheets());
         }
 
         // POST: UserController/AddProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AddProfile(string email, string password)
+        public async Task<ActionResult> AddSheet(int siteId, string login, string password)
         {
-            var response = await _userClient.AddProfile(email, password);
-            if(response?.IsSuccessStatusCode ?? false)
+            var sheet = await _userClient.AddSheet(siteId, login, password);
+            if(sheet != null)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                return Ok(content);
+                return Ok(sheet);
             }
-            return StatusCode(500, $"Error adding a {email} profile");
+            return StatusCode(500, $"Error adding a {login} sheet");
         }
 
         // POST: UserController/Edit/5
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult ChangePassword(int profileId, string password)
+        public async Task<ActionResult> ChangePassword(int sheetId, string login, string password)
         {
-            return Ok();
+            var sheet = await _userClient.AddSheet(sheetId, login, password);
+            if (sheet != null)
+            {
+                return Ok(sheet);
+            }
+            return StatusCode(500, $"Error updating a {login} sheet");
         }
 
         // POST: UserController/DeleteProfile/5
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult DeleteProfile(int profileId)
+        public async Task<ActionResult> DeleteSheet(int sheetId)
         {
-            return Ok();
+            if (await _userClient.DeleteSheet(sheetId))
+            {
+                Ok();
+            }
+            return StatusCode(500);
         }
     }
 }

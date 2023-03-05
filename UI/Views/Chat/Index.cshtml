@@ -1,0 +1,159 @@
+﻿@model Messanger
+
+@{
+    ViewData["Title"] = "Chats";
+}
+
+<partial name="_AlertsPartial" />
+
+@if (Model != null && Model.Chats?.Count == 0)
+{
+    <div class="alert alert-danger text-center">No chats</div>
+}
+else
+{
+    <div class="container pb-3">
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="card" id="chat" style="border-radius: 15px;">
+                    <div class="card-body">
+                        <div class="row">
+
+                            <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+                                <div class="p-3">
+
+                                    <div id="divSearch" class="input-group mb-3">
+                                        <span class="input-group-text border-0" id="search">
+                                            <i class="fa-solid fa-search"></i>
+                                        </span>
+                                        <input type="search" id="search" class="form-control rounded" oninput="searchChat(this)" placeholder="Search" aria-label="search" aria-describedby="search" autocomplete="off" />
+                                    </div>
+
+                                    <div id="usersArea" class="overflow-auto" style="position: relative;">
+                                        <ul class="list-unstyled list-group mb-0">
+                                            @foreach (var chat in Model.Chats)
+                                            {
+                                                <li id="@($"user_{chat.Id}")" class="p-3 border-bottom">
+                                                    <a href="#!" class="d-flex justify-content-between" onclick="activatingChat(@chat.Id)">
+                                                        <div class="d-flex flex-row">
+                                                            <div>
+                                                                <img src="@($"data:image/png;base64, {chat.Avatar}")" alt="avatar" class="rounded-circle d-flex align-self-center me-3" width="60" />
+                                                                @switch (chat.Status)
+                                                                {
+                                                                    case Status.Online:
+                                                                        <span class="badge badge-success badge-dot"></span>
+                                                                        break;
+
+                                                                    case Status.Offline:
+                                                                        <span class="badge badge-danger badge-dot"></span>
+                                                                        break;
+                                                                }
+                                                            </div>
+                                                            <div class="pt-1">
+                                                                <p name="userName" class="fw-bold mb-0">@chat.UserName</p>
+                                                                <p class="small text-muted">@chat.AboutMe</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="pt-1">
+                                                            <p class="small text-muted mb-1">Just now</p>
+                                                            @if (chat.Messages.Where(m => !m.IsRead).Count() > 0)
+                                                            {
+                                                                <span id="@($"numberOfUnreadMessages_{chat.Id}")" class="badge bg-danger rounded-pill float-end">@chat.Messages.Where(m => !m.IsRead).Count()</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span id="@($"numberOfUnreadMessages_{chat.Id}")" class="badge bg-danger rounded-pill float-end d-none"></span>
+                                                            }
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div id="messagesArea" class="col-md-6 col-lg-7 col-xl-8">
+                                @foreach (var chat in Model?.Chats)
+                                {
+                                    <div id="@($"messages_{@chat.Id}")" name="messages" class="pt-3 pe-3 overflow-auto" style="position: relative;">
+                                        @if (chat.Messages.Count > 0)
+                                        {
+                                            foreach (var m in chat.Messages)
+                                            {
+                                                if (m.IsOwner)
+                                                {
+                                                    <div class="d-flex flex-row justify-content-start">
+                                                        <img src="@($"data:image/png;base64, {Model.Avatar}")" alt="owner" class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+                                                        <div>
+                                                            <p class="small p-2 ms-3 mb-1 rounded-3 text-black" style="background-color: #e3ebf7 ;">
+                                                                @m.Text
+                                                            </p>
+                                                            <p class="small ms-3 mb-3 rounded-3 text-muted float-end">@m.DateTime.ToString("HH:mm dd.MM.yyyy")</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row justify-content-start">
+                                                        <img src="@($"data:image/png;base64, {Model.Avatar}")" alt="owner" class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+                                                        <div class="col-4 ms-3">
+                                                            <img src="~/image/city2.jpg" class="img-thumbnail"/>
+                                                            <p class="small rounded-3 text-muted float-end text-nowrap">@m.DateTime.ToString("HH:mm dd.MM.yyyy")</p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="d-flex flex-row justify-content-end">
+                                                        <div>
+                                                            <p class="small p-2 me-3 mb-1 rounded-3 text-white bg-primary">
+                                                                @m.Text
+                                                            </p>
+                                                            <p class="small me-3 mb-3 rounded-3 text-muted float-end">@m.DateTime.ToString("HH:mm dd.MM.yyyy")</p>
+                                                        </div>
+                                                        <img src="@($"data:image/png;base64, {chat.Avatar}")" alt="avatar " class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+                                                    </div>
+
+                                                    <div class="d-flex flex-row justify-content-end">                                                        
+                                                        <div class="col-5 me-3">
+                                                            <img src="~/image/city.jpg" class="img-thumbnail" />
+                                                            <p class="small rounded-3 text-muted float-end text-nowrap">@m.DateTime.ToString("HH:mm dd.MM.yyyy")</p>
+                                                        </div>
+                                                        <img src="@($"data:image/png;base64, {chat.Avatar}")" alt="avatar " class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div>No messages</div>
+                                        }
+                                    </div>
+                                }
+                                <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
+                                    <img id="ownerAvatar" src="@($"data:image/png;base64, {Model.Avatar}")" alt="owner" class="rounded-circle d-flex" style="width: 40px; height: 100%" />
+                                    <input type="text" class="form-control form-control-lg ms-3" id="newMessage" placeholder="Message" onkeydown="pressEnter(event, @Model.OwnerId)" />
+                                    <a class="ms-3 text-muted" href="#!"><i class="fa-solid fa-paperclip"></i></a>
+                                    <a class="ms-3 text-muted" href="#!"><i class="fa-solid fa-smile text-warning"></i></a>
+                                    <a class="ms-3" href="#!" onclick="sendMessage(@Model.OwnerId)"><i class="fa-solid fa-paper-plane"></i></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    @section Scripts{
+    <script src="~/js/Chat/chat.js"></script>
+    }
+}

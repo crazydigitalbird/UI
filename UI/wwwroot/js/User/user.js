@@ -1,32 +1,40 @@
-﻿function successAddProfile(data) {
-    var profile = JSON.parse(data);
+﻿function successAddSheet(sheet) {
 
+    var userInfo = JSON.parse(sheet.info);
+
+    var fullName = '';
+    if (userInfo.name) {
+        fullName = userInfo.name;
+    }
+    if (userInfo.lastName) {
+        fullName = `${fullName} ${userInfo.lastName}`;
+    }
 
     var newCard = $(`<div class="col">
                     <div class="card h-100 text-center">
                         <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                            <img src="/image/city.jpg" class="img-fluid" />
+                            <img src="${userInfo.avatar}" class="img-fluid" />
                             <a href="#">
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </a>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title">${profile.FirstName} ${profile.LastName}</h5>
+                            <h5 class="card-title">${fullName}</h5>
                             <div>
-                                <button type="button" class="btn btn-primary btn-floating" onclick="editProfile(event, ${profile.Id})">
+                                <button type="button" class="btn btn-primary btn-floating" onclick="editSheet(event, ${sheet.id})">
                                     <i class="fa-solid fa-user-pen mr-2"></i>
                                 </button>
-                                <button type="button" class="btn btn-danger btn-floating" onclick="removeProfile(event, ${profile.Id})">
+                                <button type="button" class="btn btn-danger btn-floating" onclick="removeSheet(event, ${sheet.id})">
                                     <i class="fa-solid fa-trash mr-2"></i>
                                 </button>
                             </div>
                             <div class="row d-none">
                                 <div class="form-outline col w-100">
-                                    <input type="password" name="password${profile.Id}" id="password${profile.Id}" class="form-control" />
-                                    <label class="form-label" for="password${profile.Id}">New Password</label>
+                                    <input type="password" name="password${sheet.id}" id="password${sheet.id}" class="form-control" />
+                                    <label class="form-label" for="password${sheet.id}">New Password</label>
                                 </div>
                                 <div class="col-auto pe-0">
-                                    <button type="button" class="btn btn-success btn-floating" data-mdb-ripple-color="success" onclick="changePassword(event, ${profile.Id})">
+                                    <button type="button" class="btn btn-success btn-floating" data-mdb-ripple-color="success" onclick="changePassword(event, ${sheet.id})">
                                         <i class="fa-solid fa-save fa-xl"></i>
                                     </button>
                                 </div>
@@ -34,59 +42,58 @@
                         </div>
                     </div>
                 </div>`);
-    $('#cardAddProfile').after(newCard);
+    $('#cardAddSheet').after(newCard);
 
-    //showAlert('alert-success', 'alert-danger', `Added profile ${profile.FirstName} ${profile.LastName}`);
-    showToast('bg-success', 'bg-danger', `The  ${profile.FirstName} ${profile.LastName} profile has been added successfully`)
+    showToast('bg-success', 'bg-danger', `The  ${fullName} sheet has been added successfully`)
 
     $('#email').val('');
     $('#password').val('');
 }
 
-function failurAddProfile(error) {
+function failureAddSheet(error) {
     //showAlert('alert-danger', 'alert-success', error.responseText);
     showAlert('bg-danger', 'bg-success', error.responseText);
 }
 
-function removeProfile(e, profileId) {
-    var fullName = $(e.target).siblings('.card-title').text();
-    $.post("/User/DeleteProfile", { profileId: profileId }, function () {
-        e.target.closest('div .col').remove();
-        showToast('bg-success', 'bg-danger', `${fullName}'s profile has been deleted`);
+function removeSheet(e, sheetId) {
+    var fullName = $(e).closest('div').siblings('.card-title').text();
+    $.post("/User/DeleteSheet", { sheetId: sheetId }, function () {
+        e.closest('div .col').remove();
+        showToast('bg-success', 'bg-danger', `${fullName}'s sheet has been deleted`);
     }).fail(function () {
-        showToast('bg-danger', 'bg-success', `Error deleting the profile of ${fullName}`);
+        showToast('bg-danger', 'bg-success', `Error deleting the sheet of ${fullName}`);
     });
 }
 
-function editProfile(e, profileId) {
-    var $divParent = $(e.target).closest('div');
+function editSheet(e, sheetId) {
+    var $divParent = $(e).closest('div');
     $divParent.addClass('d-none');
     $divParent.siblings('div').removeClass('d-none');
-    mdb.Input.getInstance($(`#password${profileId}`).closest('div')[0]).update();
+    mdb.Input.getInstance($(`#password${sheetId}`).closest('div')[0]).update();
 }
 
-function changePassword(e, profileId) {
-    var $divParent = $(e.target).closest('div .row');
+function changePassword(e, sheetId, credentials) {
+    var $divParent = $(e).closest('div .row');
     $divParent.addClass('d-none');
     $divParent.siblings('div').removeClass('d-none');
 
-    var $inputPassword = $(`#password${profileId}`);
+    var $inputPassword = $(`#password${sheetId}`);
 
     if ($inputPassword.val()) {
-        var fullName = $(e.target).closest('.card-body').find('.card-title').text();
+        var credentialsObj = JSON.parse(credentials);
+        var fullName = $(e).closest('.card-body').find('.card-title').text();
 
-        $.post("/User/ChangePassword", { profileId: profileId, password: $inputPassword.val() }, function () {
-            showToast('bg-success', 'bg-danger', `${fullName}'s profile password has been changed`);
+        $.post("/User/ChangePassword", { sheetId: sheetId, login: credentialsObj.login, password: $inputPassword.val() }, function () {
+            showToast('bg-success', 'bg-danger', `${fullName}'s sheet password has been changed`);
         }).fail(function () {
-            showToast('bg-danger', 'bg-success', `Error change password the profile of ${fullName}`);
+            showToast('bg-danger', 'bg-success', `Error change password the sheet of ${fullName}`);
         });
-        $(`#password${profileId}`).val('');
+        $(`#password${sheetId}`).val('');
     }
-
 }
 
 function showAlert(addClass, removeClass, text) {
-    var $alert = $('#alertAddProfile');
+    var $alert = $('#alertAddSheet');
     if (!$alert.hasClass(addClass)) {
         $alert.addClass(addClass);
     }

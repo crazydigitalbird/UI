@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Filters;
 using UI.Models;
 
 namespace UI.Controllers
 {
     [Authorize]
+    [APIAuthorize]
     public class OperatorController : Controller
     {
         private readonly IOperatorClient _operatorClient;

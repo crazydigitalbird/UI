@@ -1,4 +1,4 @@
-﻿@model Agency
+﻿@model AgencyView
 
 @{
     ViewData["Title"] = Model?.Id > 0 ? $"Edit {Model?.Name}" : "Add new agency";
@@ -30,10 +30,10 @@
         else
         {*@
 
-@*        @if (Model?.Id > 0)
+        @if (Model?.Id > 0)
         {
-            <input type="hidden" name="agency.Id" value="@Model.Id" />
-        }*@
+            <input type="hidden" asp-for="Id" />
+        }
 
         <div class="form-outline mb-3">
             <input class="form-control" asp-for="Name" />

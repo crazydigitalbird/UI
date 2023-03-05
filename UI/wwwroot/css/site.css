@@ -115,6 +115,61 @@ html {
     background: linear-gradient(to bottom right, rgba(255, 216, 0, 1), rgba(255, 216, 0, 1));
 }
 
+/*---- Table cabinets ----*/
+#tableCabinet tbody tr:hover {
+    cursor: pointer;
+}
+
+.tr-border {
+    /*border: 2px solid #3b71ca !important;*/
+    outline: thin solid #3b71ca;
+    outline-offset: -1px;
+    z-index: 0;
+}
+
+.tableFixedHead {
+    overflow: auto;
+}
+
+    .tableFixedHead thead th {
+        position: sticky;
+        top: -1px;
+        z-index: 10;
+    }
+
+.d-none-users {
+    display: none !important;
+}
+
+.btn-size-fixed {
+    width: 83px;
+    max-width: 83px;
+}
+
+.dropdown-menu-width {
+    min-width: inherit;
+}
+
+/*---- Chat ----*/
+
+/*#chat .form-control {
+    border-color: transparent;
+}
+
+    #chat .form-control:focus {
+        border-color: transparent;
+        box-shadow: black 0px 0px 0px 1px inset;
+    }*/
+
+.badge-dot{
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+    margin-left: 2.9rem;
+    margin-top: -.75rem;
+}
+
+
 /*---- User card ----*/
 /*.profile-card .card-up{
     height: 120px;

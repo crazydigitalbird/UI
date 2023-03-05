@@ -1,12 +1,14 @@
-﻿@model IEnumerable<Profile>
+﻿@using Newtonsoft.Json;
+@model IEnumerable<Sheet>
 
 @{
     ViewData["Title"] = "User";
+    var sites = (List<SheetSite>)ViewData["Sites"];
 }
 
 <div class="container mt-5">
     <div class="row row-cols-1 row-cols-md-4 g-4">
-        <div id="cardAddProfile" class="col">
+        <div id="cardAddSheet" class="col">
             <div class="card h-100 text-center">
                 <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
 
@@ -15,21 +17,34 @@
                     </a>
                 </div>
                 <div class="card-body d-flex flex-column justify-content-end">
-                    <div id="alertAddProfile" class="alert my-1 d-none"></div>
-                    <h5 class="card-title">Add a new profile</h5>
-                    <form asp-action="AddProfile" method="post" data-ajax="true" data-ajax-success="successAddProfile" data-ajax-failure="failureAddProfile" data-ajax-loading="#spinnerAddProfile">
-                        <div class="form-outline mb-3">
-                            <input type="email" id="email" name="email" class="form-control" autocomplete="off" required />
-                            <label class="form-label" for="email">Email</label>
+                    <div id="alertAddSheet" class="alert my-1 d-none"></div>
+                    <h5 class="card-title">Add a new sheet</h5>
+                    <form asp-action="AddSheet" method="post" data-ajax="true" data-ajax-success="successAddSheet" data-ajax-failure="failureAddSheet" data-ajax-loading="#spinnerAddSheet">
+
+                        <div class="mb-3">
+                            <select id="siteId" name="siteId" class="form-control">
+                                <option selected>Select site</option>
+                                @foreach (SheetSite s in sites)
+                                {
+                                    <option value="@s.Id">@s.Name</option>
+                                }
+                            </select>
                         </div>
+
                         <div class="form-outline mb-3">
-                            <input type="password" id="password" name="password" class="form-control" required />
+                            <input type="text" id="login" name="login" class="form-control" autocomplete="off" required />
+                            <label class="form-label" for="login">Login</label>
+                        </div>
+
+                        <div class="form-outline mb-3">
+                            <input type="password" id="password" name="password" class="form-control" autocomplete="new-password" required />
                             <label class="form-label" for="password">Passowrd</label>
                         </div>
+
                         <button type="submit" class="btn btn-primary">
                             <i class="fa-solid fa-plus mr-2"></i>
-                            Add profile
-                            <span id="spinnerAddProfile" class="spinner-border spinner-border-sm" style="display: none;"></span>
+                            Add Sheet
+                            <span id="spinnerAddSheet" class="spinner-border spinner-border-sm" style="display: none;"></span>
                         </button>
                     </form>
                 </div>
@@ -37,23 +52,23 @@
         </div>
         @if (Model != null)
         {
-            foreach (var profile in Model)
+            foreach (var sheet in Model)
             {
                 <div class="col">
                     <div class="card h-100 text-center">
                         <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                            <img src="~/image/city.jpg" class="img-fluid" />
+                            <img src="~/image/avatar.webp" class="img-fluid" />
                             <a href="#">
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </a>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title">@($"{profile.FirstName} {profile.LastName}")</h5>
+                            <h5 class="card-title">@($"{sheet.Info} {sheet}")</h5>
                             <div>
-                                <button type="button" class="btn btn-primary btn-floating" onclick="editProfile(event, @profile.Id)">
+                                <button type="button" class="btn btn-primary btn-floating" onclick="editSheet(this, @sheet.Id)">
                                     <i class="fa-solid fa-user-pen mr-2"></i>
                                 </button>
-                                <button type="button" class="btn btn-danger btn-floating" onclick="removeProfile(event, @profile.Id)">
+                                <button type="button" class="btn btn-danger btn-floating" onclick="removeSheet(this, @sheet.Id)">
                                     <i class="fa-solid fa-trash mr-2"></i>
                                 </button>
                             </div>
@@ -65,11 +80,11 @@
                              </div>*@
                             <div class="row d-none">
                                 <div class="form-outline col w-100">
-                                    <input type="password" name='@($"password{profile.Id}")' id='@($"password{profile.Id}")' class="form-control" />
-                                    <label class="form-label" for='@($"password{profile.Id}")'>New Password</label>
+                                    <input type="password" name='@($"password{sheet.Id}")' id='@($"password{sheet.Id}")' class="form-control" />
+                                    <label class="form-label" for='@($"password{sheet.Id}")'>New Password</label>
                                 </div>
                                 <div class="col-auto pe-0">
-                                    <button type="button" class="btn btn-success btn-floating" data-mdb-ripple-color="success" onclick="changePassword(event, @profile.Id)">
+                                    <button type="button" class="btn btn-success btn-floating" data-mdb-ripple-color="success" onclick="changePassword(this, @sheet.Id, @sheet.Credentials)">
                                         <i class="fa-solid fa-save fa-xl"></i>
                                     </button>
                                 </div>

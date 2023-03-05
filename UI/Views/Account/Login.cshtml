@@ -1,9 +1,8 @@
-﻿@model LoginModel
+﻿@model LoginRegisterModel
 
 @{
-
     bool register = false;
-    if(ViewData["register"] != null)
+    if (ViewData["register"] != null)
     {
         register = (bool)ViewData["register"];
     }
@@ -19,6 +18,12 @@
         }
         else
         {
+            <partial name="_AlertsPartial" />
+
+            <div class="alert alert-danger alert-dismissible fade show" asp-validation-summary="ModelOnly">
+                <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <!--- Pills navs -->
             <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -27,14 +32,12 @@
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link  @(register ? "active" : "")" id="tab-register" data-mdb-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register" aria-selected="false">
+                    <a class="nav-link me-0  @(register ? "active" : "")" id="tab-register" data-mdb-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register" aria-selected="false">
                         Register
                     </a>
                 </li>
             </ul>
             <!--- Pills navs -->
-
-            <div class="alert alert-danger" asp-validation-summary="ModelOnly"></div>
 
             <!--- Pills content -->
             <div class="tab-content">
@@ -42,26 +45,26 @@
                     <form method="post" asp-action="LogIn">
 
                         <!-- Email input -->
-                    <div class="form-outline mb-4">
-                            <input type="text" class="form-control" asp-for="Email" />
-                            <label class="form-label" asp-for="Email"></label>
-                            <span asp-validation-for="Email"></span>
+                        <div class="form-outline mb-4">
+                            <input type="text" class="form-control" asp-for="LoginModel.Login" />
+                            <label class="form-label" asp-for="LoginModel.Login"></label>
+                            <span asp-validation-for="LoginModel.Login"></span>
                         </div>
 
                         <!-- Password input -->
-                    <div class="form-outline mb-4">
-                            <input type="password" class="form-control" asp-for="Password" />
-                            <label class="form-label" asp-for="Password"></label>
-                            <span asp-validation-for="Password"></span>
+                        <div class="form-outline mb-4">
+                            <input type="password" class="form-control" asp-for="LoginModel.Password" autocomplete="new-password" />
+                            <label class="form-label" asp-for="LoginModel.Password"></label>
+                            <span asp-validation-for="LoginModel.Password"></span>
                         </div>
 
                         <div class="row mb-4">
-@*                            <div class="col-md-6 d-flex justify-content-left">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" asp-for="RememberMe" />
-                                    <label class="form-check-label" asp-for="RememberMe">Remember me</label>
-                                </div>
-                            </div>*@
+                            @*                            <div class="col-md-6 d-flex justify-content-left">
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="RememberMe" />
+                        <label class="form-check-label" asp-for="RememberMe">Remember me</label>
+                        </div>
+                        </div>*@
 
                             <div class="col-md-12 d-flex justify-content-end">
                                 <a asp-controller="Account" asp-action="PasswordRecovery">Forgot password</a>
@@ -70,41 +73,44 @@
 
                         <!-- Submit button -->
                         <button type="submit" class="btn btn-primary btn-block mb-4">SIGN IN</button>
-
-@*                        <div class="text-center">
-                            <p>Not a member? <a href="#!">Register</a></p>
-                        </div>*@
                     </form>
                 </div>
                 <div class="tab-pane fade @(register ? "show active" : "")" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
                     <form method="post" asp-action="Register">
 
+                        <!-- Login input -->
+                        <div class="form-outline mb-4">
+                            <input type="text" class="form-control" asp-for="RegisterModel.Login" />
+                            <label class="form-label" asp-for="RegisterModel.Login"></label>
+                            <span asp-validation-for="RegisterModel.Login"></span>
+                        </div>
+
                         <!-- Email input -->
                         <div class="form-outline mb-4">
-                            <input type="email" class="form-control" asp-for="Email" />
-                            <label class="form-label" asp-for="Email"></label>
-                            <span asp-validation-for="Email"></span>
+                            <input type="email" class="form-control" asp-for="RegisterModel.Email" />
+                            <label class="form-label" asp-for="RegisterModel.Email"></label>
+                            <span asp-validation-for="RegisterModel.Email"></span>
                         </div>
 
                         <!-- Password input -->
                         <div class="form-outline mb-4">
-                            <input type="password" class="form-control" asp-for=Password />
-                            <label class="form-label" asp-for="Password"></label>
-                            <span asp-validation-for="Password"></span>
+                            <input type="password" class="form-control" asp-for="RegisterModel.Password" autocomplete="new-password" />
+                            <label class="form-label" asp-for="RegisterModel.Password"></label>
+                            <span asp-validation-for="RegisterModel.Password"></span>
                         </div>
 
                         <!-- Repeat Passoerd input -->
                         <div class="form-outline mb-4">
-                            <input type="password" class="form-control" asp-for="ConfirmPassowrd" />
-                            <label class="form-label" asp-for="ConfirmPassowrd">Repeat password</label>
-                            <span asp-validation-for="ConfirmPassowrd"></span>
+                            <input type="password" class="form-control" asp-for="RegisterModel.ConfirmPassowrd" />
+                            <label class="form-label" asp-for="RegisterModel.ConfirmPassowrd">Repeat password</label>
+                            <span asp-validation-for="RegisterModel.ConfirmPassowrd"></span>
                         </div>
-                        
+
                         <!-- Referral Code input -->
-@*                        <div class="form-outline mb-4">
-                            <input type="text" class="form-control" id="referralCode" name="referralCode" value="@ViewData["referralCode"]" autocomplete="off" />
-                            <label class="form-label" for="referralCode">Referral Code</label>
-                        </div>*@
+                        @*                        <div class="form-outline mb-4">
+                    <input type="text" class="form-control" id="referralCode" name="referralCode" value="@ViewData["referralCode"]" autocomplete="off" />
+                    <label class="form-label" for="referralCode">Referral Code</label>
+                    </div>*@
 
                         <!-- Submit button -->
                         <button type="submit" class="btn btn-primary btn-block mb-3">Register</button>
@@ -119,5 +125,5 @@
 </div>
 
 @section Scripts{
-<partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 }

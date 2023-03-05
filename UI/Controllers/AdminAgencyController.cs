@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Filters;
 using UI.Models;
 
 namespace UI.Controllers
 {
     [Authorize]
+    [APIAuthorize]
     public class AdminAgencyController : Controller
     {
         private readonly IAdminAgencyClient _adminAgencyClient;
@@ -23,7 +25,7 @@ namespace UI.Controllers
         }
 
         public async Task<IActionResult> Index()
-        {
+        {            
             var groups = await _adminAgencyClient.GetGroups();
             var shifts = await _adminAgencyClient.GetShifts();
             var cabinets = await _adminAgencyClient.GetCabinets();
@@ -124,14 +126,14 @@ namespace UI.Controllers
 
         public async Task<IActionResult> Users()
         {
-            Agency agency = await _adminAgencyClient.GetAgency();
+            AgencyView agency = await _adminAgencyClient.GetAgency();
             ViewData["FreeUsers"] = await _adminAgencyClient.GetFreeUsers();
             ViewData["Roles"] = _roles;
             return View(agency);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Users(Agency agency, List<ApplicationUser> originalUsers)
+        public async Task<IActionResult> Users(AgencyView agency, List<ApplicationUser> originalUsers)
         {
             if (ModelState.IsValid)
             {

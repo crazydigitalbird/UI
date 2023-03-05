@@ -1,0 +1,232 @@
+﻿@model IEnumerable<Cabinet>
+
+@{
+    ViewData["Title"] = "Cabinets";
+}
+
+<div class="row">
+
+    <div class="col-md-12 col-lg-4 mb-3">
+
+        <div id="toolbarTableCabinets" class="row mb-3">
+            <div class="col pe-0">
+                <div class="input-group">
+                    <span class="input-group-text border-0" id="search-addon-cabinets">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    <input type="search" id="searchCabinets" class="form-control rounded" oninput="searchTable(event, 'tableCabinets')" placeholder="Search" aria-label="search" aria-describedby="search-addon-cabinets" autocomplete="off" />
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="addCabinet" class="btn btn-primary" style="min-width: 142px;">
+                    <i class="fa-solid fa-plus"></i>
+                    Add cabinet
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 tableFixedHead">
+                <table id="tableCabinets" class="table table-sm table-bordered table-hover text-center">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th style="width: 0px;">Id</th>
+                            <th class="w-100">Cabinet</th>
+                            <th class="text-truncate">Total Profiles</th>
+                            <th class="text-truncate">Total Users</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Count() > 0)
+                        {
+                            <tr onclick="selectedCabinet(event)" class="tr-border">
+                                <td>
+                                    <i class="fa-solid fa-cubes-stacked fa-xl"></i>
+                                </td>
+                                <td class="text-start">All Cabinets</td>
+                                <td>@Model.Sum(c => c.Profiles.Count)</td>
+                                <td>@Model.Sum(c => c.Users.Count)</td>
+                            </tr>
+                            foreach (var c in Model)
+                            {
+                                <tr data-cabinet-id="@c.Id" onclick="selectedCabinet(event)">
+                                    <td>@($"C{c.Id}")</td>
+                                    <td class="text-start">@c.Name</td>
+                                    <td>@c.Profiles.Count</td>
+                                    <td>@c.Users.Count</td>
+                                </tr>
+                            }
+                        }
+                        <tr class="tr-placeholder">
+                            <td colspan="4">No cabinets</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-lg-8">
+        <div class="row mb-3">
+            <div class="col pe-0">
+                <div class="input-group">
+                    <span class="input-group-text border-0" id="search-addon-users">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    <input type="search" id="searchUsers" class="form-control rounded" oninput="searchTable(event, 'tableUsers')" placeholder="Search" aria-label="search" aria-describedby="search-addon-users" />
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="addUser" class="btn btn-primary" style="min-width: 142px;">
+                    <i class="fa-solid fa-plus"></i>
+                    Add user
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 tableFixedHead">
+                <table id="tableUsers" class="table table-sm table-bordered table-hover text-center">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>№</th>
+                            <th>Role</th>
+                            <th>Name</th>
+                            <th>Mail</th>
+                            <th>Cabinets</th>
+                            <th>Rights</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Count() > 0)
+                        {
+                            int count = 1;
+                            foreach (var u in Model.SelectMany(c => c.Users))
+                            {
+                                var userCabinets = Model.Where(c => c.Users.Any(cu => cu.Id == u.Id));
+                                <tr id="@($"tr_{u.Id}")" class="align-middle" data-cabinets="@(string.Join( ",", userCabinets.Select(c => c.Id)))">
+                                    <td>@count</td>
+                                    <td>@u.Role</td>
+                                    <td>@u.UserName</td>
+                                    <td>@u.Email</td>
+                                    <td name="cabinets" class="text-start">
+                                        @if (userCabinets.Count() < 5)
+                                        {
+                                            <div class="d-grid d-md-block gap-1">
+                                                @foreach (var cabinet in userCabinets)
+                                                {
+                                                    <div id="@($"container_{u.Id}_{cabinet.Id}")" class="btn-group" style="display: contents;">
+                                                        <button id="@($"{u.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 dropdown-toggle btn-size-fixed" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">@($"C{cabinet.Id}")</button>
+                                                        <ul class="dropdown-menu dropdown-menu-width" aria-labelledby="@($"{u.Id}_{cabinet.Id}")">
+                                                            <li class="btn-size-fixed bg-danger">
+                                                                <button class="dropdown-item btn bg-danger text-center" onclick="unbindCabinetToUser(@cabinet.Id, @u.Id)">
+                                                                    <i class="fa-solid fa-trash"></i>
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                <button type="button" class="btn btn-sm btn-success btn-rounded my-md-1 btn-size-fixed" onclick="bindCabinetToUser(this, @u.Id, '@u.UserName')">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="dropdown" style="max-width: 455px;">
+                                                    <a role="button" href="#" id="@u.Id" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 btn-block dropdown-toggle" data-mdb-toggle="dropdown" aria-expanded="false">@($"Total Cabinets {userCabinets.Count()}")</a>
+                                                    <ul class="dropdown-menu w-100" aria-labelledby="@u.Id">
+                                                        @foreach (var cabinet in userCabinets)
+                                                        {
+                                                            <li id="@($"container_{u.Id}_{cabinet.Id}")">
+                                                                <div class="dropdown-item">
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col">
+                                                                            @($"C{cabinet.Id}")
+                                                                        </div>
+                                                                        <div class="col-auto">
+                                                                            <button type="button" class="btn btn-danger btn-sm" onclick="unbindCabinetToUser(@cabinet.Id, @u.Id)">
+                                                                                <i class="fa-solid fa-trash"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                        <li>
+                                                            <div class="dropdown-item">
+                                                                <div class="row align-items-center">
+                                                                    <div class="col">Add cabinet</div>
+                                                                    <div class="col-auto">
+                                                                        <button type="button" class="btn btn-success btn-sm" onclick="bindCabinetToUser(this, @u.Id, '@u.UserName')">
+                                                                            <i class="fa-solid fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                        <tr class="tr-placeholder">
+                            <td colspan="6">No users</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="modalBindCabinet" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bind Cabinets</h5>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formBindCabinet" asp-action="BindCabinetsToUser" method="post" data-ajax="true" data-ajax-success="successBindCabinets" data-ajax-failure="failureBindCabinets" data-ajax-loading="#spinnerBindCabinets" novalidate="novalidate">
+                <div class="modal-body">
+                    <input type="hidden" id="userId" name="userId" />
+                    <input type="hidden" id="userName" name="userName" />
+                    @foreach (var c in Model)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="@c.Id" name="cabinets" value="@c.Id" />
+                            <label class="form-check-label" for="@c.Id">@c.Name</label>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button id="btnBindCabinets" type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-save"></i>
+                        Save
+                        <span id="spinnerBindCabinets" class="spinner-border spinner-border-sm" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<partial name="_AddCabinet" />
+<partial name="_Toast" />
+
+@section Scripts{
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/Cabinet/cabinet.js"></script>
+}

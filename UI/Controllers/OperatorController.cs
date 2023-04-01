@@ -11,16 +11,33 @@ namespace UI.Controllers
     public class OperatorController : Controller
     {
         private readonly IOperatorClient _operatorClient;
+        private readonly ICommentClient _commentClient;
 
-        public OperatorController(IOperatorClient operatorClient)
+        public OperatorController(IOperatorClient operatorClient, ICommentClient commentClient)
         {
             _operatorClient = operatorClient;
+            _commentClient = commentClient;
         }
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Profile> profiles = await _operatorClient.GetProfilesAsync();
-            return View(profiles);
+            IEnumerable<SheetView> sheets = await _operatorClient.GetSheetsAsync();
+            if(sheets == null)
+            {
+                return View();
+            }
+
+            var sheetsIsNewComments = new List<int>();
+            foreach (var sheet in sheets)
+            {
+                var newCommentsCount = await _commentClient.GetNewSheetCommentsCountAsync(sheet.Id);
+                if(newCommentsCount > 0)
+                {
+                    sheetsIsNewComments.Add(sheet.Id);
+                }
+            }
+            ViewData["sheetsIsNewComments"] = sheetsIsNewComments;
+            return View(sheets);
         }
 
         public async Task<IActionResult> Balance(Interval interval)
@@ -33,20 +50,20 @@ namespace UI.Controllers
             return StatusCode(500, $"Error getting a balance for a {interval}");
         }
 
-        public IActionResult Notes(int profileId)
+        public IActionResult Comments(int sheetId)
         {
-            return ViewComponent("Notes", profileId);
+            return ViewComponent("Comments", sheetId);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNote(int profileId, string text)
+        public async Task<IActionResult> AddComment(int sheetId, string text)
         {
-            HttpResponseMessage response = await _operatorClient.CreateNoteAsync(User.Identity.Name, profileId, text);
-            if (response?.IsSuccessStatusCode ?? false)
+            var comment = await _commentClient.AddCommentAsync(sheetId, text);
+            if (comment != null)
             {
-                return Ok(new { name = User.Identity.Name, date = DateTime.Now.ToString("HH:mm dd.MM.yyy") });
+                return Ok(comment);
             }
-            return StatusCode(500, $"Error creating note for profile with id: {profileId}");
+            return StatusCode(500, $"Error creating comment for sheet with id: {sheetId}");
         }
     }
 }

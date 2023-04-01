@@ -32,11 +32,12 @@
                 {
                     <tr>
                         <td class="col-sm-3">@agency.Name</td>
-                        <td class="col-sm-6">@agency.Description</td>
-                        <td class="col-sm-3 text-center align-middle">
+                        <td class="col-sm-5">@agency.Description</td>
+                        <td class="col-sm-4 text-center align-middle">
                             <div class="d-grid gap-2 d-xl-block">
-                                <a class="btn btn-sm btn-info" asp-controller="AdminAgency" asp-action="Index" asp-route-agencyId="@agency.Id">Profiles</a>
-                                <a class="btn btn-sm btn-primary" asp-controller="Admin" asp-action="EditAgency" asp-route-agencyId="@agency.Id">Edit</a>
+                                <a class="btn btn-sm btn-info" asp-controller="AdminAgency" asp-action="Index" asp-route-agencyId="@agency.Id">Sheets</a>
+                                <a class="btn btn-sm btn-primary" asp-controller="Cabinet" asp-action="Index" asp-route-agencyId="@agency.Id">Cabinets</a>
+                                <a class="btn btn-sm btn-warning" asp-controller="Admin" asp-action="EditAgency" asp-route-agencyId="@agency.Id">Edit</a>
                                 <a class="btn btn-sm btn-danger" onclick="confirm(@agency.Id, '@agency.Name')">Delete</a>
                             </div>
                         </td>

@@ -1,30 +1,60 @@
-﻿using UI.Models;
+﻿using Core.Models.Agencies;
+using Core.Models.Agencies.Comments;
+using Core.Models.Agencies.Operators;
+using System.Security.Principal;
+using UI.Models;
 
 namespace UI.Infrastructure.API
 {
-    public class ApiOperatorClient : IOperatorClient
+    public class ApiOperatorClient : IOperatorClient, ISignOut
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<ApiOperatorClient> _logger;
 
-        public ApiOperatorClient(IHttpClientFactory httpClientFactory, ILogger<ApiOperatorClient> logger)
+        public ApiOperatorClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ApiOperatorClient> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Profile>> GetProfilesAsync()
+        public async Task<IEnumerable<SheetView>> GetSheetsAsync()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            try
+            var sessionGuid = GetSessionGuid();
+            var operatorId = await GetOperatorIdAsync();
+            if (operatorId > 0)
             {
-                return await httpClient.GetFromJsonAsync<IEnumerable<Profile>>("/Operator/Profiles");
+                try
+                {
+                    var response = await httpClient.GetAsync($"Agencies/Operators/GetAgencyOperatorSessions?operatorId={operatorId}&sessionGuid={sessionGuid}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var agencyOperatorSessions = await response.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>();
+
+                        var individualSheets = agencyOperatorSessions.SelectMany(s => s.Session.Sheets).Select(ass => ass.Sheet);
+                        var cabinetsSheets = agencyOperatorSessions.SelectMany(s => s.Session.Cabinets).SelectMany(c => c.Cabinet?.Sheets).Select(s => s.Sheet);
+                        var sheets = individualSheets.Concat(cabinetsSheets);
+
+                        var sheetsView = sheets.Select(s => (SheetView)s).ToList();
+                        return sheetsView;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        SignOut();
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Error getting all the sheets. Operator with id: {operatorId}. HttpStatusCode {httpStatusCode}", operatorId, response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error getting all the sheets.");
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting all the profiles.");
-                return null;
-            }
+            return null;
         }
 
         public async Task<Dictionary<int, int>> GetBalanceAsync(string name, Interval interval)
@@ -35,47 +65,111 @@ namespace UI.Infrastructure.API
                 var url = $"/Operator/Balance?operator={name}&interval={interval}";
                 return await httpClient.GetFromJsonAsync<Dictionary<int, int>>(url);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting balance");
                 return null;
             }
         }
 
-        public async Task<List<Note>> Notes(string name, int profileId)
+        #region Get operator Id
+
+        private async Task<int> GetOperatorIdAsync()
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            try
+            var member = await GetAgencyMemberByUserAsync();
+            if (member != null)
             {
-                return await httpClient.GetFromJsonAsync<List<Note>>($"/Operator/Notes?operator={name}&&profileId={profileId}");
+                var agencyOperator = await GetAgencyOperatorAsync(member.Id);
+                if (agencyOperator != null)
+                {
+                    return agencyOperator.Id;
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error receiving notes for profile with id: {profileId}. Operator {operatro}", profileId, name);
-                return null;
-            }
+            return 0;
         }
 
-        public async Task<HttpResponseMessage> CreateNoteAsync(string name, int profileId, string text)
+        private async Task<AgencyMember> GetAgencyMemberByUserAsync()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            var userId = GetUserId();
             try
             {
-                return await httpClient.PostAsJsonAsync("/Operator/CreateNote", new { profileId = profileId, text = text});
+                var response = await httpClient.GetAsync($"Agencies/GetAgencyMemberByUser?userId={userId}&sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var agencyMember = await response.Content.ReadFromJsonAsync<AgencyMember>();
+                    return agencyMember;
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting agency member. User with id: {userId}. HttpStatusCode {httpStatusCode}", userId, response.StatusCode);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating note for profile with id: {profileId}", profileId);
-                return null;
+                _logger.LogError(ex, "Error getting agency member. User with id: {userId}.", userId);
             }
+            return null;
+        }
+
+        private async Task<AgencyOperator> GetAgencyOperatorAsync(int memberId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            try
+            {
+                var response = await httpClient.GetAsync($"Agencies/Operators/GetAgencyOperatorByMember?memberId={memberId}&sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var agencyOperator = await response.Content.ReadFromJsonAsync<AgencyOperator>();
+                    return agencyOperator;
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting agency operator. Agency member with id: {memberId}. HttpStatusCode {httpStatusCode}", memberId, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting agency operator. Agency member with id: {memberId}.", memberId);
+            }
+            return null;
+        }
+
+        private int GetUserId()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+            var userId = int.Parse(user.FindFirst("Id")?.Value);
+            return userId;
+        }
+
+        #endregion
+
+        private string GetSessionGuid()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+            var sessionGuid = user.FindFirst("SessionGuid")?.Value;
+            return sessionGuid;
+        }
+
+        public void SignOut()
+        {
+            _httpContextAccessor.HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
         }
     }
 
     public interface IOperatorClient
     {
+        Task<IEnumerable<SheetView>> GetSheetsAsync();
         Task<Dictionary<int, int>> GetBalanceAsync(string name, Interval interval);
-        Task<List<Note>> Notes(string name, int profileId);
-        Task<IEnumerable<Profile>> GetProfilesAsync();
-        Task<HttpResponseMessage> CreateNoteAsync(string name, int profileId, string text);
     }
 }

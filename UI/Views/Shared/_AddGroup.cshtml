@@ -1,4 +1,6 @@
-﻿<div class="modal fade" id="modalAddGroup" tabindex="-1" role="dialog" data-mdb-backdrop="static" aria-hidden="true">
+﻿@model int
+
+<div class="modal fade" id="modalAddGroup" tabindex="-1" role="dialog" data-mdb-backdrop="static" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,6 +9,7 @@
             </div>
             <form id="formAddGroup" asp-action="AddGroup" method="post" data-ajax="true" data-ajax-success="successAddGroup" data-ajax-failure="failureAddGroup" data-ajax-loading="#spinnerAddGroup" novalidate="novalidate">
                 <div class="modal-body"> 
+                    <input type="hidden" name="agencyId" value="@Model" />
                     <div class="form-outline">
                         <input id="nameGroup" name="nameGroup" type="text" class="form-control" autocomplete="off" data-val="true" data-val-required="The New group name field is requird." />
                         <label class="form-label" for="namgeGroup">New group name</label>

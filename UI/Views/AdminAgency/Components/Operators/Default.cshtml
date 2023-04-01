@@ -1,7 +1,12 @@
-﻿@model List<Operator>
+﻿@using Core.Models.Agencies.Operators;
+@model IEnumerable<OperatorSessionsView>
+
+@{
+    var sheetId = int.Parse(ViewData["sheetId"].ToString());
+}
 
 <div>
-    <input name="popoverProfileId" type="hidden" value="@ViewData["profileId"]" />
+    <input name="popoverProfileId" type="hidden" value="@ViewData["sheetId"]" />
     <table name="operators" class="table table-secondary table-sm table-hover text-black">
         <thead>
             <tr>
@@ -9,7 +14,7 @@
                 <th class="text-bold">Name</th>
                 <th class="text-bold">Time</th>
                 <th class="text-bold">Team</th>
-                <th class="text-bold">Profiles</th>
+                <th class="text-bold">Sheets</th>
                 <th class="text-bold"></th>
             </tr>
         </thead>
@@ -17,23 +22,57 @@
             <tr class="tr-placeholder text-center">
                 <td colspan="6">Not operators</td>
             </tr>
-            @foreach (var o in Model)
+            @if (Model.Count() > 0)
             {
-            <tr>
-                <td>@o.Id</td>
-                <td>@o.Name</td>
-                <td class="text-end">@o.Time</td>
-                <td name="Team">@o.Team</td>
-                <td class="text-center">@o.Profiles.Count</td>
-                <td name="Action">
-                    <a role="button" class="btn btn-sm btn-info" onclick="addTempOperator(event)">
-                        <i class="fa-solid fa-clock fa-xl"></i>
-                    </a>
-                    <a role="button" class="btn btn-sm btn-danger" onclick="deleteOperator(event, @o.Id)">
-                        <i class="fa-solid fa-trash fa-xl"></i>
-                    </a>
-                </td>
-            </tr>
+                foreach (var osv in Model)
+                {
+                    foreach (var s in osv.Sessions)
+                    {
+                        if (s.Session.Sheets?.Any(ass => ass.Sheet.Id == sheetId) ?? false)
+                        {
+                            <tr>
+                                <td>@osv.Operator.Id</td>
+                                <td>@(osv.Operator.Member.User.Login ?? osv.Operator.Member.User.Email)
+                                </td>
+                                <td class="text-end">Time</td>
+                                <td name="Team">@(s.Creator.Member.User.Login ?? s.Creator.Member.User.Email)
+                                </td>
+                                <td class="text-center">@osv.CountSheets()</td>
+                                <td name="Action">
+                                    <a role="button" class="btn btn-sm btn-info" onclick="addTempOperator(event)">
+                                        <i class="fa-solid fa-clock fa-xl"></i>
+                                    </a>
+                                    <a role="button" class="btn btn-sm btn-danger" onclick="deleteOperator(event, @osv.Operator.Id)">
+                                        <i class="fa-solid fa-trash fa-xl"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        else if (s.Session.Cabinets?.Any(asc => asc.Cabinet.Sheets.Any(acs => acs.Sheet.Id == sheetId)) ?? false)
+                        {
+                            <tr>
+                                <td>@osv.Operator.Id</td>
+                                <td>
+                                    @(osv.Operator.Member.User.Login ?? osv.Operator.Member.User.Email)
+                                </td>
+                                <td class="text-end">Time</td>
+                                <td name="Team">
+                                    @(s.Creator.Member.User.Login ?? s.Creator.Member.User.Email)
+                                </td>
+                                <td class="text-center">@osv.CountSheets()</td>
+                                <td name="Action">
+                                    <a role="button" class="btn btn-sm btn-info btn-block" onclick="addTempOperator(event)">
+                                        <i class="fa-solid fa-clock fa-xl"></i>
+                                    </a>
+@*                                    <a role="button" class="btn btn-sm btn-danger" onclick="deleteOperator(event, @osv.Operator.Id)">
+                                        <i class="fa-solid fa-trash fa-xl"></i>
+                                    </a>*@
+                                </td>
+                            </tr>
+                        }
+
+                    }
+                }
             }
         </tbody>
     </table>
@@ -50,15 +89,15 @@
                         <tr class="tr-placeholder text-center">
                             <td colspan="4">Not free operators</td>
                         </tr>
-                        @if (Model?.Count > 0)
+                        @if (Model?.Count() > 0)
                         {
-                            foreach (var o in Model)
+                            foreach (var osv in Model.Where(os => !os.Sessions.Any(s => s.Session.Sheets.Any(ass => ass.Sheet.Id == sheetId))))
                             {
                                 <tr onclick="addOperator(event)">
-                                    <td>@o.Id</td>
-                                    <td>@o.Name</td>
-                                    <td class="text-end">@o.Time</td>
-                                    <td class="text-center">@o.Profiles.Count</td>
+                                    <td>@osv.Operator.Id</td>
+                                    <td>@(osv.Operator.Member.User.Login ?? osv.Operator.Member.User.Email)</td>
+                                    <td class="text-end">Time</td>
+                                    <td class="text-center">@osv.CountSheets()</td>
                                 </tr>
                             }
                         }

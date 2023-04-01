@@ -1,7 +1,9 @@
-﻿@model IEnumerable<Cabinet>
+﻿@using Core.Models.Agencies.Cabinets;
+@model IEnumerable<AgencyCabinet>
 
 @{
     ViewData["Title"] = "Cabinets";
+    var operatorSessionsView = (IEnumerable<OperatorSessionsView>)ViewData["operators"];
 }
 
 <div class="row">
@@ -32,7 +34,7 @@
                         <tr>
                             <th style="width: 0px;">Id</th>
                             <th class="w-100">Cabinet</th>
-                            <th class="text-truncate">Total Profiles</th>
+                            <th class="text-truncate">Total Sheets</th>
                             <th class="text-truncate">Total Users</th>
                         </tr>
                     </thead>
@@ -44,16 +46,16 @@
                                     <i class="fa-solid fa-cubes-stacked fa-xl"></i>
                                 </td>
                                 <td class="text-start">All Cabinets</td>
-                                <td>@Model.Sum(c => c.Profiles.Count)</td>
-                                <td>@Model.Sum(c => c.Users.Count)</td>
+                                <td>@Model.Sum(c => c.Sheets?.Count)</td>
+                                <td>@(operatorSessionsView?.Count() ?? 0)</td>
                             </tr>
                             foreach (var c in Model)
                             {
                                 <tr data-cabinet-id="@c.Id" onclick="selectedCabinet(event)">
                                     <td>@($"C{c.Id}")</td>
                                     <td class="text-start">@c.Name</td>
-                                    <td>@c.Profiles.Count</td>
-                                    <td>@c.Users.Count</td>
+                                    <td>@c.Sheets?.Count</td>
+                                    <td>@operatorSessionsView?.Where(osv => osv.IsBindedCabinet(c.Id)).Count()</td>
                                 </tr>
                             }
                         }
@@ -77,10 +79,10 @@
                 </div>
             </div>
             <div class="col-auto">
-                <button type="button" id="addUser" class="btn btn-primary" style="min-width: 142px;">
+                <a id="addUser" class="btn btn-primary" asp-controller="AdminAgency" asp-action="Users" asp-route-agencyId="@(ViewData["agencyId"] ?? "0")" asp-route-returnUrl="@ViewData["returnUrl"]" style="min-width: 142px;">
                     <i class="fa-solid fa-plus"></i>
                     Add user
-                </button>
+                </a>
             </div>
         </div>
 
@@ -101,32 +103,32 @@
                         @if (Model?.Count() > 0)
                         {
                             int count = 1;
-                            foreach (var u in Model.SelectMany(c => c.Users))
+                            foreach (var osv in operatorSessionsView)
                             {
-                                var userCabinets = Model.Where(c => c.Users.Any(cu => cu.Id == u.Id));
-                                <tr id="@($"tr_{u.Id}")" class="align-middle" data-cabinets="@(string.Join( ",", userCabinets.Select(c => c.Id)))">
+                                var userCabinets = Model.Where(c => osv.IsBindedCabinet(c.Id));
+                                <tr id="@($"tr_{osv.Operator.Id}")" class="align-middle" data-cabinets="@(string.Join( ",", userCabinets.Select(c => c.Id)))">
                                     <td>@count</td>
-                                    <td>@u.Role</td>
-                                    <td>@u.UserName</td>
-                                    <td>@u.Email</td>
+                                    <td>operator</td>
+                                    <td>@osv.Operator.Member.User.Login</td>
+                                    <td>@osv.Operator.Member.User.Email</td>
                                     <td name="cabinets" class="text-start">
                                         @if (userCabinets.Count() < 5)
                                         {
                                             <div class="d-grid d-md-block gap-1">
                                                 @foreach (var cabinet in userCabinets)
                                                 {
-                                                    <div id="@($"container_{u.Id}_{cabinet.Id}")" class="btn-group" style="display: contents;">
-                                                        <button id="@($"{u.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 dropdown-toggle btn-size-fixed" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">@($"C{cabinet.Id}")</button>
-                                                        <ul class="dropdown-menu dropdown-menu-width" aria-labelledby="@($"{u.Id}_{cabinet.Id}")">
+                                                    <div id="@($"container_{osv.Operator.Id}_{cabinet.Id}")" class="btn-group" style="display: contents;">
+                                                        <button id="@($"{osv.Operator.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 dropdown-toggle btn-size-fixed" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">@($"C{cabinet.Id}")</button>
+                                                        <ul class="dropdown-menu dropdown-menu-width" aria-labelledby="@($"{osv.Operator.Id}_{cabinet.Id}")">
                                                             <li class="btn-size-fixed bg-danger">
-                                                                <button class="dropdown-item btn bg-danger text-center" onclick="unbindCabinetToUser(@cabinet.Id, @u.Id)">
+                                                                <button class="dropdown-item btn bg-danger text-center" onclick="unbindCabinetToUser(@cabinet.Id, @osv.Operator.Id)">
                                                                     <i class="fa-solid fa-trash"></i>
                                                                 </button>
                                                             </li>
                                                         </ul>
                                                     </div>
                                                 }
-                                                <button type="button" class="btn btn-sm btn-success btn-rounded my-md-1 btn-size-fixed" onclick="bindCabinetToUser(this, @u.Id, '@u.UserName')">
+                                                <button type="button" class="btn btn-sm btn-success btn-rounded my-md-1 btn-size-fixed" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </button>
                                             </div>
@@ -135,18 +137,18 @@
                                         {
                                             <div class="row">
                                                 <div class="dropdown" style="max-width: 455px;">
-                                                    <a role="button" href="#" id="@u.Id" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 btn-block dropdown-toggle" data-mdb-toggle="dropdown" aria-expanded="false">@($"Total Cabinets {userCabinets.Count()}")</a>
-                                                    <ul class="dropdown-menu w-100" aria-labelledby="@u.Id">
+                                                    <a role="button" href="#" id="@($"button_dropdown_{osv.Operator.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 btn-block dropdown-toggle" data-mdb-toggle="dropdown" aria-expanded="false">@($"Total Cabinets {userCabinets.Count()}")</a>
+                                                    <ul class="dropdown-menu w-100" aria-labelledby="@osv.Operator.Id">
                                                         @foreach (var cabinet in userCabinets)
                                                         {
-                                                            <li id="@($"container_{u.Id}_{cabinet.Id}")">
+                                                            <li id="@($"container_{osv.Operator.Id}_{cabinet.Id}")">
                                                                 <div class="dropdown-item">
                                                                     <div class="row align-items-center">
                                                                         <div class="col">
                                                                             @($"C{cabinet.Id}")
                                                                         </div>
                                                                         <div class="col-auto">
-                                                                            <button type="button" class="btn btn-danger btn-sm" onclick="unbindCabinetToUser(@cabinet.Id, @u.Id)">
+                                                                            <button type="button" class="btn btn-danger btn-sm" onclick="unbindCabinetToUser(@cabinet.Id, @osv.Operator.Id)">
                                                                                 <i class="fa-solid fa-trash"></i>
                                                                             </button>
                                                                         </div>
@@ -159,7 +161,7 @@
                                                                 <div class="row align-items-center">
                                                                     <div class="col">Add cabinet</div>
                                                                     <div class="col-auto">
-                                                                        <button type="button" class="btn btn-success btn-sm" onclick="bindCabinetToUser(this, @u.Id, '@u.UserName')">
+                                                                        <button type="button" class="btn btn-success btn-sm" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
                                                                             <i class="fa-solid fa-plus"></i>
                                                                         </button>
                                                                     </div>
@@ -198,7 +200,8 @@
             </div>
             <form id="formBindCabinet" asp-action="BindCabinetsToUser" method="post" data-ajax="true" data-ajax-success="successBindCabinets" data-ajax-failure="failureBindCabinets" data-ajax-loading="#spinnerBindCabinets" novalidate="novalidate">
                 <div class="modal-body">
-                    <input type="hidden" id="userId" name="userId" />
+                    <input type="hidden" name="agencyId" value="@ViewData["agencyId"]" />
+                    <input type="hidden" id="operatorId" name="operatorId" />
                     <input type="hidden" id="userName" name="userName" />
                     @foreach (var c in Model)
                     {

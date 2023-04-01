@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UI.Infrastructure.API;
-using UI.Models;
 
 namespace UI.Infrastructure.Components
 {
@@ -16,11 +15,11 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int profileId)
+        public async Task<IViewComponentResult> InvokeAsync(int sheetId, int agencyId)
         {
-            ViewData["profileId"] = profileId;
-            List<Operator> operators = (await _adminAgencyClient.GetOperatorsProfile(profileId)).ToList();
-            return View(operators);
+            ViewData["sheetId"] = sheetId;
+            var operatorSessionsViews = await _adminAgencyClient.GetAgencyOperators(agencyId);
+            return View(operatorSessionsViews);
         }
     }
 }

@@ -25,7 +25,8 @@
                         <td>@site.Description</td>
                         <td style="width: 160px;">
                             <a class="btn btn-sm btn-primary" asp-controller="Site" asp-action="Edit" asp-route-siteId="@site.Id" >Edit</a>
-                            <a class="btn btn-sm btn-danger" asp-controller="Site" asp-action="Delete" asp-route-siteId="@site.Id" asp-route-name="@site.Name">Delete</a>
+                            <a class="btn btn-sm btn-danger" onclick="confirm(@site.Id, '@site.Name')">Delete</a>
+                            @*<a class="btn btn-sm btn-danger" asp-controller="Site" asp-action="Delete" asp-route-siteId="@site.Id" asp-route-name="@site.Name">Delete</a>*@
                         </td>
                     </tr>
                 }
@@ -38,3 +39,9 @@
 
     <a class="btn btn-sm btn-success" asp-controller="Site" asp-action="Add">Add site</a>
 </div>
+
+<partial name="_Confirm" />
+
+@section Scripts{
+    <script src="~/js/Site/site.js"></script>
+}

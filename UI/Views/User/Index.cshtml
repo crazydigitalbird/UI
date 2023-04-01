@@ -54,16 +54,17 @@
         {
             foreach (var sheet in Model)
             {
+                var info = JsonConvert.DeserializeObject<dynamic>(sheet.Info);
                 <div class="col">
                     <div class="card h-100 text-center">
-                        <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                            <img src="~/image/avatar.webp" class="img-fluid" />
+                        <div class="bg-image hover-overlay ripple mt-3" data-mdb-ripple-color="light">
+                            <img src="~/image/avatar.webp" class="img-fluid rounded-circle" />
                             <a href="#">
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </a>
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title">@($"{sheet.Info} {sheet}")</h5>
+                        <div class="card-body"> 
+                            <h5 class="card-title">@($"{info.name} {info.lastName}")</h5>
                             <div>
                                 <button type="button" class="btn btn-primary btn-floating" onclick="editSheet(this, @sheet.Id)">
                                     <i class="fa-solid fa-user-pen mr-2"></i>
@@ -80,11 +81,11 @@
                              </div>*@
                             <div class="row d-none">
                                 <div class="form-outline col w-100">
-                                    <input type="password" name='@($"password{sheet.Id}")' id='@($"password{sheet.Id}")' class="form-control" />
+                                    <input type="password" name='@($"password{sheet.Id}")' id='@($"password{sheet.Id}")' class="form-control" autocomplete="new-password" />
                                     <label class="form-label" for='@($"password{sheet.Id}")'>New Password</label>
                                 </div>
                                 <div class="col-auto pe-0">
-                                    <button type="button" class="btn btn-success btn-floating" data-mdb-ripple-color="success" onclick="changePassword(this, @sheet.Id, @sheet.Credentials)">
+                                    <button type="button" class="btn btn-success btn-floating" data-mdb-ripple-color="success" onclick="changePassword(this, @sheet.Id)">
                                         <i class="fa-solid fa-save fa-xl"></i>
                                     </button>
                                 </div>

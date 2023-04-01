@@ -7,6 +7,7 @@
             </div>
             <form id="formAddCabinet" asp-action="Add" method="post" data-ajax="true" data-ajax-success="successAddCabinet" data-ajax-failure="failureAddCabinet" data-ajax-loading="#spinnerAddCabinet" novalidate="novalidate">
                 <div class="modal-body">
+                    <input type="hidden" name="agencyId" value="@ViewData["agencyId"]" />
                     <div class="form-outline">
                         <input id="name" name="name" type="text" class="form-control" autocomplete="off" data-val="true" data-val-required="The New cabinet name field is requird." />
                         <label class="form-label" for="name">New cabinet name</label>

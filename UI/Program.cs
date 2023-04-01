@@ -25,6 +25,8 @@ builder.Services.AddSingleton<IUserClient, ApiUserClient>();
 builder.Services.AddSingleton<ICabinetClient, ApiCabinetClient>();
 builder.Services.AddSingleton<IChatClient, ApiChatClient>();
 builder.Services.AddSingleton<ISiteClient, ApiSiteClient>();
+builder.Services.AddSingleton<ICommentClient, ApiCommentClient>();
+builder.Services.AddSingleton<IGroupClient, ApiGroupClient>();
 
 builder.Services.AddHttpClient("api", client =>
 {

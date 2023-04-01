@@ -22,7 +22,7 @@ namespace UI.Controllers
          // GET: UserController
         public async Task<ActionResult> Index()
         {
-            ViewData["Sites"] = (await _userClient.GetSites()).Where(s => s.IsActive).ToList();
+            ViewData["Sites"] = (await _userClient.GetSites())?.Where(s => s.IsActive).ToList();
             return View(await _userClient.GetSheets());
         }
 
@@ -42,14 +42,14 @@ namespace UI.Controllers
         // POST: UserController/Edit/5
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<ActionResult> ChangePassword(int sheetId, string login, string password)
+        public async Task<ActionResult> ChangePassword(int sheetId, string password)
         {
-            var sheet = await _userClient.AddSheet(sheetId, login, password);
+            var sheet = await _userClient.UpdateSheet(sheetId, password);
             if (sheet != null)
             {
                 return Ok(sheet);
             }
-            return StatusCode(500, $"Error updating a {login} sheet");
+            return StatusCode(500, $"Error updating a sheet with id: {sheetId}");
         }
 
         // POST: UserController/DeleteProfile/5
@@ -59,7 +59,7 @@ namespace UI.Controllers
         {
             if (await _userClient.DeleteSheet(sheetId))
             {
-                Ok();
+                return Ok();
             }
             return StatusCode(500);
         }

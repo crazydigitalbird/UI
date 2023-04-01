@@ -5,12 +5,12 @@ function getOldValueShift(event) {
     previousShiftSelect = event.target.value;
 }
 
-function changeShift(event, profileId) {
+function changeShift(event, sheetId) {
     var privatePreviousShiftSelect = previousShiftSelect;
     var rowId = event.target.closest('tr').getAttribute('data-index');
     $.post('/AdminAgency/ChangeShift',
         {
-            profileId: profileId,
+            sheetId: sheetId,
             shiftId: event.target.value
         },
         function () {

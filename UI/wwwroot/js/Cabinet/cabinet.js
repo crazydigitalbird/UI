@@ -18,8 +18,8 @@ function setHeight() {
     $(".tableFixedHead").css("max-height", freeAreaHeight);
 }
 
-function successAddCabinet(data) {
-    var cabinet = JSON.parse(data);
+function successAddCabinet(cabinet) {
+    /*var cabinet = JSON.parse(data);*/
     $('#modalAddCabinet').modal('hide');
     $('#toastBody').html(`The ${cabinet.name} cabinet has been added successfully`)
 
@@ -109,16 +109,12 @@ function selectedCabinet(e) {
     }
 }
 
-function bindCabinetToUser(e, userId, userName) {
+function bindCabinetToUser(e, operatorId, userName) {
 
-    $('#userId').val(userId);
+    $('#operatorId').val(operatorId);
     $('#userName').val(userName);
 
-    var userDataCabinets = $(e).closest('tr').attr('data-cabinets').toString();
-    var bindCabinets = new Array();
-    if (userDataCabinets) {
-        bindCabinets = userDataCabinets.split(',').map(Number);
-    }
+    var bindCabinets = getBindCabinets(e);
 
     $('#formBindCabinet .form-check-input').each(function () {
         var id = Number($(this).attr('id'));
@@ -127,11 +123,16 @@ function bindCabinetToUser(e, userId, userName) {
         if (checked) {
             if (!bindCabinets.includes(id)) {
                 this.checked = false;
+                this.disabled = false;
+            }
+            else {
+                this.disabled = true;
             }
         }
         else {
             if (bindCabinets.includes(id)) {
                 this.checked = true;
+                this.disabled = true;
             }
         }
     });
@@ -139,9 +140,36 @@ function bindCabinetToUser(e, userId, userName) {
     $('#modalBindCabinet').modal('show');
 }
 
+function getBindCabinets(e) {
+    var userDataCabinets = $(e).closest('tr').attr('data-cabinets').toString();
+    var bindCabinets = new Array();
+    if (userDataCabinets) {
+        bindCabinets = userDataCabinets.split(',').map(Number);
+    }
+    return bindCabinets;
+}
+
 function successBindCabinets(data) {
     var userCabinets = JSON.parse(data);
-    var $tdUserCabinets = $(`#tableUsers #tr_${userCabinets.userId} td[name=cabinets]`).empty();
+
+    var $tdUserCabinets = $(`#tableUsers #tr_${userCabinets.userId} td[name=cabinets]`);
+
+    for (var i = 0; i < userCabinets.cabinets.length; i++) {
+        var $tdCabinetTotalUsers = $(`#tableCabinets tr[data-cabinet-id=${userCabinets.cabinets[i]}] td`).last();
+        if ($tdCabinetTotalUsers) {
+            cabinetTotalUsers = Number($tdCabinetTotalUsers.text()) + 1;
+            $tdCabinetTotalUsers.text(cabinetTotalUsers);
+        }
+    }
+
+    var oldUserCabinets = getBindCabinets($tdUserCabinets);
+    if (oldUserCabinets) {
+        userCabinets.cabinets = oldUserCabinets.concat(userCabinets.cabinets);
+    }
+
+    $tdUserCabinets.empty();
+
+
     if (userCabinets.cabinets.length > 4) {
 
         var liCabinets = '';
@@ -209,6 +237,7 @@ function successBindCabinets(data) {
     }
 
     $tdUserCabinets.closest('tr').attr('data-cabinets', userCabinets.cabinets.join(','));
+
     $('#modalBindCabinet').modal('hide')
 }
 
@@ -230,8 +259,8 @@ function failureBindCabinets(error) {
     setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
 }
 
-function unbindCabinetToUser(cabinetId, userId) {
-    $.post('/Cabinet/UnbindCabinetToUser', { cabinetId: cabinetId, userId: userId }, function () {
+function unbindCabinetToUser(cabinetId, operatorId) {
+    $.post('/Cabinet/UnbindCabinetToUser', { cabinetId: cabinetId, operatorId: operatorId }, function () {
 
         var $tdCabinetTotalUsers = $(`#tableCabinets tr[data-cabinet-id=${cabinetId}] td`).last();
         if ($tdCabinetTotalUsers) {
@@ -239,7 +268,7 @@ function unbindCabinetToUser(cabinetId, userId) {
             $tdCabinetTotalUsers.text(cabinetTotalUsers);
         }
 
-        var $tr = $(`#tr_${userId}`);
+        var $tr = $(`#tr_${operatorId}`);
         var cabinets = $tr.attr('data-cabinets').toString().split(',').map(Number);
         if (cabinets) {
             var newCabinets = $.grep(cabinets, function (c) {
@@ -248,13 +277,13 @@ function unbindCabinetToUser(cabinetId, userId) {
 
             $tr.removeData('cabinets', undefined).attr('data-cabinets', newCabinets.join(','));
 
-            var $aDropDownToggle = $(`#${userId}`);
+            var $aDropDownToggle = $(`#button_dropdown_${operatorId}`);
             if ($aDropDownToggle) {
                 $aDropDownToggle.text(`Total Cabinets ${newCabinets.length}`);
             }
         }
 
-        $(`#container_${userId}_${cabinetId}`).remove();
+        $(`#container_${operatorId}_${cabinetId}`).remove();
 
     }).fail(function (error) {
         $('#toastBody').html(error.responseText)

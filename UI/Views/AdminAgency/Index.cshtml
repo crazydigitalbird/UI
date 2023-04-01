@@ -1,7 +1,7 @@
-﻿@model List<Profile>
+﻿@model List<SheetView>
 
 @{
-    ViewData["Title"] = "Profiles";
+    ViewData["Title"] = "Sheets";
     var groups = (IEnumerable<SelectListItem>)ViewData["Groups"];
     var shifts = (IEnumerable<SelectListItem>)ViewData["Shifts"];
     var cabinets = (IEnumerable<SelectListItem>)ViewData["Cabinets"];
@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
 <partial name="_AlertsPartial" />
+
+<input type="hidden" id="agencyId" value="@ViewData["agencyId"]" />
 
 <div id="tableDiv" class="d-none">
 
@@ -28,9 +30,9 @@
             <i class="fa-solid fa-plus"></i>
             Add Work Schedule
         </button>
-        <button id="addProfiles" class="btn btn-success">
+        <button id="addSheets" class="btn btn-success">
             <i class="fa-solid fa-plus"></i>
-            Add Profiles
+            Add Sheets
         </button>
     </div>
 
@@ -51,7 +53,7 @@
                 <th data-field="status"></th>
                 <th data-field="name" data-sortable="true">Name</th>
                 <th data-field="lastName" data-sortable="true">Last name</th>
-                <th data-field="id" data-sortable="true">Profile ID</th>
+                <th data-field="id" data-sortable="true">Sheet ID</th>
                 <th data-field="balance" class="text-center">Balance</th>
                 <th data-field="media" class="text-center">Media materials</th>
                 <th data-field="operators" data-formatter="operatorsFormatter" class="text-center">Operators</th>
@@ -75,15 +77,15 @@
         <tbody>
             @if (Model?.Count > 0)
             {
-                @foreach (var profile in Model)
+                @foreach (var sheet in Model)
                 {
                     <tr>
-                        <td>@*@profile.Id*@</td>
+                        <td>@*@sheet.Id*@</td>
 
                         <td>@counter</td>
 
                         <td class="text-center">
-                            @if (profile.Status == Status.Online)
+                            @if (sheet.Status == Status.Online)
                             {
                                 <i class="fa-solid fa-circle text-success"></i>
                             }
@@ -93,16 +95,16 @@
                             }
                         </td>
 
-                        <td>@profile.FirstName</td>
+                        <td>@sheet.FirstName</td>
 
-                        <td>@profile.LastName</td>
+                        <td>@sheet.LastName</td>
 
-                        <td>@profile.Id</td>
+                        <td>@sheet.Id</td>
 
                         <td>
                             <div class="row justify-content-center">
                                 <div class="col-6 text-end">
-                                    @($"{profile.Balance}$ ")
+                                    @($"{sheet.Balance}$ ")
                                 </div>
                                 <div class="col-auto ps-0">
                                     <i class="fa-solid fa-signal fa-signal-gradient"></i>
@@ -114,26 +116,26 @@
                             <div class="row text-start">
                                 <div class="col-4 pe-0">
                                     <i class="fa-solid fa-paperclip fa-fw pe-1"></i>
-                                    @profile.Photo
+                                    @sheet.Photo
                                 </div>
                                 <div class="col-4 pe-0">
                                     <i class="fa-solid fa-video fa-fw pe-1"></i>
-                                    @profile.Video
+                                    @sheet.Video
                                 </div>
                                 <div class="col-4">
                                     <i class="fa-solid fa-volume-high fa-fw pe-1"></i>
-                                    @profile.Audio
+                                    @sheet.Audio
                                 </div>
                             </div>
                         </td>
 
-                        <td>@profile.Operators</td>
+                        <td>@sheet.Operators</td>
 
-                        <td>@profile.Group.Id</td>
+                        <td>@sheet.Group?.Id</td>
 
-                        <td>@profile.Shift.Id</td>
+                        <td>@sheet.Shift?.Id</td>
 
-                        <td>@profile.Cabinet.Id</td>
+                        <td>@sheet.Cabinet?.Id</td>
                     </tr>
                     counter++;
                 }
@@ -152,11 +154,12 @@
     </div>
 </div>
 
-<partial name="_DeleteProfiles" />
-<partial name="_AddGroup" />
+<partial name="_DeleteSheets" />
+<partial name="_AddGroup" model="@ViewData["agencyId"]" />
 <partial name="_AddWorkSchedule" />
-<partial name="_AddProfile" />
+<partial name="_AddSheet" />
 <partial name="_Popover" />
+<partial name="_Toast" />
 
 @section Scripts{
 <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
@@ -166,7 +169,7 @@
 <script src="~/js/AdminAgency/group.js"></script>
 <script src="~/js/AdminAgency/shift.js"></script>
 <script src="~/js/AdminAgency/cabinet.js"></script>
-<script src="~/js/AdminAgency/profile.js"></script>
+<script src="~/js/AdminAgency/sheet.js"></script>
 <script src="~/js/AdminAgency/filters.js"></script>
 <script src="~/js/AdminAgency/popovers.js"></script>
 <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>

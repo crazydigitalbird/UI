@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ApplicationUser>
+﻿@using Core.Models.Users;
+@model IEnumerable<User>
 
 @{
     ViewData["Title"] = "Add admin";
@@ -11,11 +12,11 @@
         <form method="post" asp-controller="Admin" asp-action="AddAdmin">
             <div class="form-outline mb-3">
                 <input id="userId" name="userId" type="hidden" required />
-                <input id="email" type="email" class="form-control" list="users" autocomplete="off" onchange="setUserId()" />
+                <input id="email" type="text" class="form-control" list="users" autocomplete="off" onchange="setUserId()" />
                 <datalist id="users">
                     @foreach (var user in Model)
                     {
-                        <option value="@user.Email" data-userid="@user.Id">@user.Email</option>
+                        <option value="@(user.Login ?? user.Email)" data-userid="@user.Id">@(user.Login ?? user.Email)</option>
                     }
                 </datalist>
             </div>

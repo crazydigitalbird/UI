@@ -73,11 +73,11 @@ namespace UI.Controllers
         {
             if (await _siteClient.Delete(siteId))
             {
-                TempData["Message"] = $"The site has been deleted";
+                TempData["Message"] = $"The site {name} has been deleted";
             }
             else
             {
-                TempData["Error"] = $"Error deleting a site with id '{siteId}'";
+                TempData["Error"] = $"Error deleting a site {name}";
             }
             return RedirectToAction(nameof(Index));
         }

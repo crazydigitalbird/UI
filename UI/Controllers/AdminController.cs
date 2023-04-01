@@ -1,5 +1,4 @@
-﻿using Core.Models.Agencies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -15,15 +14,18 @@ namespace UI.Controllers
     {
         private readonly IAdminClient _adminClient;
 
+        private readonly IAdminAgencyClient _adminAgencyClient;
+
         private readonly IAuthenticationClient _authenticationClient;
 
         private readonly ILogger<AdminController> _logger;
 
         private readonly List<SelectListItem> _roles = new List<SelectListItem> { new("Admin Agency", "1"), new("Operator", "2"), new("User", "3") };
 
-        public AdminController(IAdminClient adminClient, IAuthenticationClient authenticationClient, ILogger<AdminController> logger)
+        public AdminController(IAdminClient adminClient, IAdminAgencyClient adminAgencyClient, IAuthenticationClient authenticationClient, ILogger<AdminController> logger)
         {
             _adminClient = adminClient;
+            _adminAgencyClient = adminAgencyClient;
             _authenticationClient = authenticationClient;
             _logger = logger;
         }
@@ -41,7 +43,7 @@ namespace UI.Controllers
 
         public async Task<IActionResult> AddAgency()
         {
-            ViewData["FreeUsers"] = await _adminClient.GetNonAgencyUsers();
+            ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
             return View("Edit");
         }
@@ -59,21 +61,21 @@ namespace UI.Controllers
                 }
                 TempData["Error"] = $"Error adding a agency '{agency.Name}'";
             }
-            ViewData["FreeUsers"] = await _adminClient.GetNonAgencyUsers();
+            ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
             return View("Edit", agency);
         }
 
         public async Task<IActionResult> EditAgency(int agencyId)
         {
-            AgencyView agency = await _adminClient.GetAgencyById(agencyId);
+            AgencyView agency = await _adminAgencyClient.GetAgencyById(agencyId);
             if (agency is null)
             {
                 TempData["Error"] = $"Agency with id '{agencyId}' not found";
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["FreeUsers"] = await _adminClient.GetNonAgencyUsers();
+            ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
 
             return View("Edit", agency);
@@ -85,16 +87,16 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (await _adminClient.UpdateAgency(agency, originalUsers))
+                if (await _adminAgencyClient.UpdateAgency(agency, originalUsers))
                 {
                     TempData["Message"] = $"The '{agency.Name}' agency has been updated";
                     return RedirectToAction(nameof(Index));
                 }
                 TempData["Error"] = $"'{agency.Name}' agency update error";
             }
-            ViewData["FreeUsers"] = await _adminClient.GetNonAgencyUsers();
+            ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
-            return View("Edit", await _adminClient.GetAgencyById(agency.Id));
+            return View("Edit", await _adminAgencyClient.GetAgencyById(agency.Id));
         }
 
         public async Task<IActionResult> DeleteAgency(int agencyId)
@@ -117,7 +119,7 @@ namespace UI.Controllers
 
         public async Task<IActionResult> AddAdmin()
         {
-            return View(await _adminClient.GetNonAgencyUsers());
+            return View(await _adminClient.GetUsers());
         }
 
         [HttpPost]
@@ -136,7 +138,7 @@ namespace UI.Controllers
             {
                 TempData["Error"] = "Please select an existing user";
             }
-            return View(await _adminClient.GetNonAgencyUsers());
+            return View(await _adminClient.GetUsers());
         }
 
         public async Task<IActionResult> DeleteAdmin(int adminId, string email)

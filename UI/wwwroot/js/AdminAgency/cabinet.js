@@ -5,12 +5,12 @@ function getOldValueCabinet(event) {
     previousCabinetSelect = event.target.value;
 }
 
-function changeCabinet(event, profileId) {
+function changeCabinet(event, sheetId) {
     var privatePreviousCabinetSelect = previousCabinetSelect;
     var rowId = event.target.closest('tr').getAttribute('data-index');
     $.post('/AdminAgency/ChangeCabinet',
         {
-            profileId: profileId,
+            sheetId: sheetId,
             cabinetId: event.target.value
         },
         function () {

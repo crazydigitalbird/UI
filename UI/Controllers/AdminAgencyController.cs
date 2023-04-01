@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Core.Models.Agencies.Groups;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -14,147 +15,175 @@ namespace UI.Controllers
     {
         private readonly IAdminAgencyClient _adminAgencyClient;
 
+        private readonly IGroupClient _groupClient;
+
         private readonly ILogger<AdminAgencyController> _logger;
 
         private readonly List<SelectListItem> _roles = new List<SelectListItem> { new("Admin Agency", "1"), new("Operator", "2"), new("User", "3") };
 
-        public AdminAgencyController(IAdminAgencyClient adminAgencyClient, ILogger<AdminAgencyController> logger)
+        public AdminAgencyController(IAdminAgencyClient adminAgencyClient, IGroupClient groupClient, ILogger<AdminAgencyController> logger)
         {
             _adminAgencyClient = adminAgencyClient;
+            _groupClient = groupClient;
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
-        {            
-            var groups = await _adminAgencyClient.GetGroups();
+        public async Task<IActionResult> Index(int agencyId = 0)
+        {
+            if (agencyId == 0)
+            {
+                agencyId = await _adminAgencyClient.GetAgencyId();
+                if (agencyId == 0)
+                {
+                    return View();
+                }
+            }
+            var sheets = await _adminAgencyClient.GetSheets(agencyId);
+
+            var groups = await _groupClient.GetGroupsAsync(agencyId);
             var shifts = await _adminAgencyClient.GetShifts();
-            var cabinets = await _adminAgencyClient.GetCabinets();
-            var profiles = await _adminAgencyClient.GetProfiles();
+            var cabinets = await _adminAgencyClient.GetCabinets(agencyId);
 
-            ViewData["Groups"] = groups.Select((g, i) => new SelectListItem(g, $"{i + 1}"));
-            ViewData["Shifts"] = shifts.Select((s, i) => new SelectListItem(s, $"{i + 1}"));
-            ViewData["Cabinets"] = cabinets.Select((c, i) => new SelectListItem(c, $"{i + 1}"));
+            if (sheets != null)
+            {
+                foreach (var sheet in sheets)
+                {
+                    if (cabinets?.Any(c => c.Sheets?.Any(acs => acs.Sheet.Id == sheet.Id) ?? false) ?? false)
+                    {
+                        sheet.Cabinet = (Cabinet)cabinets.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
+                    }
+                    if (groups?.Any(g => g.Sheets?.Any(ags => ags.Sheet.Id == sheet.Id) ?? false) ?? false)
+                    {
+                        sheet.Group = groups.FirstOrDefault(g => g.Sheets.Any(ags => ags.Sheet.Id == sheet.Id));
+                    }
+                }
+            }
 
-            return View(profiles);
+            ViewData["Groups"] = groups?.Select(g => new SelectListItem(g.Description, g.Id.ToString()));
+            ViewData["Shifts"] = shifts?.Select((s, i) => new SelectListItem(s, $"{i + 1}"));
+            ViewData["Cabinets"] = cabinets?.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
+            ViewData["agencyId"] = agencyId;
+
+            return View(sheets);
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteProfiles(int[] profilesId)
+        public async Task<IActionResult> DeleteSheets(int[] sheetsId)
         {
-            var response = await _adminAgencyClient.DeleteProfiles(profilesId);
-            if (response?.IsSuccessStatusCode ?? false)
+            List<int> errorDelitingSheets = new List<int>();
+            foreach (var sheetId in sheetsId)
+            {
+                if (!await _adminAgencyClient.DeleteSheet(sheetId))
+                {
+                    errorDelitingSheets.Add(sheetId);
+                }
+            }
+            return Ok(errorDelitingSheets);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeGroup(int sheetId, int groupId)
+        {
+            if (await _groupClient.ChangeGroupAsync(sheetId, groupId))
             {
                 return Ok();
             }
-            return StatusCode(500, "Error deleting profiles");
+            return StatusCode(500, $"For sheet id: {sheetId}, the group value has not been changed");
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeGroup(int profileId, int groupId)
-        {
-            var response = await _adminAgencyClient.ChangeGroup(profileId, groupId);
-            if (response?.IsSuccessStatusCode ?? false)
-            {
-                return Ok();
-            }
-            return StatusCode(500, $"For profile id: {profileId}, the group value has not been changed");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddGroup([Required] string nameGroup)
+        public async Task<IActionResult> AddGroup(int agencyId, [Required] string nameGroup)
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminAgencyClient.AddGroup(nameGroup);
-                if (response?.IsSuccessStatusCode ?? false)
+                var group = await _groupClient.AddGroupAsync(agencyId, nameGroup);
+                if (group != null)
                 {
-                    return Ok(await response.Content.ReadAsStringAsync());
+                    return Ok(group); //await response.Content.ReadAsStringAsync()
                 }
             }
             return BadRequest(nameGroup);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeShift(int profileId, int shiftId)
+        public async Task<IActionResult> ChangeShift(int sheetId, int shiftId)
         {
-            var response = await _adminAgencyClient.ChangeShift(profileId, shiftId);
-            if (response?.IsSuccessStatusCode ?? false)
+            if (await _adminAgencyClient.ChangeShift(sheetId, shiftId))
             {
                 return Ok();
             }
-            return StatusCode(500, $"For profile id: {profileId}, the shift value has not been changed");
+            return StatusCode(500, $"For sheet id: {sheetId}, the shift value has not been changed");
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeCabinet(int profileId, int cabinetId)
+        public async Task<IActionResult> ChangeCabinet(int sheetId, int cabinetId)
         {
-            var response = await _adminAgencyClient.ChangeCabinet(profileId, cabinetId);
-            if (response?.IsSuccessStatusCode ?? false)
+
+            if (await _adminAgencyClient.ChangeCabinet(sheetId, cabinetId))
             {
                 return Ok();
             }
-            return StatusCode(500, $"For profile id: {profileId}, the cabinet value has not been changed");
+            return StatusCode(500, $"For sheet id: {sheetId}, the cabinet value has not been changed");
         }
 
         [HttpPost]
-        public IActionResult GetOperators(int profileId)
+        public IActionResult GetOperators(int sheetId, int agencyId)
         {
-            return ViewComponent("Operators", profileId);
+            return ViewComponent("Operators", new { sheetId, agencyId });
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteOperatorFromProfile(int operatorId, int profileId)
+        public async Task<IActionResult> DeleteOperatorFromSheet(int operatorId, int sheetId)
         {
-            var response = await _adminAgencyClient.DeleteOperatorFromProfile(operatorId, profileId);
-            if (response?.IsSuccessStatusCode ?? false)
+            if (await _adminAgencyClient.DeleteOperatorFromSheet(operatorId, sheetId))
             {
                 return Ok();
             }
-            return StatusCode(500, $"For profile id: {profileId}, the operator id: {operatorId} has not been deleted");
+            return StatusCode(500, $"For sheet id: {sheetId}, the operator id: {operatorId} has not been deleted");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOperatorFromProfile(int operatorId, int profileId)
+        public async Task<IActionResult> AddOperatorFromSheet(int agencyId, int sheetId, int operatorId)
         {
-            var response = await _adminAgencyClient.AddOperatorFromProfile(operatorId, profileId);
-            if (response?.IsSuccessStatusCode ?? false)
+            if (await _adminAgencyClient.AddOperatorFromSheet(agencyId, sheetId, operatorId))
             {
                 return Ok(User.Identity.Name);
             }
-            return StatusCode(500, $"For profile id: {profileId}, the operator id: {operatorId} has not been added");
+            return StatusCode(500, $"For sheet id: {sheetId}, the operator id: {operatorId} has not been added");
         }
 
-        public async Task<IActionResult> Users()
+        public async Task<IActionResult> Users(int agencyId)
         {
-            AgencyView agency = await _adminAgencyClient.GetAgency();
-            ViewData["FreeUsers"] = await _adminAgencyClient.GetFreeUsers();
+            if (agencyId == 0)
+            {
+                agencyId = await _adminAgencyClient.GetAgencyId();
+                if (agencyId == 0)
+                {
+                    return View();
+                }
+            }
+            AgencyView agency = await _adminAgencyClient.GetAgencyById(agencyId);
+            ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
+            ViewData["returnUrl"] = Request.Headers.Referer.ToString();
             return View(agency);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Users(AgencyView agency, List<ApplicationUser> originalUsers)
+        public async Task<IActionResult> Users(AgencyView agency, List<ApplicationUser> originalUsers, string returnUrl)
         {
             if (ModelState.IsValid)
             {
-                var deleteUsers = originalUsers.ExceptBy(agency.Users.Select(u => u.Id), ou => ou.Id).ToList();
-
-                var addUsers = agency.Users.ExceptBy(originalUsers.Select(ou => ou.Id), u => u.Id).ToList();
-
-                var updateUser = agency.Users.Intersect(originalUsers, new MyApplicationUserIsUpdateRoleComparer()).ToList();
-
-                var response = await _adminAgencyClient.UpdateAgency(agency);
-                if (response.IsSuccessStatusCode)
+                if (await _adminAgencyClient.UpdateAgency(agency, originalUsers))
                 {
-                    TempData["Message"] = $"Updated the list of users of the '{agency.Name}' agency";
-                    return RedirectToAction(nameof(Index));
+                    TempData["Message"] = $"The '{agency.Name}' agency has been updated";
+                    return Redirect(returnUrl);
                 }
-                TempData["Error"] = $"Error updating the list of users of the '{agency.Name}' anency";
+                TempData["Error"] = $"'{agency.Name}' agency update error";
             }
-            agency = await _adminAgencyClient.GetAgency();
-            ViewData["FreeUsers"] = await _adminAgencyClient.GetFreeUsers();
+            ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
-            return View(agency);
+            return View("Edit", await _adminAgencyClient.GetAgencyById(agency.Id));
         }
     }
 }

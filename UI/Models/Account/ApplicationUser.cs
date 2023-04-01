@@ -1,4 +1,6 @@
-﻿using Core.Models.Users;
+﻿using Core.Models.Agencies;
+using Core.Models.Agencies.Operators;
+using Core.Models.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace UI.Models
@@ -14,6 +16,32 @@ namespace UI.Models
         public Role Role { get; set; }
 
         public string Hash { get; set; }
+
+        public static explicit operator ApplicationUser(AgencyMember member)
+        {
+            var appUser = new ApplicationUser()
+            {
+                Id = member.User.Id,
+                UserName = member.User.Login,
+                Email = member.User.Email,
+                EmailConfirmed = member.User.Confirmed
+            };
+
+
+            if(member.AgencyAdmins.Count > 0){
+                appUser.Role = Role.AdminAgency;
+            }
+            else if(member.AgencyOperators.Count > 0)
+            {
+                appUser.Role = Role.Operator;
+            }
+            else
+            {
+                appUser.Role = Role.User;
+            }
+
+            return appUser;
+        }
 
         public static explicit operator ApplicationUser(User user)
         {
@@ -41,6 +69,18 @@ namespace UI.Models
             {
                 appUser.Role = Role.User;
             }
+
+            return appUser;
+        }
+
+        public static explicit operator ApplicationUser(AgencyOperator agencyOperator)
+        {
+            var appUser = new ApplicationUser()
+            {
+                Id = agencyOperator.Id,
+                UserName = agencyOperator.Member.User.Login,
+                Email = agencyOperator.Member.User.Email
+            };
 
             return appUser;
         }

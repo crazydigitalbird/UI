@@ -26,9 +26,9 @@ namespace UI.Infrastructure.API
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
             {
-                var sesstionGuid = GetSessionGuid();
+                var sessionGuid = GetSessionGuid();
                 var userId = GetUserId();
-                var response = await httpClient.GetAsync($"Sheets/GetSheets?userId={userId}&sessionGuid={sesstionGuid}");
+                var response = await httpClient.GetAsync($"Sheets/GetSheets?userId={userId}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
                     var sheets = (await response.Content.ReadFromJsonAsync<IEnumerable<Sheet>>()).Where(s => s.IsActive);
@@ -58,7 +58,7 @@ namespace UI.Infrastructure.API
             {
                 var credentials = JsonConvert.SerializeObject(new { login = login, password = password }, Formatting.Indented);
 
-                var info = JsonConvert.SerializeObject(new { name = "Anna", lastName = "Sokolova", avatar= "~/image/avatar.webp" }, Formatting.Indented);
+                var info = JsonConvert.SerializeObject(new { name = "Anna", lastName = "Sokolova", avatar = "/image/avatar.webp" }, Formatting.Indented);
 
                 var response = await httpClien.PutAsync($"Sheets/AddSheet?siteId={siteId}&credentials={credentials}&info={info}&sessionGuid={sesstionGuid}", null);
                 if (response.IsSuccessStatusCode)
@@ -66,7 +66,7 @@ namespace UI.Infrastructure.API
                     var sheet = await response.Content.ReadFromJsonAsync<Sheet>();
                     return sheet;
                 }
-                else if(response.StatusCode == HttpStatusCode.Unauthorized)
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     SignOut();
                 }
@@ -82,34 +82,41 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Sheet> UpdateSheet(int sheetId, string login, string password)
+        public async Task<SheetSite> UpdateSheet(int sheetId, string password)
         {
             HttpClient httpClien = _httpClientFactory.CreateClient("api");
             var sesstionGuid = GetSessionGuid();
             try
             {
-                var credentials = JsonConvert.SerializeObject(new { login = login, password = password }, Formatting.Indented);
+                var sheets = await GetSheets();
+                var sheet = sheets?.Where(s => s.Id == sheetId).FirstOrDefault();
+                if (sheet != null)
+                {
+                    var credentialsObject = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+                    credentialsObject.Password = password;
+                    var credentials = JsonConvert.SerializeObject( credentialsObject, Formatting.Indented);
 
-                var info = JsonConvert.SerializeObject(new { name = "Anna", lastName = "Sokolova", avatar = "~/image/avatar.webp" }, Formatting.Indented);
+                    var info = JsonConvert.SerializeObject(new { name = "Anna", lastName = "Sokolova", avatar = "~/image/avatar.webp" }, Formatting.Indented);
 
-                var response = await httpClien.PostAsync($"Sheets/UpdateSheet?sheedId={sheetId}&credentials={credentials}&info={info}&sessionGuid={sesstionGuid}", null);
-                if (response.IsSuccessStatusCode)
-                {
-                    var sheet = await response.Content.ReadFromJsonAsync<Sheet>();
-                    return sheet;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    SignOut();
-                }
-                else
-                {
-                    _logger.LogWarning("Error updating sheet with Id '{sheetId}', login {login}. HttpStatsCode: {httpStatusCode}", sheetId, login, response.StatusCode);
+                    var response = await httpClien.PostAsync($"Sheets/UpdateSheet?sheedId={sheetId}&credentials={credentials}&info={info}&sessionGuid={sesstionGuid}", null);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var sheetUpdated = await response.Content.ReadFromJsonAsync<SheetSite>();
+                        return sheetUpdated;
+                    }
+                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        SignOut();
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Error updating sheet with Id '{sheetId}'. HttpStatsCode: {httpStatusCode}", sheetId, response.StatusCode);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding sheet with Id '{sheetId}', login {login}.", sheetId, login);
+                _logger.LogError(ex, "Error adding sheet with Id '{sheetId}'.", sheetId);
             }
             return null;
         }
@@ -187,11 +194,17 @@ namespace UI.Infrastructure.API
             _httpContextAccessor.HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
         }
 
+        public Task<bool> ChangePaassword(int sheetId, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IUserClient
     {
         Task<Sheet> AddSheet(int siteId, string login, string password);
+        Task<SheetSite> UpdateSheet(int sheetId, string password);
+        Task<bool> ChangePaassword(int sheetId, string password);
         Task<bool> DeleteSheet(int sheetId);
         Task<IEnumerable<Sheet>> GetSheets();
         Task<List<SheetSite>> GetSites();

@@ -11,10 +11,12 @@
     <form method="post" asp-controller="AdminAgency" asp-action="Users">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="Name" />
+        <input type="hidden" name=returnUrl value="@ViewData["returnUrl"]" />
 
         <partial name="_Users" model="Model.Users" />
 
-        <a class="btn btn-sm btn-danger" asp-controller="AdminAgency" asp-action="Index">Cancel</a>
+        <a class="btn btn-sm btn-danger" href="@ViewData["returnUrl"]">Cancel</a>
+
         <button type="submit" class="btn btn-sm btn-success">Save</button>
     </form>
 </div>

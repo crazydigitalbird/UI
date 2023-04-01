@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ApplicationUser>
+﻿@using Core.Models.Users;
+@model IEnumerable<UserAdmin>
 
 @{
     ViewData["Title"] = "Admins";
@@ -10,19 +11,19 @@
     <table class="table table-sm table-hover">
         <theader>
             <tr>
-                <th class="text-bold">Email</th>
+                <th class="text-bold">Login</th>
                 <th class="text-bold text-center">Action</th>
             </tr>
         </theader>
         <tbody>
             @if (Model?.Count() > 0)
             {
-                foreach (var admin in Model.OrderBy(u=> u.Email))
+                foreach (var admin in Model.OrderBy(u=> u.User.Login))
                 {
                     <tr>
-                        <td>@admin.Email</td>
+                        <td>@(admin.User.Login ?? admin.User.Email)</td>
                         <td style="width: 80px;">
-                            <a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="DeleteAdmin" asp-route-adminId="@admin.Id" asp-route-email="@admin.Email">Delete</a>
+                            <a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="DeleteAdmin" asp-route-adminId="@admin.Id" asp-route-email="@(admin.User.Login ?? admin.User.Email)">Delete</a>
                         </td>
                     </tr>
                 }

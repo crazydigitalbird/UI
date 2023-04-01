@@ -7,10 +7,10 @@ $('#addGroup').click(() => {
     $('#modalAddGroup').modal('show');
 });
 
-function successAddGroup(data) {
-    var group = JSON.parse(data);
+function successAddGroup(group) {
+    /*var group = JSON.parse(data);*/
     $('#modalAddGroup').modal('hide');
-    $('#toastBody').html(`The ${group.name} group has been added successfully`)
+    $('#toastBody').html(`The ${group.description} group has been added successfully`)
 
     var toast = $('#toast');
 
@@ -25,7 +25,7 @@ function successAddGroup(data) {
     $('select[name="groupHeader"]').each(function (i, item) {
         $(item).append($('<option>', {
             value: group.id,
-            text: group.name
+            text: group.description
         }));
     });
 
@@ -57,12 +57,12 @@ function getValueSelect(event) {
     previousOldGroupSelect = event.target.value;
 }
 
-function changeGroup(event, profileId) {
+function changeGroup(event, sheetId) {
     var privatePreviousOldGroupSelect = previousOldGroupSelect;
     var rowId = event.target.closest('tr').getAttribute('data-index');
     $.post('/AdminAgency/ChangeGroup',
         {
-            profileId: profileId,
+            sheetId: sheetId,
             groupId: event.target.value
         },
         function () {

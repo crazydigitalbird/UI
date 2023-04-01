@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UI.Infrastructure.API;
-using UI.Models;
+using UI.Infrastructure.Filters;
 
 namespace UI.Controllers
 {
+    [Authorize]
+    [APIAuthorize]
     public class ChatController : Controller
     {
         private readonly IChatClient _chatClient;
@@ -30,7 +32,11 @@ namespace UI.Controllers
         [HttpPost]
         public async Task<IActionResult> SendMessage(int userId, int chatId, string message)
         {
-            return Ok();
+            if(await _chatClient.SendMessageAsync(userId, chatId, message))
+            {
+                return Ok();
+            }
+            return StatusCode(500);
         }
     }
 }

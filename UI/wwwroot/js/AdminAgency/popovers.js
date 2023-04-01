@@ -53,11 +53,12 @@ $('#adminAgencyTable').on('reset-view.bs.table', function (e) {
 
             //Get popover content
             var content;
+            var agencyId = $('#agencyId').val();
             $.ajax({
                 async: false,
                 method: "POST",
                 url: '/AdminAgency/GetOperators',
-                data: { profileId: id },
+                data: { sheetId: id, agencyId: agencyId },
             })
                 .done(function (data) {
                     content = data;
@@ -73,13 +74,15 @@ $('#adminAgencyTable').on('reset-view.bs.table', function (e) {
         $(event.target).attr('popover-show', '1');
     }).on('hide.bs.popover', function (event) {
         var profileId = $('input[name=popoverProfileId]').val();
-        var operators = $('table[name=operators] tbody tr:not(.tr-placeholder)').length;
-        $('#adminAgencyTable').bootstrapTable('updateCellByUniqueId', {
-            id: profileId,
-            field: 'operators',
-            value: operators,
-            reinit: false
+        if (profileId) {
+            var operators = $('table[name=operators] tbody tr:not(.tr-placeholder)').length;
+            $('#adminAgencyTable').bootstrapTable('updateCellByUniqueId', {
+                id: profileId,
+                field: 'operators',
+                value: operators,
+                reinit: false
             });
+        }
     }).on('hidden.bs.popover', function (event) {
         $(event.target).attr('popover-show', '0');
     });
@@ -92,8 +95,8 @@ function popoverClose(e) {
 
 //Deleting an operator from the list and adding an operator to the list free operators
 function deleteOperator(e, operatorId) {
-    var profileId = $(e.target.closest('div')).find('input[name="popoverProfileId"]').val();
-    $.post('/AdminAgency/DeleteOperatorFromProfile', { operatorId: operatorId, profileId: profileId }, function () {
+    var sheetId = $(e.target.closest('div')).find('input[name="popoverProfileId"]').val();
+    $.post('/AdminAgency/DeleteOperatorFromSheet', { operatorId: operatorId, sheetId: sheetId }, function () {
         setTimeout(() => {
             var $deleteRow = $(e.target.closest('tr'));
             $deleteRow.find('td[name]').each(function () {
@@ -126,14 +129,20 @@ function searchOperator(e) {
 //Adding an operator from the list free operators
 function addOperator(e) {
     var $row = $(e.target.closest('tr'));
+    var agencyId = $('#agencyId').val();
     var operatorId = $row.find('td').first().text();
-    var profileId = $(e.target.closest('#dropdownOperators')).siblings('input[name="popoverProfileId"]').val();
+    var sheetId = $(e.target.closest('#dropdownOperators')).siblings('input[name="popoverProfileId"]').val();
 
-    $.post('/AdminAgency/AddOperatorFromProfile', { operatorId: operatorId, profileId: profileId }, function (data) {
+    $.post('/AdminAgency/AddOperatorFromSheet', { agencyId: agencyId, operatorId: operatorId, sheetId: sheetId }, function (data) {
         var team = data;
 
         $addRow = $row.clone();
         $addRow.removeAttr('onclick');
+
+        var $tdSteetsCount = $addRow.find('td').last();
+        var sheetsCount = Number($tdSteetsCount.text()) + 1;
+        $tdSteetsCount.text(sheetsCount);
+
         $addRow.find('td').last().before(`<td name="Team">${team}</td>`);
         $addRow.find('td').last().after(`<td name="Action">
                             <a role="button" class="btn btn-sm btn-info" onclick="addTempOperator(event)">

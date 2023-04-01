@@ -1,0 +1,68 @@
+﻿@using Core.Models.Agencies.Comments;
+@model IEnumerable<SheetComment>
+
+<div class="modal-header" style="border-bottom: solid white;">
+    <h5 class="modal-tittle text-black"></h5>
+    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" style="filter: none;"></button>
+</div>
+<div class="modal-body">
+    <ul class="list-unstyled text-white">
+        @if (Model?.Count() > 0)
+        {
+            @foreach (var comment in Model.Where(c => !c.IsNew))
+            {
+                <li classs="d-flex justify-content-between mb-4">
+                    <div class="mask-custom card w-100">
+                        <div class="card-header d-flex justify-content-between p-3" style="border-bottom: 1px solid rgba(255, 255, 255, .3);">
+                            <p class="fw-bold mb-0"><i class="fa-solid fa-check text-success"></i>@(comment.Member.User.Login ?? comment.Member.User.Email)</p>
+                            <p class="text-light small mb-0"><i class="fa-solid fa-clock"></i> @comment.Created.ToString("HH:mm dd.MM.yyy")</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">
+                                @comment.Content
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            }
+            @if (Model.Any(c => c.IsNew))
+            {
+                if (Model.Any(c => !c.IsNew))
+                {
+                    <li class="dropdown-divider my-4" style="border-color: white !important;">New message</li>
+                }
+
+                @foreach (var comment in Model.Where(n => n.IsNew))
+                {
+                    <li classs="d-flex justify-content-between mb-4">
+                        <div class="mask-custom card w-100">
+                            <div class="card-header d-flex justify-content-between p-3" style="border-bottom: 1px solid rgba(255, 255, 255, .3);">
+                                <p class="fw-bold mb-0"><i class="fa-solid fa-check"></i>@(comment.Member.User.Login ?? comment.Member.User.Email)</p>
+                                <p class="text-light small mb-0"><i class="fa-solid fa-clock"></i> @comment.Created.ToString("HH:mm dd.MM.yyy")</p>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">
+                                    @comment.Content
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                }
+            }
+        }
+        else
+        {
+            <p id="noComments" class="text-black text-center">No comments</p>
+        }
+    </ul>
+</div>
+<div class="modal-footer" style="border-top: solid white;">
+    <div class="form-outline">
+        <textarea id="textAreaComment" class="form-control mask-custom text-white" rows="4" style="background: rgba(24, 24, 16, .2)"></textarea>
+        <label class="form-label text-white" for="textAreaComment">Comment</label>
+    </div>
+    <button type="button" class="btn btn-sm btn-success btn-rounded float-end" onclick="addComment(@ViewData["sheetId"])">
+        Send
+        <i class="fa-solid fa-paper-plane"></i>
+    </button>
+</div>

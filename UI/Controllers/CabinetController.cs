@@ -13,29 +13,37 @@ namespace UI.Controllers
     public class CabinetController : Controller
     {
         private readonly ICabinetClient _cabinetClient;
+        private readonly IAdminAgencyClient _adminAgencyClient;
         private readonly ILogger<CabinetController> _logger;
 
-        public CabinetController(ICabinetClient cabinetClient, ILogger<CabinetController> logger)
+        public CabinetController(ICabinetClient cabinetClient, IAdminAgencyClient adminAgencyClient, ILogger<CabinetController> logger)
         {
             _cabinetClient = cabinetClient;
+            _adminAgencyClient = adminAgencyClient;
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int agencyId = 0)
         {
-            IEnumerable<Cabinet> cabinets = await _cabinetClient.GetCabinetsAsync();
+            if (agencyId == 0)
+            {
+                agencyId = await _adminAgencyClient.GetAgencyId();
+            }
+            ViewData["agencyId"] = agencyId;
+            ViewData["operators"] = await _adminAgencyClient.GetAgencyOperators(agencyId);
+            var cabinets = await _cabinetClient.GetCabinetsAsync(agencyId);
             return View(cabinets);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([Required] string name)
+        public async Task<IActionResult> Add(int agencyId, [Required] string name)
         {
             if (ModelState.IsValid)
             {
-                var response = await _cabinetClient.AddAsync(name);
-                if (response?.IsSuccessStatusCode ?? false)
+                var cabinet = await _cabinetClient.AddAsync(agencyId, name);
+                if (cabinet != null)
                 {
-                    return Ok(await response.Content.ReadAsStringAsync());
+                    return Ok(cabinet);
                 }
                 return StatusCode(500, $"Error adding the {name} cabinet");
             }
@@ -46,28 +54,30 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BindCabinetsToUser(List<int> cabinets, [Required] int userId, [Required] string userName)
+        public async Task<IActionResult> BindCabinetsToUser(int agencyId, List<int> cabinets, [Required] int operatorId, [Required] string userName)
         {
             if (ModelState.IsValid)
             {
-                var response = await _cabinetClient.BindCabinetToUserAsync(cabinets, userId);
-                if (response?.IsSuccessStatusCode ?? false)
+                foreach (var cabinet in cabinets)
                 {
-                    var context = new {userId = userId, userName = userName, cabinets = cabinets};
-                    var contextJson = JsonConvert.SerializeObject(context);
-                    return Ok(contextJson);
+                    if (!await _cabinetClient.BindCabinetToOperatorAsync(agencyId, cabinet, operatorId))
+                    {
+                        return BadRequest($"Error when binding cabinets from the user {userName}");
+                    }
                 }
+                var context = new { userId = operatorId, userName = userName, cabinets = cabinets };
+                var contextJson = JsonConvert.SerializeObject(context);
+                return Ok(contextJson);
             }
-            return BadRequest($"Error when binding/unbinding cabinets from the user {userName}");
+            return BadRequest($"Error when binding cabinets from the user {userName}");
         }
 
         [HttpPost]
-        public async Task<IActionResult> UnbindCabinetToUser([Required] int cabinetId, [Required] int userId)
+        public async Task<IActionResult> UnbindCabinetToUser([Required] int cabinetId, [Required] int operatorId)
         {
             if (ModelState.IsValid)
             {
-                var response = await _cabinetClient.UnbindCabinetToUserAsync(cabinetId, userId);
-                if (response?.IsSuccessStatusCode ?? false)
+                if (await _cabinetClient.UnbindCabinetToUserAsync(cabinetId, operatorId))
                 {
                     return Ok();
                 }

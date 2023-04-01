@@ -69,7 +69,7 @@ function setHeight() {
 function balanceFormatter(value, row) {
     var balanceFormatHtml = `<div class="row justify-content-center">
                                 <div class="col-6 text-end">
-                                    ${value}
+                                    ${value}$ 
                                 </div>
                                 <div class="col-auto ps-0">
                                     <i class="fa-solid fa-signal fa-signal-gradient"></i>
@@ -78,17 +78,17 @@ function balanceFormatter(value, row) {
     return balanceFormatHtml;
 }
 
-function notesFormatter(value, row) {
-    var notViewNotes = JSON.parse(value.toLowerCase());
-    if (notViewNotes) {
-        return `<a href="#" role="button" class="position-relative" onclick="showNotes(event, ${row['id']})">
+function commentsFormatter(value, row) {
+    var notViewComments = JSON.parse(value.toLowerCase());
+    if (notViewComments) {
+        return `<a href="#" role="button" class="position-relative" onclick="showComments(event, ${row['id']})">
                     <i class="fa-regular fa-note-sticky @*fa-clipboard*@ fa-xl"></i>
                     <span class="position-absolute top-0 translate-middle p-1 bg-danger border botder-light rounded-circle text" style="left: 90%">
-                        <span class="visually-hidden">Unread notes</span>
+                        <span class="visually-hidden">Unread comments</span>
                     </span>
                 </a>`;
     } else {
-        return `<a href="#" role="button" class="position-relative" onclick="showNotes(event, ${row['id']})">
+        return `<a href="#" role="button" class="position-relative" onclick="showComments(event, ${row['id']})">
                     <i class="fa-regular fa-note-sticky fa-xl"></i>
                 </a>`;
     }
@@ -126,21 +126,21 @@ function updateBalance(e, interval) {
     }
 }
 
-$('#modalNotes').on('shown.bs.modal', function () {
+$('#modalComments').on('shown.bs.modal', function () {
     $('.modal-body')[0].scrollTo(0, $('.list-unstyled').outerHeight());
 });
 
-function showNotes(event, profileId) {
-    $.get('Operator/Notes', { profileId: profileId }, function (data) {
-        $('#modalNotes').find('.modal-content').html(data);
-        var row = $('#operatorTable').bootstrapTable('getRowByUniqueId', profileId);
-        $('#modalNotes').find('.modal-tittle').text(`${row['name']} ${row['lastName']}`);
-        $('#modalNotes').modal('show');        
+function showComments(event, sheetId) {
+    $.get('Operator/Comments', { sheetId: sheetId }, function (data) {
+        $('#modalComments').find('.modal-content').html(data);
+        var row = $('#operatorTable').bootstrapTable('getRowByUniqueId', sheetId);
+        $('#modalComments').find('.modal-tittle').text(`${row['name']} ${row['lastName']}`);
+        $('#modalComments').modal('show');        
 
         if ($(event.target)) {
             $('#operatorTable').bootstrapTable('updateCellByUniqueId', {
-                id: profileId,
-                field: 'notes',
+                id: sheetId,
+                field: 'comments',
                 value: 'false',
                 reinit: false
             });
@@ -151,25 +151,30 @@ function showNotes(event, profileId) {
     });
 }
 
-function createNotes(profileId) {
-    var $textAreaNote = $('#textAreaNote');
-    if ($textAreaNote.val()) {
-        $.post('Operator/CreateNote', { profileId: profileId, text: $textAreaNote.val() }, function (data) {
+function addComment(sheetId) {
+    var $textAreaComment = $('#textAreaComment');
+    if ($textAreaComment.val()) {
+        $.post('Operator/AddComment', { sheetId: sheetId, text: $textAreaComment.val() }, function (data) {
+            /*${new Date(data.created).toLocaleDateString()}*/
             $('.list-unstyled').append(`<li classs="d-flex justify-content-between mb-4">
                                             <div class="mask-custom card w-100">
                                                 <div class="card-header d-flex justify-content-between p-3" style="border-bottom: 1px solid rgba(255, 255, 255, .3);">
-                                                    <p class="fw-bold mb-0"><i class="fa-solid fa-check text-success"></i> ${data.name}</p>
-                                                    <p class="text-light small mb-0"><i class="fa-solid fa-clock"></i> ${data.date}</p>
+                                                    <p class="fw-bold mb-0"><i class="fa-solid fa-check text-success"></i> ${data.member.user.login}</p>
+                                                    <p class="text-light small mb-0"><i class="fa-solid fa-clock"></i> now</p>
                                                 </div>
                                                 <div class="card-body">
                                                     <p class="mb-0">
-                                                        ${$textAreaNote.val()}
+                                                        ${data.content}
                                                     </p>
                                                 </div>
                                             </div>
                                         </li>`);
-            $textAreaNote.val('');
+            $textAreaComment.val('');
             $('.modal-body')[0].scrollTo(0, $('.list-unstyled').outerHeight());
+            var noComments = $('#noComments');
+            if (noComments) {
+                noComments.remove();
+            }
         }).fail(function (error) {
             failure(error.responseText);
         });

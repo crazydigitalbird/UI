@@ -28,7 +28,7 @@ namespace UI.Infrastructure.API
                     var messanger = await response.Content.ReadFromJsonAsync<Messanger>();
                     return messanger;
                 }
-                else if(response.StatusCode == HttpStatusCode.Unauthorized)
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     SignOut();
                 }
@@ -44,6 +44,32 @@ namespace UI.Infrastructure.API
             return null;
         }
 
+        public async Task<bool> SendMessageAsync(int userId, int chatId, string message)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var response = await httpClient.PostAsync($"", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending message");
+            }
+            return false;
+        }
+
         public void SignOut()
         {
             _httpContextAccessor.HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
@@ -53,5 +79,6 @@ namespace UI.Infrastructure.API
     public interface IChatClient
     {
         Task<Messanger> GetMessangerAsync();
+        Task<bool> SendMessageAsync(int userId, int chatId, string message);
     }
 }

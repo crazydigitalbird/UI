@@ -1,7 +1,8 @@
-﻿@model IEnumerable<Profile>
+﻿@model IEnumerable<SheetView>
 
 @{
     ViewData["Title"] = "Operator";
+    var sheetsIsNewComments = (List<int>)ViewData["sheetsIsNewComments"];
     int counter = 1;
 }
 
@@ -20,7 +21,7 @@
             <th data-field="status" data-width="60"></th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="lastName" data-sortable="true">Last name</th>
-            <th data-field="id" data-width="120" data-sortable="true">Profile ID</th>
+            <th data-field="id" data-width="120" data-sortable="true" class="text-center">Sheet ID</th>
             <th data-field="balance" data-width="120" data-formatter="balanceFormatter" class="text-center">
                 <div class="dropdown">
                     Balance
@@ -53,20 +54,20 @@
             <th data-field="media" data-width="250" class="text-center">Media materials</th>
             <th data-field="detailedBalance" class="text-center">Detailed balance</th>
             <th data-field="top" class="text-center">Top man</th>
-            <th data-field="notes" data-align="center" data-formatter="notesFormatter">Notes</th>
+            <th data-field="comments" data-align="center" data-formatter="commentsFormatter">Comments</th>
         </tr>
     </thead>
     <tbody>
         @if (Model?.Count() > 0)
         {
-            @foreach (var profile in Model)
+            @foreach (var sheet in Model)
             {
                 <tr>
 
                     <td>@counter</td>
 
                     <td class="text-center">
-                        @switch (profile.Status)
+                        @switch (sheet.Status)
                         {
                             case Status.Online:
                                 <i class="fa-solid fa-circle text-success"></i>
@@ -82,27 +83,27 @@
                         }
                     </td>
 
-                    <td>@profile.FirstName</td>
+                    <td>@sheet.FirstName</td>
 
-                    <td>@profile.LastName</td>
+                    <td>@sheet.LastName</td>
 
-                    <td>@profile.Id</td>
+                    <td>@sheet.Id</td>
 
-                    <td>@profile.Balance</td>
+                    <td>@sheet.Balance</td>
 
                     <td>
                         <div class="row text-start">
                             <div class="col-4 pe-0">
                                 <i class="fa-solid fa-paperclip fa-fw pe-1"></i>
-                                @profile.Photo
+                                @sheet.Photo
                             </div>
                             <div class="col-4 pe-0">
                                 <i class="fa-solid fa-video fa-fw pe-1"></i>
-                                @profile.Video
+                                @sheet.Video
                             </div>
                             <div class="col-4">
                                 <i class="fa-solid fa-volume-high fa-fw pe-1"></i>
-                                @profile.Audio
+                                @sheet.Audio
                             </div>
                         </div>
                     </td>
@@ -111,7 +112,7 @@
 
                     <td></td>
 
-                    <td>@(counter % 2 == 0 ? true: false)</td>
+                    <td>@(sheetsIsNewComments.Contains(sheet.Id))</td>
                 </tr>
                 counter++;
             }
@@ -119,7 +120,7 @@
     </tbody>
 </table>
 
-<div class="modal fade" id="modalNotes" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="modalComments" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content gradient-custom">
         </div>

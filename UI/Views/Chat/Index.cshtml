@@ -34,7 +34,7 @@ else
 
                                     <div id="usersArea" class="overflow-auto" style="position: relative;">
                                         <ul class="list-unstyled list-group mb-0">
-                                            @foreach (var chat in Model.Chats)
+                                            @foreach (var chat in Model?.Chats)
                                             {
                                                 <li id="@($"user_{chat.Id}")" class="p-3 border-bottom">
                                                     <a href="#!" class="d-flex justify-content-between" onclick="activatingChat(@chat.Id)">

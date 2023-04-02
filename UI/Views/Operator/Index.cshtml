@@ -21,7 +21,8 @@
             <th data-field="status" data-width="60"></th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="lastName" data-sortable="true">Last name</th>
-            <th data-field="id" data-width="120" data-sortable="true" class="text-center">Sheet ID</th>
+            <th data-field="sheetId" data-width="120" data-sortable="true" data-align="center">Sheet ID</th>
+            <th data-field="id" data-visible="false">ID</th>
             <th data-field="balance" data-width="120" data-formatter="balanceFormatter" class="text-center">
                 <div class="dropdown">
                     Balance
@@ -87,21 +88,27 @@
 
                     <td>@sheet.LastName</td>
 
+                    <td>@sheet.SheetId</td>
+
                     <td>@sheet.Id</td>
 
                     <td>@sheet.Balance</td>
 
                     <td>
-                        <div class="row text-start">
-                            <div class="col-4 pe-0">
-                                <i class="fa-solid fa-paperclip fa-fw pe-1"></i>
+                        <div class="row text-center mx-1">
+                            <div class="col-3 p-0" title="Photo">
+                                <i class="fa-solid fa-image fa-fw pe-1"></i>
                                 @sheet.Photo
                             </div>
-                            <div class="col-4 pe-0">
+                            <div class="col-3 p-0" title="Private Photo">
+                                <i class="fa-solid fa-unlock-keyhole fa-fw pe-1"></i>
+                                @sheet.PrivatePhoto
+                            </div>
+                            <div class="col-3 p-0" title="Video">
                                 <i class="fa-solid fa-video fa-fw pe-1"></i>
                                 @sheet.Video
                             </div>
-                            <div class="col-4">
+                            <div class="col-3 p-0" title="Audio">
                                 <i class="fa-solid fa-volume-high fa-fw pe-1"></i>
                                 @sheet.Audio
                             </div>

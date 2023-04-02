@@ -8,6 +8,8 @@ namespace UI.Models
     {
         public int Id { get; set; }
 
+        public int SheetId { get; set; }
+
         public Status Status { get; set; }
 
         public string FirstName { get; set; }
@@ -17,6 +19,8 @@ namespace UI.Models
         public int Balance { get; set; }
 
         public int Photo { get; set; }
+
+        public int PrivatePhoto { get; set; }
 
         public int Video { get; set; }
 
@@ -34,9 +38,10 @@ namespace UI.Models
         {
             var sheetView = new SheetView();
             sheetView.Id = sheet.Id;
-            var info = JsonConvert.DeserializeObject<dynamic>(sheet.Info);
-            sheetView.FirstName = info["name"];
-            sheetView.LastName = info["lastName"];
+            var SheetInfo = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
+            sheetView.SheetId = SheetInfo.Id;
+            sheetView.FirstName = SheetInfo.Personal.Name;
+            sheetView.LastName = SheetInfo.Personal.LastName;
             return sheetView;
         }
     }

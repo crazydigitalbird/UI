@@ -53,7 +53,8 @@
                 <th data-field="status"></th>
                 <th data-field="name" data-sortable="true">Name</th>
                 <th data-field="lastName" data-sortable="true">Last name</th>
-                <th data-field="id" data-sortable="true">Sheet ID</th>
+                <th data-field="sheetId" data-sortable="true" data-align="center">Sheet ID</th>
+                <th data-field="id" data-visible="false">ID</th>
                 <th data-field="balance" class="text-center">Balance</th>
                 <th data-field="media" class="text-center">Media materials</th>
                 <th data-field="operators" data-formatter="operatorsFormatter" class="text-center">Operators</th>
@@ -99,6 +100,8 @@
 
                         <td>@sheet.LastName</td>
 
+                        <td>@sheet.SheetId</td>
+
                         <td>@sheet.Id</td>
 
                         <td>
@@ -113,16 +116,20 @@
                         </td>
 
                         <td>
-                            <div class="row text-start">
-                                <div class="col-4 pe-0">
-                                    <i class="fa-solid fa-paperclip fa-fw pe-1"></i>
+                            <div class="row text-center mx-1">
+                                <div class="col-3 p-0" title="Photo">
+                                    <i class="fa-solid fa-image fa-fw pe-1"></i>
                                     @sheet.Photo
                                 </div>
-                                <div class="col-4 pe-0">
+                                <div class="col-3 p-0" title="Private Photo">
+                                    <i class="fa-solid fa-unlock-keyhole fa-fw pe-1"></i>
+                                    @sheet.PrivatePhoto
+                                </div>
+                                <div class="col-3 p-0" title="Video">
                                     <i class="fa-solid fa-video fa-fw pe-1"></i>
                                     @sheet.Video
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3 p-0" title="Audio">
                                     <i class="fa-solid fa-volume-high fa-fw pe-1"></i>
                                     @sheet.Audio
                                 </div>
@@ -162,16 +169,16 @@
 <partial name="_Toast" />
 
 @section Scripts{
-<script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
-<script src="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
-@*<script src="~/lib/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>*@
-<script src="~/js/AdminAgency/dataTable.js"></script>
-<script src="~/js/AdminAgency/group.js"></script>
-<script src="~/js/AdminAgency/shift.js"></script>
-<script src="~/js/AdminAgency/cabinet.js"></script>
-<script src="~/js/AdminAgency/sheet.js"></script>
-<script src="~/js/AdminAgency/filters.js"></script>
-<script src="~/js/AdminAgency/popovers.js"></script>
-<script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
-<partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+    @*<script src="~/lib/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>*@
+    <script src="~/js/AdminAgency/dataTable.js"></script>
+    <script src="~/js/AdminAgency/group.js"></script>
+    <script src="~/js/AdminAgency/shift.js"></script>
+    <script src="~/js/AdminAgency/cabinet.js"></script>
+    <script src="~/js/AdminAgency/sheet.js"></script>
+    <script src="~/js/AdminAgency/filters.js"></script>
+    <script src="~/js/AdminAgency/popovers.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -4,14 +4,14 @@
     ViewData["Title"] = "Chats";
 }
 
-<partial name="_AlertsPartial" />
-
-@if (Model != null && Model.Chats?.Count == 0)
+@if (Model == null || Model.Chats?.Count == 0)
 {
     <div class="alert alert-danger text-center">No chats</div>
 }
 else
 {
+    <partial name="_AlertsPartial" />
+
     <div class="container pb-3">
 
         <div class="row">
@@ -34,7 +34,7 @@ else
 
                                     <div id="usersArea" class="overflow-auto" style="position: relative;">
                                         <ul class="list-unstyled list-group mb-0">
-                                            @foreach (var chat in Model?.Chats)
+                                            @foreach (var chat in Model.Chats)
                                             {
                                                 <li id="@($"user_{chat.Id}")" class="p-3 border-bottom">
                                                     <a href="#!" class="d-flex justify-content-between" onclick="activatingChat(@chat.Id)">
@@ -71,6 +71,7 @@ else
                                                     </a>
                                                 </li>
                                             }
+                                            }
                                         </ul>
                                     </div>
 
@@ -79,7 +80,7 @@ else
                             </div>
 
                             <div id="messagesArea" class="col-md-6 col-lg-7 col-xl-8">
-                                @foreach (var chat in Model?.Chats)
+                                @foreach (var chat in Model.Chats)
                                 {
                                     <div id="@($"messages_{@chat.Id}")" name="messages" class="pt-3 pe-3 overflow-auto" style="position: relative;">
                                         @if (chat.Messages.Count > 0)
@@ -101,7 +102,7 @@ else
                                                     <div class="d-flex flex-row justify-content-start">
                                                         <img src="@($"data:image/png;base64, {Model.Avatar}")" alt="owner" class="rounded-circle d-flex" style="width: 45px; height: 100%" />
                                                         <div class="col-4 ms-3">
-                                                            <img src="~/image/city2.jpg" class="img-thumbnail"/>
+                                                            <img src="~/image/city2.jpg" class="img-thumbnail" />
                                                             <p class="small rounded-3 text-muted float-end text-nowrap">@m.DateTime.ToString("HH:mm dd.MM.yyyy")</p>
                                                         </div>
                                                     </div>
@@ -118,7 +119,7 @@ else
                                                         <img src="@($"data:image/png;base64, {chat.Avatar}")" alt="avatar " class="rounded-circle d-flex" style="width: 45px; height: 100%" />
                                                     </div>
 
-                                                    <div class="d-flex flex-row justify-content-end">                                                        
+                                                    <div class="d-flex flex-row justify-content-end">
                                                         <div class="col-5 me-3">
                                                             <img src="~/image/city.jpg" class="img-thumbnail" />
                                                             <p class="small rounded-3 text-muted float-end text-nowrap">@m.DateTime.ToString("HH:mm dd.MM.yyyy")</p>
@@ -135,11 +136,11 @@ else
                                     </div>
                                 }
                                 <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
-                                    <img id="ownerAvatar" src="@($"data:image/png;base64, {Model.Avatar}")" alt="owner" class="rounded-circle d-flex" style="width: 40px; height: 100%" />
-                                    <input type="text" class="form-control form-control-lg ms-3" id="newMessage" placeholder="Message" onkeydown="pressEnter(event, @Model.OwnerId)" />
+                                    <img id="ownerAvatar" src="@($"data:image/png;base64, {Model?.Avatar}")" alt="owner" class="rounded-circle d-flex" style="width: 40px; height: 100%" />
+                                    <input type="text" class="form-control form-control-lg ms-3" id="newMessage" placeholder="Message" onkeydown="pressEnter(event, @Model?.OwnerId)" />
                                     <a class="ms-3 text-muted" href="#!"><i class="fa-solid fa-paperclip"></i></a>
                                     <a class="ms-3 text-muted" href="#!"><i class="fa-solid fa-smile text-warning"></i></a>
-                                    <a class="ms-3" href="#!" onclick="sendMessage(@Model.OwnerId)"><i class="fa-solid fa-paper-plane"></i></a>
+                                    <a class="ms-3" href="#!" onclick="sendMessage(@Model?.OwnerId)"><i class="fa-solid fa-paper-plane"></i></a>
                                 </div>
                             </div>
 

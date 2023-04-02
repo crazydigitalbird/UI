@@ -81,15 +81,21 @@ function balanceFormatter(value, row) {
 function commentsFormatter(value, row) {
     var notViewComments = JSON.parse(value.toLowerCase());
     if (notViewComments) {
-        return `<a href="#" role="button" class="position-relative" onclick="showComments(event, ${row['id']})">
-                    <i class="fa-regular fa-note-sticky @*fa-clipboard*@ fa-xl"></i>
+        return `<a href="#" role="button" class="position-relative me-1" onclick="showComments(event, ${row['id']})" title="Comments">
+                    <i class="fa-solid fa-headset fa-xl text-warning"></i>
                     <span class="position-absolute top-0 translate-middle p-1 bg-danger border botder-light rounded-circle text" style="left: 90%">
                         <span class="visually-hidden">Unread comments</span>
                     </span>
+                </a>
+                <a href="/Chat/Index?sheetId=${row['id']}" role="button" title="Chats">
+                    <i class="fa-regular fa-comments fa-xl"></i>
                 </a>`;
     } else {
-        return `<a href="#" role="button" class="position-relative" onclick="showComments(event, ${row['id']})">
-                    <i class="fa-regular fa-note-sticky fa-xl"></i>
+        return `<a href="#" role="button" class="position-relative me-1" onclick="showComments(event, ${row['id']})" title="Comments">
+                    <i class="fa-solid fa-headset fa-xl text-warning"></i>
+                </a>
+                <a href="/Chat/Index?sheetId=${row['id']}" role="button" title="Chats">
+                    <i class="fa-regular fa-comments fa-xl"></i>
                 </a>`;
     }
 }

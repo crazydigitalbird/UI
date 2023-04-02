@@ -18,14 +18,9 @@ namespace UI.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int sheetId)
         {
             var messanger = await _chatClient.GetMessangerAsync();
-            if (messanger is null)
-            {
-                TempData["Error"] = "Error. Try again.";
-                return View();
-            }
             return View(messanger);
         }
 

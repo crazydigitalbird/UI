@@ -9,6 +9,7 @@ using UI.Infrastructure.API;
 var builder = WebApplication.CreateBuilder(args);
 
 string uriApi = builder.Configuration["UriApi"];
+string uriApiBot = builder.Configuration["UriApiBot"];
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -39,6 +40,19 @@ builder.Services.AddHttpClient("api", client =>
         handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     }
     return handler;
+}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
+
+builder.Services.AddHttpClient("apiBot", client =>
+{
+    client.BaseAddress = new Uri(uriApiBot);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var hadler = new HttpClientHandler();
+    if (builder.Environment.IsDevelopment())
+    {
+        hadler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
+    }
+    return hadler;
 }).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
 
 bool ValidateServerCetification(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)

@@ -1,0 +1,14 @@
+﻿@model Media
+
+@if (Model != null && Model.Videos?.Count > 0)
+{
+    <input type="hidden" id="cursor" value="@Model.Cursor" />
+    @foreach(var video in Model.Videos)
+    {
+        
+    }
+}
+else
+{
+    <div class="text-center">No videos</div>
+}

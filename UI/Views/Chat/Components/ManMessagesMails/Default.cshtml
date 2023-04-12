@@ -1,0 +1,20 @@
+﻿@model MessagesAndMailsLeft
+
+<div class="d-flex mb-1" id="@($"chatMenu_{Model.IdInterlocutor}")" name="chatMenu">
+    <div class="btn-group disabled" role="group">
+        <button class="btn btn-secondary">
+            <span><i class="fa-regular fa-message fa-2xl pe-1"></i></span>
+            <span class="badge bg-success" id="@($"messagesLeft_{Model.IdInterlocutor}")">@(Model?.MessagesLeft ?? 0)</span>
+        </button>
+        <button class="btn btn-secondary">
+            <span><i class="fa-regular fa-envelope fa-2xl pe-1"></i></span>
+            <span class="badge bg-success">@(Model?.MailsLeft ?? 0)</span>
+        </button>
+    </div>
+    <img src="@Model.Avatar" alt="avatar " class="rounded d-flex ms-3" style="height: 100%" />
+    <span class="ps-3">
+        @Model.UserName
+        <br>
+        <span class="small text-muted"><a href="#!" onclick="copyIdInterlocutor(this)">@Model.IdInterlocutor</a></span>
+    </span>
+</div>

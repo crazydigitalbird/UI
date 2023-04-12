@@ -4,6 +4,8 @@ using Polly.Contrib.WaitAndRetry;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
+using System.Text;
 using UI.Infrastructure.API;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,9 +37,9 @@ builder.Services.AddHttpClient("api", client =>
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     if (builder.Environment.IsDevelopment())
     {
-        handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     }
     return handler;
 }).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
@@ -48,9 +50,9 @@ builder.Services.AddHttpClient("apiBot", client =>
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var hadler = new HttpClientHandler();
+    hadler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     if (builder.Environment.IsDevelopment())
     {
-        hadler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     }
     return hadler;
 }).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));

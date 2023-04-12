@@ -1,0 +1,14 @@
+﻿@model Media
+
+@if (Model != null && Model.Photos?.Count > 0)
+{
+    <input type="hidden" id="cursor" value="@Model.Cursor" />
+    @foreach (var photo in Model.Photos)
+    {
+
+    }
+}
+else
+{
+    <div class="text-center">No photos</div>
+}

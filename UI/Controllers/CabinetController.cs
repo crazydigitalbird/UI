@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using UI.Infrastructure.API;
-using UI.Models;
-using Newtonsoft.Json;
 using UI.Infrastructure.Filters;
 
 namespace UI.Controllers

@@ -126,7 +126,6 @@ namespace UI.Infrastructure.API
                 {
                     _logger.LogWarning("Error adding the {nameCabinet} cabinet. HttpStatusCode: {httpStatusCode}", name, response.StatusCode);
                 }
-
             }
             catch (Exception ex)
             {
@@ -139,17 +138,16 @@ namespace UI.Infrastructure.API
 
         public async Task<bool> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
             try
             {
-                var agencySession = await AddAgencySession(agencyId);
+                var agencySession = await AddAgencySession(agencyId, sessionGuid);
                 if (agencySession != null)
                 {
-                    var agencySessionSheet = await AddAgencySessionCabinet(cabinetId, agencySession.Id);
+                    var agencySessionSheet = await AddAgencySessionCabinet(cabinetId, agencySession.Id, sessionGuid);
                     if (agencySessionSheet != null)
                     {
-                        var agencyOperatorSession = await AddAgencyOperatorSession(operatorId, agencySession.Id);
+                        var agencyOperatorSession = await AddAgencyOperatorSession(operatorId, agencySession.Id, sessionGuid);
                         if (agencyOperatorSession != null)
                         {
                             return true;
@@ -164,10 +162,9 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        private async Task<AgencySession> AddAgencySession(int agencyId)
+        private async Task<AgencySession> AddAgencySession(int agencyId, string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
             try
             {
                 var response = await httpClient.PutAsync($"Agencies/Sessions/AddAgencySession?agencyId={agencyId}&sessionGuid={sessionGuid}", null);
@@ -193,10 +190,9 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        private async Task<AgencySessionCabinet> AddAgencySessionCabinet(int cabinetId, int agencySessionId)
+        private async Task<AgencySessionCabinet> AddAgencySessionCabinet(int cabinetId, int agencySessionId, string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
             try
             {
                 var response = await httpClient.PostAsync($"Agencies/Sessions/AddAgencySessionCabinet?agencySessionId={agencySessionId}&cabinetId={cabinetId}&sessionGuid={sessionGuid}", null);
@@ -221,10 +217,9 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        private async Task<AgencyOperatorSession> AddAgencyOperatorSession(int operatorId, int agencySessionId)
+        private async Task<AgencyOperatorSession> AddAgencyOperatorSession(int operatorId, int agencySessionId, string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
             try
             {
                 var response = await httpClient.PutAsync($"Agencies/Operators/AddAgencyOperatorSession?operatorId={operatorId}&agencySessionId={agencySessionId}&sessionGuid={sessionGuid}", null);
@@ -262,7 +257,7 @@ namespace UI.Infrastructure.API
                 {
                     var agencyOperatorSessions = (await responseAgencyOperatorSessions.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>());
                     var agencyCurrentOperatorSessions = agencyOperatorSessions.Where(s => s.Operator.Id == operatorId && s.Session.Cabinets.Count > 0);
-                    if (agencyCurrentOperatorSessions.Count() > 0)
+                    if (agencyCurrentOperatorSessions.Any())
                     {
                         foreach (var aos in agencyCurrentOperatorSessions)
                         {
@@ -317,11 +312,8 @@ namespace UI.Infrastructure.API
     public interface ICabinetClient
     {
         Task<IEnumerable<AgencyCabinet>> GetCabinetsAsync(int agencyId);
-
         Task<Cabinet> AddAsync(int agencyId, string name);
-
         Task<bool> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId);
-
         Task<bool> UnbindCabinetToUserAsync(int cabinetId, int userId);
     }
 }

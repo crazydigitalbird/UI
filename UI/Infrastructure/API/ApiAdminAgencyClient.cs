@@ -13,9 +13,7 @@ namespace UI.Infrastructure.API
     public class ApiAdminAgencyClient : IAdminAgencyClient, ISignOut
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly ILogger<ApiAdminAgencyClient> _logger;
 
         public ApiAdminAgencyClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ApiAdminAgencyClient> logger)
@@ -178,7 +176,6 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-
         public async Task<bool> ChangeShift(int sheetId, int shiftId)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -312,8 +309,11 @@ namespace UI.Infrastructure.API
                     var operatorSessionsView = new List<OperatorSessionsView>();
                     foreach (var ao in agencyOperators)
                     {
-                        var osv = new OperatorSessionsView() { Operator = ao };
-                        osv.Sessions = await GetAgencyOperatorSessions(ao.Id, sessionGuid);
+                        var osv = new OperatorSessionsView
+                        {
+                            Operator = ao,
+                            Sessions = await GetAgencyOperatorSessions(ao.Id, sessionGuid)
+                        };
                         operatorSessionsView.Add(osv);
                     }
 
@@ -421,7 +421,6 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-
         #region Delete operator from sheet
 
         public async Task<bool> DeleteOperatorFromSheet(int operatorId, int sheetId)
@@ -435,7 +434,7 @@ namespace UI.Infrastructure.API
                 {
                     var agencyOperatorSessions = (await responseAgencyOperatorSessions.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>());
                     var agencyCurrentOperatorSessions = agencyOperatorSessions.Where(s => s.Operator.Id == operatorId && s.Session.Sheets.Count > 0);
-                    if (agencyCurrentOperatorSessions.Count() > 0)
+                    if (agencyCurrentOperatorSessions.Any())
                     {
                         foreach (var aos in agencyCurrentOperatorSessions)
                         {
@@ -480,17 +479,16 @@ namespace UI.Infrastructure.API
 
         public async Task<bool> AddOperatorFromSheet(int agencyId, int sheetId, int operatorId)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
             try
             {
-                var agencySession = await AddAgencySession(agencyId);
+                var agencySession = await AddAgencySession(agencyId, sessionGuid);
                 if (agencySession != null)
                 {
-                    var agencySessionSheet = await AddAgencySessionSheet(sheetId, agencySession.Id);
+                    var agencySessionSheet = await AddAgencySessionSheet(sheetId, agencySession.Id, sessionGuid);
                     if (agencySessionSheet != null)
                     {
-                        var agencyOperatorSession = await AddAgencyOperatorSession(operatorId, agencySession.Id);
+                        var agencyOperatorSession = await AddAgencyOperatorSession(operatorId, agencySession.Id, sessionGuid);
                         if (agencyOperatorSession != null)
                         {
                             return true;
@@ -505,10 +503,9 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        private async Task<AgencySession> AddAgencySession(int agencyId)
+        private async Task<AgencySession> AddAgencySession(int agencyId, string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
             try
             {
                 var response = await httpClient.PutAsync($"Agencies/Sessions/AddAgencySession?agencyId={agencyId}&sessionGuid={sessionGuid}", null);
@@ -534,10 +531,9 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        private async Task<AgencySessionSheet> AddAgencySessionSheet(int sheetId, int agencySessionId)
+        private async Task<AgencySessionSheet> AddAgencySessionSheet(int sheetId, int agencySessionId, string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
             try
             {
                 var response = await httpClient.PostAsync($"Agencies/Sessions/AddAgencySessionSheet?agencySessionId={agencySessionId}&sheetId={sheetId}&sessionGuid={sessionGuid}", null);
@@ -562,10 +558,9 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        private async Task<AgencyOperatorSession> AddAgencyOperatorSession(int operatorId, int agencySessionId)
+        private async Task<AgencyOperatorSession> AddAgencyOperatorSession(int operatorId, int agencySessionId, string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
             try
             {
                 var response = await httpClient.PutAsync($"Agencies/Operators/AddAgencyOperatorSession?operatorId={operatorId}&agencySessionId={agencySessionId}&sessionGuid={sessionGuid}", null);
@@ -808,7 +803,6 @@ namespace UI.Infrastructure.API
                 _logger.LogWarning("Error getting the memberId for the user {email} in agency with Id: {agencyId}. HttpStatsCode: {httpStatusCode}", user.Email, agencyId, responseMember.StatusCode);
             }
         }
-
 
         private int GetUserId()
         {

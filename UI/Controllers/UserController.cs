@@ -10,7 +10,6 @@ namespace UI.Controllers
     public class UserController : Controller
     {
         private readonly IUserClient _userClient;
-
         private readonly ILogger<UserController> _logger;
 
         public UserController(IUserClient userClient, ILogger<UserController> logger)

@@ -1,19 +1,20 @@
 ﻿function successAddSheet(sheet) {
+    hidenAlert();
 
     var userInfo = JSON.parse(sheet.info);
 
     var fullName = '';
-    if (userInfo.name) {
-        fullName = userInfo.name;
+    if (userInfo.Personal.Name) {
+        fullName = userInfo.Personal.Name;
     }
-    if (userInfo.lastName) {
-        fullName = `${fullName} ${userInfo.lastName}`;
+    if (userInfo.Personal.LastName) {
+        fullName = `${fullName} ${userInfo.Personal.LastName}`;
     }
 
     var newCard = $(`<div class="col">
                     <div class="card h-100 text-center">
                         <div class="bg-image hover-overlay ripple mt-3" data-mdb-ripple-color="light">
-                            <img src="${userInfo.avatar}" class="img-fluid rounded-circle" />
+                            <img src="${userInfo.Personal.Avatar}" class="img-fluid rounded-circle p-3" />
                             <a href="#">
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </a>
@@ -47,7 +48,7 @@
 
     showToast('bg-success', 'bg-danger', `The  ${fullName} sheet has been added successfully`)
 
-    $('#email').val('');
+    $('#login').val('');
     $('#password').val('');
 }
 
@@ -104,6 +105,15 @@ function showAlert(addClass, removeClass, text) {
         $alert.removeClass('d-none');
     }
     $alert.text(text);
+}
+
+function hidenAlert() {
+    var $alert = $('#alertAddSheet');
+    $alert.text('');
+
+    if (!$alert.hasClass('d-none')) {
+        $alert.addClass('d-none');
+    }
 }
 
 function showToast(addClass, removeClass, text) {

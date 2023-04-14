@@ -35,9 +35,9 @@ builder.Services.AddHttpClient("api", client =>
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     if (builder.Environment.IsDevelopment())
     {
-        handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     }
     return handler;
 }).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
@@ -48,14 +48,14 @@ builder.Services.AddHttpClient("apiBot", client =>
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var hadler = new HttpClientHandler();
+    hadler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     if (builder.Environment.IsDevelopment())
     {
-        hadler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
     }
     return hadler;
 }).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
 
-bool ValidateServerCetification(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)
+static bool ValidateServerCetification(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)
 {
     return true;
 }

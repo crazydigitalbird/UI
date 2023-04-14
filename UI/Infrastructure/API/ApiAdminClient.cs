@@ -9,11 +9,8 @@ namespace UI.Infrastructure.API
     public class ApiAdminClient : IAdminClient, ISignOut
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly IAdminAgencyClient _adminAgencyClient;
-
         private readonly ILogger<ApiAdminClient> _logger;
 
         public ApiAdminClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IAdminAgencyClient adminAgencyClient, ILogger<ApiAdminClient> logger)
@@ -137,7 +134,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting admins");
+                _logger.LogError(ex, "Error getting admins.");
             }
             return null;
         }
@@ -165,7 +162,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting users");
+                _logger.LogError(ex, "Error getting users.");
             }
             return null;
         }

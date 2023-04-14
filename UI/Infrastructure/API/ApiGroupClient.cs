@@ -10,9 +10,7 @@ namespace UI.Infrastructure.API
     public class ApiGroupClient : IGroupClient, ISignOut
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly ILogger<ApiAdminAgencyClient> _logger;
 
         public ApiGroupClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ApiAdminAgencyClient> logger)

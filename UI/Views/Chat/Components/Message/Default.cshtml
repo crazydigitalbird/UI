@@ -1,0 +1,40 @@
+﻿@model Message
+
+@if (Model != null)
+{
+    if (Model.Type == MessageType.Message)
+    {
+        <div class="d-flex flex-row justify-content-start">
+            <img src="@ViewData["ownerAvatar"]" alt="owner" class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+            <div>
+                <p class="small p-2 ms-3 mb-1 rounded-3 text-black" style="background-color: #e3ebf7;">
+                    @Model.Content.Message
+                </p>
+                <p class="small ms-3 mb-3 rounded-3 text-muted float-end">@Model.DateCreated.ToString("HH:mm dd.MM.yyyy")</p>
+            </div>
+        </div>
+    }
+    else if (Model.Type == MessageType.Photo_batch)
+    {
+        foreach (var photo in Model.Content.Photos)
+        {
+            <div class="d-flex flex-row justify-content-start">
+                <img src="@ViewData["ownerAvatar"]" alt="owner" class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+                <div class="col-4 ms-3">
+                    <img src="@photo.Url" class="img-thumbnail" />
+                    <p class="small rounded-3 text-muted float-end text-nowrap">@Model.DateCreated.ToString("HH:mm dd.MM.yyyy")</p>
+                </div>
+            </div>
+        }
+    }
+    else if (Model.Type == MessageType.Sticker)
+    {
+        <div class="d-flex flex-row justify-content-start">
+            <img src="@ViewData["ownerAvatar"]" alt="owner" class="rounded-circle d-flex" style="width: 45px; height: 100%" />
+            <div class="col-3 ms-3">
+                <img src="@Model.Content.Url" class="img-thumbnail" />
+                <p class="small rounded-3 text-muted float-end text-nowrap">@Model.DateCreated.ToString("HH:mm dd.MM.yyyy")</p>
+            </div>
+        </div>
+    }
+}

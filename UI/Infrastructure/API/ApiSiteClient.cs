@@ -8,9 +8,7 @@ namespace UI.Infrastructure.API
     public class ApiSiteClient : ISiteClient, ISignOut
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly ILogger<ApiSiteClient> _logger;
 
         public ApiSiteClient(IHttpClientFactory httpClientFactory,IHttpContextAccessor httpContextAccessor, ILogger<ApiSiteClient> logger)

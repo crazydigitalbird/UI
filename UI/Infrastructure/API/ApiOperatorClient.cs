@@ -1,5 +1,6 @@
 ﻿using Core.Models.Agencies;
 using Core.Models.Agencies.Operators;
+using Core.Models.Sheets;
 using System.Security.Principal;
 using UI.Models;
 
@@ -36,7 +37,7 @@ namespace UI.Infrastructure.API
                         var cabinetsSheets = agencyOperatorSessions.SelectMany(s => s.Session.Cabinets).SelectMany(c => c.Cabinet?.Sheets).Select(s => s.Sheet);
                         var sheets = individualSheets.Concat(cabinetsSheets);
 
-                        var sheetsView = sheets.Select(s => (SheetView)s).ToList();
+                        var sheetsView = sheets.Where(s => s.IsActive).Select(s => (SheetView)s).ToList();
                         await GettingStatusAndMedia(sheetsView);
                         return sheetsView;
                     }
@@ -56,6 +57,35 @@ namespace UI.Infrastructure.API
             }
             return null;
         }
+
+        public async Task<Sheet> GetSheetAsync(int sheetId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            try
+            {
+                var response = await httpClient.GetAsync($"Sheets/GetSheet?sheedId={sheetId}&sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var sheet = await response.Content.ReadFromJsonAsync<Sheet>();
+                    return sheet;
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting sheet with id: {sheetId}. HttpStatusCode {httpStatusCode}", sheetId, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting sheet with id: {sheetId}.", sheetId);
+            }
+            return null;
+        }
+
         private async Task GettingStatusAndMedia(List<SheetView> sheetsView)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
@@ -203,6 +233,7 @@ namespace UI.Infrastructure.API
     public interface IOperatorClient
     {
         Task<IEnumerable<SheetView>> GetSheetsAsync();
+        Task<Sheet> GetSheetAsync(int sheetId);
         Task<Dictionary<int, int>> GetBalanceAsync(string name, Interval interval);
     }
 }

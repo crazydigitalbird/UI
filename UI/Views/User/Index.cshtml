@@ -58,13 +58,13 @@
                 <div class="col">
                     <div class="card h-100 text-center">
                         <div class="bg-image hover-overlay ripple mt-3" data-mdb-ripple-color="light">
-                            <img src="@sheetInfo.Personal.Avatar" class="img-fluid rounded-circle p-3" />
+                            <img src="@sheetInfo.Personal?.Avatar" class="img-fluid rounded-circle p-3" />
                             <a href="#">
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </a>
                         </div>
                         <div class="card-body"> 
-                            <h5 class="card-title">@($"{sheetInfo.Personal.Name} {sheetInfo.Personal.LastName}")</h5>
+                            <h5 class="card-title">@($"{sheetInfo.Personal?.Name} {sheetInfo.Personal?.LastName}")</h5>
                             <div>
                                 <button type="button" class="btn btn-primary btn-floating" onclick="editSheet(this, @sheet.Id)">
                                     <i class="fa-solid fa-user-pen mr-2"></i>

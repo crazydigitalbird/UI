@@ -1,0 +1,53 @@
+﻿@using Humanizer;
+@model Messanger
+
+@if (Model != null && Model.Dialogs?.Count > 0)
+{
+    <input type="hidden" id="cursor" value="@Model.Cursor" />
+    foreach (var dialog in Model.Dialogs)
+    {
+        <li id="@($"user_{dialog.IdInterlocutor}")" class="p-3 border-bottom">
+            <a href="#!" class="d-flex justify-content-between" onclick="activatingDialogue(@dialog.IdInterlocutor)">
+                <div class="d-flex flex-row">
+                    <div>
+                        <img src="@dialog.Avatar" alt="avatar" class="rounded-circle d-flex align-self-center me-3" width="60" />
+                        @switch (dialog.Status)
+                        {
+                            case Status.Online:
+                                <span class="badge bg-success badge-dot"></span>
+                                break;
+
+                            case Status.Offline:
+                                <span class="badge bg-danger badge-dot"></span>
+                                break;
+                        }
+                    </div>
+                    <div class="pt-1">
+                        <p name="userName" class="fw-bold mb-0">@($"{dialog.UserName}, {dialog.Age}")</p>
+                        @*<p class="small text-muted">@chat?.LastMessage?.Content?.Message.Truncate(15)</p>*@
+                    </div>
+                </div>
+                <div class="pt-1 ms-1">
+                    <p class="small text-muted mb-1 text-nowrap">@dialog.DateUpdated.Humanize()</p>
+                    @if (dialog.HasNewMessage)
+                    {
+                        <span id="@($"numberOfUnreadMessages_{dialog.IdInterlocutor}")" class="badge bg-danger rounded-pill float-end">1</span>
+                    }
+                    else
+                    {
+                        <span id="@($"numberOfUnreadMessages_{dialog.IdInterlocutor}")" class="badge bg-danger rounded-pill float-end d-none"></span>
+                    }
+                </div>
+            </a>
+        </li>
+    }
+}
+else if (Model?.Dialogs == null || Model?.Dialogs.Count == 0)
+{
+    <input type="hidden" id="cursor" value="" />
+    <div class="text-center my-1">No new dialogues</div>
+}
+else
+{
+    <div class="text-center">No dialogues</div>
+}

@@ -7,8 +7,8 @@ namespace UI.Infrastructure.API
 {
     public class ApiAuthenticationClient : IAuthenticationClient
     {
-        IHttpClientFactory _httpClientFactory;
-        ILogger<ApiAuthenticationClient> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<ApiAuthenticationClient> _logger;
 
         public ApiAuthenticationClient(IHttpClientFactory httpClientFactory, ILogger<ApiAuthenticationClient> logger)
         {
@@ -36,7 +36,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "An error occurred while logging in: {ErrorMessage}. Login: {login}", ex.Message, login);
+                _logger.LogWarning(ex, "An error occurred while logging in: {ErrorMessage}. Login: {login}.", ex.Message, login);
             }
             return null;
         }
@@ -73,7 +73,7 @@ namespace UI.Infrastructure.API
             user.Role = Role.User;
         }
 
-        private async Task<bool> IsAdmin(HttpClient client, ApplicationUser user)
+        private static async Task<bool> IsAdmin(HttpClient client, ApplicationUser user)
         {
             var response = await client.GetAsync($"Users/GetAdminByUser?userId={user.Id}&sessionGuid={user.SesstionGuid}");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -83,7 +83,7 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        private async Task SetAgencyMemberIdByUser(HttpClient client, ApplicationUser user)
+        private static async Task SetAgencyMemberIdByUser(HttpClient client, ApplicationUser user)
         {
             var response = await client.GetAsync($"Agencies/GetAgencyMemberByUser?userId={user.Id}&sessionGuid={user.SesstionGuid}");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -94,7 +94,7 @@ namespace UI.Infrastructure.API
             }
         }
 
-        private async Task<bool> IsAdminAgency(HttpClient client, ApplicationUser user)
+        private static async Task<bool> IsAdminAgency(HttpClient client, ApplicationUser user)
         {
             var response = await client.GetAsync($"Agencies/GetAgencyAdmin?memberId={user.MemeberId}&sessionGuid={user.SesstionGuid}");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -104,7 +104,7 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        private async Task<bool> IsOperator(HttpClient client, ApplicationUser user)
+        private static async Task<bool> IsOperator(HttpClient client, ApplicationUser user)
         {
             var response = await client.GetAsync($"Agencies/Operators/GetAgencyOperatorByMember?memberId={user.MemeberId}&sessionGuid={user.SesstionGuid}");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -127,7 +127,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "An error occured during registration: {ErrorMessage}. Login: {login}. Email: {email}", ex.Message, login, email);
+                _logger.LogWarning(ex, "An error occured during registration: {ErrorMessage}. Login: {login}. Email: {email}.", ex.Message, login, email);
             }
             return false;
         }
@@ -142,7 +142,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured when changing the password: {ErrorMessage}", ex.Message);
+                _logger.LogError(ex, "An error occured when changing the password.");
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
@@ -166,13 +166,9 @@ namespace UI.Infrastructure.API
     public interface IAuthenticationClient
     {
         Task<ApplicationUser> LogInAsync(string login, string password);
-
         Task<bool> RegisterAsync(string login, string email, string password);
-
         Task<HttpResponseMessage> ChangePassowrdAsync(string password, string newPassword);
-
         Task<HttpResponseMessage> PasswordRecoveryAsync(string email);
-
         Task SetRoleAsync(ApplicationUser user);
     }
 }

@@ -38,7 +38,7 @@ namespace UI.Controllers
                 return View(loginModel);
             }
 
-            var user = await _authenticationClient.LogInAsync(loginModel.Login, loginModel.Password);
+            var user = await _authenticationClient.LogInAsync(loginModel.Login.Trim(), loginModel.Password);
 
             if (user == null)
             {
@@ -63,7 +63,7 @@ namespace UI.Controllers
                 return View("LogIn", loginRegisterModel);
             }
 
-            var isRegister = await _authenticationClient.RegisterAsync(loginRegisterModel.RegisterModel.Login, loginRegisterModel.RegisterModel.Email, loginRegisterModel.RegisterModel.Password);
+            var isRegister = await _authenticationClient.RegisterAsync(loginRegisterModel.RegisterModel.Login.Trim(), loginRegisterModel.RegisterModel.Email.Trim(), loginRegisterModel.RegisterModel.Password);
 
             if (!isRegister)
             {
@@ -169,7 +169,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _authenticationClient.PasswordRecoveryAsync(email);
+                var response = await _authenticationClient.PasswordRecoveryAsync(email.Trim());
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Message"] = "An email with instructions for changing the password has been sent to the specified email address";

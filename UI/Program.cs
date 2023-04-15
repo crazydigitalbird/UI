@@ -4,6 +4,8 @@ using Polly.Contrib.WaitAndRetry;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
+using System.Text;
 using UI.Infrastructure.API;
 
 var builder = WebApplication.CreateBuilder(args);

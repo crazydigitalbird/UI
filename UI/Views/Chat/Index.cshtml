@@ -86,12 +86,8 @@ else
                                 <div id="messageCreationArea" class="position-relative">
 
                                     <div class="position-relative">
-                                        <div id="emojisDiv" class="position-absolute bg-white bottom-100 rounded-top">
-                                            <div class="modal-header sticky-top bg-primary px-2 rounded-top">
-                                                <h5 class="modal-title text-white">Emojis</h5>
-                                                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" onclick="hidenEmojis()"></button>
-                                            </div>
-                                            <div id="emojis" class="row mx-0 bg-light" style="height: 33vh; overflow-y: auto; overflow-x: hidden;">
+                                        <div id="emojisDiv" class="position-absolute bottom-100 d-none">
+                                            <div id="emojis" >
                                             </div>
                                         </div>
                                     </div>
@@ -132,8 +128,8 @@ else
                                     </div>
 
                                     <div id="contentSend" class="d-flex mt-4">
-                                        <div class="d-grid col-4 ps-0">
-                                            <a class="btn btn-warning" role="button" href="#!" title="Emojis">Emojis<i class="fa-solid fa-smile fa-2xl ms-1"></i></a>
+                                        <div id="btnEmojis" class="d-grid col-4 ps-0">
+                                            <a class="btn btn-warning" role="button" href="#!" onclick="showHidenEmojis()" title="Emojis">Emojis<i class="fa-solid fa-smile fa-2xl ms-1"></i></a>
                                         </div>
                                         <div id="btnStickers" class="d-grid col-4">
                                             <a class="ms-3 btn text-white" href="#!" onclick="showHidenStickers()" title="Stickers" style="background-color: hotpink;">Stickers<i class="fa-solid fa-face-kiss-wink-heart fa-2xl ms-1"></i></a>
@@ -416,6 +412,9 @@ else
     <script src="~/js/Chat/sendMessage.js"></script>
     <script src="~/js/Chat/chatMessagesArea.js"></script>
     <script src="~/js/Chat/chatNavTabs.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js" 
+            asp-fallback-src="~/lib/emoji-mart/dist/browser.js">
+    </script>
     <script src="~/js/Chat/emoji.js"></script>
     <script src="~/js/Chat/media.js"></script>
 

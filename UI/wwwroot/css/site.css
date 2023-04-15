@@ -161,7 +161,7 @@ html {
         box-shadow: black 0px 0px 0px 1px inset;
     }*/
 
-.badge-dot{
+.badge-dot {
     border-radius: 50%;
     height: 10px;
     width: 10px;
@@ -248,3 +248,12 @@ body {
         float: left;
         margin-bottom: 10px;
     }
+
+
+em-emoji-picker {
+    max-height: 50vh;
+    width: 400px;
+    min-width: 250px;
+    resize: horizontal;
+    overflow: auto;
+}

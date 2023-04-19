@@ -23,7 +23,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<IEnumerable<SheetView>> GetSheets(int agencyId)
+        public async Task<List<SheetView>> GetSheets(int agencyId)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
@@ -31,14 +31,13 @@ namespace UI.Infrastructure.API
             {
                 var response = await httpClient.GetAsync($"Agencies/GetAgencySheets?agencyId={agencyId}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
-                {
+                {                    
                     var sheets = (await response.Content.ReadFromJsonAsync<IEnumerable<Sheet>>()).Where(s => s.IsActive);
                     var sheetsView = sheets.Select(s => (SheetView)s).ToList();
                     foreach (var sheetView in sheetsView)
                     {
                         sheetView.Operators = (await GetSheetAgencyOperators(sheetView.Id)).Count();
                     }
-                    await GettingStatusAndMedia(sheetsView);
                     return sheetsView;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -55,40 +54,6 @@ namespace UI.Infrastructure.API
                 _logger.LogError(ex, "Error getting all the sheets.");
             }
             return null;
-        }
-
-        private async Task GettingStatusAndMedia(List<SheetView> sheetsView)
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
-            try
-            {
-                string ids = string.Join(",", sheetsView.Select(sw => sw.SheetId));
-                httpClient.DefaultRequestHeaders.Add("id", ids);
-                var response = await httpClient.PostAsync($"status", null);
-                if (response.IsSuccessStatusCode)
-                {
-                    var dictionary = await response.Content.ReadFromJsonAsync<Dictionary<int, SheetStatusAndMedia>>();
-                    foreach (var sam in dictionary)
-                    {
-                        var sheetView = sheetsView.FirstOrDefault(sw => sw.SheetId == sam.Key);
-                        if (sheetView != null)
-                        {
-                            sheetView.Photo = sam.Value.Photo;
-                            sheetView.PrivatePhoto = sam.Value.PrivatePhoto;
-                            sheetView.Video = sam.Value.Video;
-                            sheetView.Status = sam.Value.Status ? Status.Online : Status.Offline;
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Error getting status and media all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting status and media all the sheets.");
-            }
         }
 
         public async Task<int> GetAgencyId()
@@ -826,7 +791,7 @@ namespace UI.Infrastructure.API
 
     public interface IAdminAgencyClient
     {
-        Task<IEnumerable<SheetView>> GetSheets(int agencyId);
+        Task<List<SheetView>> GetSheets(int agencyId);
         Task<IEnumerable<string>> GetShifts();
         Task<IEnumerable<AgencyCabinet>> GetCabinets(int agencyId);
         Task<bool> DeleteSheet(int sheetId);

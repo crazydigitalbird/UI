@@ -9,6 +9,10 @@
     {
       "library": "emoji-mart@5.5.2",
       "destination": "wwwroot/lib/emoji-mart/"
+    },
+    {
+      "library": "@microsoft/signalr@latest",
+      "destination": "wwwroot/lib/microsoft/signalr/"
     }
   ]
 }

@@ -119,7 +119,7 @@
 
                     <td></td>
 
-                    <td>@(sheetsIsNewComments.Contains(sheet.Id))</td>
+                    <td>@(sheetsIsNewComments?.Contains(sheet.Id) ?? false)</td>
                 </tr>
                 counter++;
             }

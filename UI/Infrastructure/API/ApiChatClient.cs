@@ -15,7 +15,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<Messanger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "")
+        public async Task<Messanger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -24,7 +24,7 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
                 httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
-                httpClient.DefaultRequestHeaders.Add("limit", "10");
+                httpClient.DefaultRequestHeaders.Add("limit", limit.ToString());
                 httpClient.DefaultRequestHeaders.Add("criteria", criteria);
                 httpClient.DefaultRequestHeaders.Add("cursor", cursor);
 
@@ -33,9 +33,7 @@ namespace UI.Infrastructure.API
                 {
                     var s = await response.Content.ReadAsStringAsync();
                     var messanger = await response.Content.ReadFromJsonAsync<Messanger>();
-
-                    await GettingManProfiles(messanger.Dialogs, sheet);
-
+                    //await AddPinAsync(sheet, 81171332, true);
                     return messanger;
                 }
                 else
@@ -44,50 +42,52 @@ namespace UI.Infrastructure.API
                 }
             }
             catch (Exception ex)
-
             {
                 _logger.LogError(ex, $"Error receiving dialogs.");
             }
             return null;
         }
 
-        private async Task GettingManProfiles(List<Dialog> chats, Sheet sheet)
+        public async Task GetManProfiles(Sheet sheet, List<Dialogue> dialogues)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
-            try
+            if (dialogues?.Count > 0)
             {
-                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
-
-                httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
-                httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
-                httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
-                httpClient.DefaultRequestHeaders.Add("ids", string.Join(",", chats.Select(c => c.IdInterlocutor)));
-
-                var response = await httpClient.PostAsync($"man_profiles", null);
-                if (response.IsSuccessStatusCode)
+                HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+                try
                 {
-                    var s = await response.Content.ReadAsStringAsync();
-                    var sheetInfos = await response.Content.ReadFromJsonAsync<List<SheetInfo>>();
-                    foreach (var sheetInfo in sheetInfos)
+                    var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                    httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
+                    httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
+                    httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                    httpClient.DefaultRequestHeaders.Add("ids", string.Join(",", dialogues.Select(c => c.IdInterlocutor)));
+
+                    var response = await httpClient.PostAsync($"man_profiles", null);
+                    if (response.IsSuccessStatusCode)
                     {
-                        var chat = chats.FirstOrDefault(c => c.IdInterlocutor == sheetInfo.Id);
-                        if (chat != null)
+                        var s = await response.Content.ReadAsStringAsync();
+                        var sheetInfos = await response.Content.ReadFromJsonAsync<List<SheetInfo>>();
+                        foreach (var sheetInfo in sheetInfos)
                         {
-                            chat.Avatar = sheetInfo.Personal.AvatarSmall;
-                            chat.UserName = sheetInfo.Personal.Name;
-                            chat.Status = sheetInfo.IsOnline ? Status.Online : Status.Offline;
-                            chat.Age = sheetInfo.Personal.Age;
+                            var chat = dialogues.FirstOrDefault(c => c.IdInterlocutor == sheetInfo.Id);
+                            if (chat != null)
+                            {
+                                chat.Avatar = sheetInfo.Personal.AvatarSmall;
+                                chat.UserName = sheetInfo.Personal.Name;
+                                chat.Status = sheetInfo.IsOnline ? Status.Online : Status.Offline;
+                                chat.Age = sheetInfo.Personal.Age;
+                            }
                         }
                     }
+                    else
+                    {
+                        _logger.LogWarning("Error getting status and media all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("Error getting status and media all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                    _logger.LogError(ex, "Error getting status and media all the sheets.");
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting status and media all the sheets.");
             }
         }
 
@@ -99,9 +99,8 @@ namespace UI.Infrastructure.API
                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
                 var messanger = new Messanger
                 {
-                    OwnerId = info.Id,
-                    Avatar = info.Personal.Avatar,
-                    Dialogs = new List<Dialog>()
+                    Sheet = info,
+                    Dialogs = new List<Dialogue>()
                 };
 
                 var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
@@ -118,9 +117,9 @@ namespace UI.Infrastructure.API
                     var s = await response.Content.ReadAsStringAsync();
                     var messages = (await response.Content.ReadFromJsonAsync<List<Message>>());
 
-                    messanger.Dialogs.Add(new Dialog { Messages = messages, IdInterlocutor = chatId });
+                    messanger.Dialogs.Add(new Dialogue { Messages = messages, IdInterlocutor = chatId });
 
-                    await GettingManProfiles(messanger.Dialogs, sheet);
+                    await GetManProfiles(sheet, messanger.Dialogs);
                     return messanger;
                 }
                 else
@@ -207,7 +206,7 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("criteria", "");
                 httpClient.DefaultRequestHeaders.Add("statuses", "");
                 httpClient.DefaultRequestHeaders.Add("tags", "");
-                httpClient.DefaultRequestHeaders.Add("excludeTags", "");                
+                httpClient.DefaultRequestHeaders.Add("excludeTags", "");
                 httpClient.DefaultRequestHeaders.Add("cursor", cursor);
 
                 var response = await httpClient.PostAsync("media_photo", null);
@@ -263,7 +262,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<bool> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message)
+        public async Task<SendMessage> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -274,30 +273,46 @@ namespace UI.Infrastructure.API
                 //}
 
                 var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
-                httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
-                httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
-                httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
-                httpClient.DefaultRequestHeaders.Add("idRegularUser", $"{idRegularUser}");
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("email", credentials.Login),
+                    new KeyValuePair<string, string>("password", credentials.Password),
+                    new KeyValuePair<string, string>("idRegularUser", $"{idRegularUser}")
+                };
+                //httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
+                //httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
+                //httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                //httpClient.DefaultRequestHeaders.Add("idRegularUser", $"{idRegularUser}");
+
                 switch (messageType)
                 {
                     case MessageType.Message:
-                        httpClient.DefaultRequestHeaders.Add("type", "text");
-                        httpClient.DefaultRequestHeaders.Add("message", message);
-                        httpClient.DefaultRequestHeaders.Add("idSticker", "");
+                        contentList.Add(new KeyValuePair<string, string>("type", "text"));
+                        contentList.Add(new KeyValuePair<string, string>("message", message));
+                        contentList.Add(new KeyValuePair<string, string>("idSticker", ""));
+                        //httpClient.DefaultRequestHeaders.Add("type", "text");
+                        //httpClient.DefaultRequestHeaders.Add("message", message);
+                        //httpClient.DefaultRequestHeaders.Add("idSticker", "");
                         break;
 
                     case MessageType.Sticker:
-                        httpClient.DefaultRequestHeaders.Add("type", "sticker");
-                        httpClient.DefaultRequestHeaders.Add("message", "");
-                        httpClient.DefaultRequestHeaders.Add("idSticker", message);
+                        contentList.Add(new KeyValuePair<string, string>("type", "sticker"));
+                        contentList.Add(new KeyValuePair<string, string>("message", ""));
+                        contentList.Add(new KeyValuePair<string, string>("idSticker", message));
+                        //httpClient.DefaultRequestHeaders.Add("type", "sticker");
+                        //httpClient.DefaultRequestHeaders.Add("message", "");
+                        //httpClient.DefaultRequestHeaders.Add("idSticker", message);
                         break;
                 }
 
-                var response = await httpClient.PostAsync("send", null);
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync("send", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var s = await response.Content.ReadAsStringAsync();
-                    return true;
+                    var sendMessage = await response.Content.ReadFromJsonAsync<SendMessage>();
+                    return sendMessage;
                 }
                 else
                 {
@@ -308,10 +323,10 @@ namespace UI.Infrastructure.API
             {
                 _logger.LogError(ex, "Error send message by user with id: {idRegularUser}. Message type: {messageType}. Sheet with id: {sheetId}.", idRegularUser, messageType, sheet.Id);
             }
-            return false;
+            return null;
         }
 
-        public async Task<Dialog> FindDialogueById(Sheet sheet, int idRegularUser)
+        public async Task<Dialogue> FindDialogueById(Sheet sheet, int idRegularUser)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -319,9 +334,8 @@ namespace UI.Infrastructure.API
                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
                 var messanger = new Messanger
                 {
-                    OwnerId = info.Id,
-                    Avatar = info.Personal.Avatar,
-                    Dialogs = new List<Dialog>()
+                    Sheet = info,
+                    Dialogs = new List<Dialogue>()
                 };
 
                 var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
@@ -334,8 +348,8 @@ namespace UI.Infrastructure.API
                 if (response.IsSuccessStatusCode)
                 {
                     var s = await response.Content.ReadAsStringAsync();
-                    var dialogues = await response.Content.ReadFromJsonAsync<List<Dialog>>();
-                    await GettingManProfiles(dialogues, sheet);
+                    var dialogues = await response.Content.ReadFromJsonAsync<List<Dialogue>>();
+                    await GetManProfiles(sheet, dialogues);
                     return dialogues.FirstOrDefault();
                 }
                 else
@@ -349,17 +363,76 @@ namespace UI.Infrastructure.API
             }
             return null;
         }
+
+        public async Task<object> AddPinAsync(Sheet sheet, int idRegularUser, bool addPin)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+                httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
+                httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
+                httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                httpClient.DefaultRequestHeaders.Add("idInterlocutor", $"{idRegularUser}");
+
+                var response = await httpClient.PostAsync("pinned", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    var s = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    _logger.LogWarning("Error pin dialogue with id: {idRegularUser}.Sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", idRegularUser, sheet.Id, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error pin dialogue with id: {idRegularUser}.Sheet with id: {sheetId}.", idRegularUser, sheet.Id);
+            }
+            return null;
+        }
+
+        public async Task<bool> AddBookmarkAsync(Sheet sheet, int idRegularUser, bool addBookmark)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+                httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
+                httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
+                httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                httpClient.DefaultRequestHeaders.Add("idRegularUser", $"{idRegularUser}");
+                httpClient.DefaultRequestHeaders.Add("bookmark", addBookmark ? "1" : "0");
+
+                var response = await httpClient.PostAsync("bookmark", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return true;
+                }
+                else
+                {
+                    _logger.LogWarning("Error bookmark dialogue with id: {idRegularUser}.Sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", idRegularUser, sheet.Id, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error bookmark dialogue with id: {idRegularUser}.Sheet with id: {sheetId}.", idRegularUser, sheet.Id);
+            }
+            return false;
+        }
     }
 
     public interface IChatClient
     {
-        Task<Messanger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "");
+        Task<Messanger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10);
+        Task GetManProfiles(Sheet sheet, List<Dialogue> dialogues);
         Task<Messanger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage);
         Task<MessagesAndMailsLeft> GetManMessagesMails(Sheet sheet, int idRegularUser);
         Task<List<StickerGroup>> GetStickersAsync(Sheet sheet);
         Task<Media> GetPhotosAsync(Sheet sheet, string cursor = "");
         Task<Media> GetVideosAsync(Sheet sheet, string cursor = "");
-        Task<bool> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message);
-        Task<Dialog> FindDialogueById(Sheet sheet, int idRegularUser);
+        Task<SendMessage> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message);
+        Task<Dialogue> FindDialogueById(Sheet sheet, int idRegularUser);
     }
 }

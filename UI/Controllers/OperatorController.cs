@@ -11,42 +11,53 @@ namespace UI.Controllers
     public class OperatorController : Controller
     {
         private readonly IOperatorClient _operatorClient;
+        private readonly ISheetClient _sheetClient;
+        private readonly IBalanceClient _balanceClient;
         private readonly ICommentClient _commentClient;
 
-        public OperatorController(IOperatorClient operatorClient, ICommentClient commentClient)
+        public OperatorController(IOperatorClient operatorClient, ISheetClient sheetClient, IBalanceClient balanceClient, ICommentClient commentClient)
         {
             _operatorClient = operatorClient;
+            _sheetClient = sheetClient;
+            _balanceClient = balanceClient;
             _commentClient = commentClient;
         }
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<SheetView> sheets = await _operatorClient.GetSheetsAsync();
+            var sheets = await _operatorClient.GetSheetsAsync();
             if(sheets == null)
             {
                 return View();
             }
 
-            var sheetsIsNewComments = new List<int>();
-            foreach (var sheet in sheets)
-            {
-                var newCommentsCount = await _commentClient.GetNewSheetCommentsCountAsync(sheet.Id);
-                if(newCommentsCount > 0)
-                {
-                    sheetsIsNewComments.Add(sheet.Id);
-                }
-            }
-            ViewData["sheetsIsNewComments"] = sheetsIsNewComments;
+            await _sheetClient.GettingStatusAndMedia(sheets);
+
+            //var sheetsIsNewComments = new List<int>();
+            //var operatorId = await _operatorClient.GetOperatorIdAsync();
+            //foreach (var sheet in sheets)
+            //{
+            //    var endDateTime = DateTime.Now;
+            //    var beginDateTime = endDateTime - TimeSpan.FromDays(30);
+            //    //sheet.Balance = (await _balanceClient.GetOperatorBalance( operatorId, beginDateTime, endDateTime)).Sum(ob => ob.Cash);
+
+            //    var newCommentsCount = await _commentClient.GetNewSheetCommentsCountAsync(sheet.Id);
+            //    if(newCommentsCount > 0)
+            //    {
+            //        sheetsIsNewComments.Add(sheet.Id);
+            //    }
+            //}
+            //ViewData["sheetsIsNewComments"] = sheetsIsNewComments;
             return View(sheets);
         }
 
         public async Task<IActionResult> Balance(Interval interval)
         {
-            Dictionary<int, int> balance = await _operatorClient.GetBalanceAsync(User.Identity.Name, interval);
-            if (balance != null)
-            {
-                return Ok(balance);
-            }
+            //Dictionary<int, int> balance = await _operatorClient.GetBalanceAsync(User.Identity.Name, interval);
+            //if (balance != null)
+            //{
+            //    return Ok(balance);
+            //}
             return StatusCode(500, $"Error getting a balance for a {interval}");
         }
 

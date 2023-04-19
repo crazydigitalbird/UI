@@ -39,9 +39,10 @@ namespace UI.Infrastructure.Components
                     sendMessage.Content = new Content() { Url = options[1] };
                     break;
             }
-
-            if (await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message))
+            var m = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message);            
+            if (m != null)
             {
+                sendMessage.Id = m.IdMessage;
                 return View(sendMessage);
             }
             return null;

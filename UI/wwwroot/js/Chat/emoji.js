@@ -16,10 +16,6 @@
     };
     const picker = new EmojiMart.Picker(pickerOptions);
     $('#emojis').append(picker);
-
-    $('#mediaModal').on('show.bs.modal', function () {
-
-    });
 });
 
 function clickOutsideEmojis(e) {

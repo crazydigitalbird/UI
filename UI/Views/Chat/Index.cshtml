@@ -15,7 +15,7 @@
 else
 {
     <input type="hidden" id="sheetId" value="@Model.Id" />
-    <input type="hidden" id="ownerId" value="@ViewData["ownerId"]" />
+    <input type="hidden" id="ownerId" value="@Model.Identity" />
 
     <partial name="_AlertsPartial" />
 
@@ -83,15 +83,19 @@ else
                             <div id="messagesArea" class="col-md-6 col-lg-7 col-xl-8 py-3">
                                 <div id="plugChatMenu" class="mb-1"></div>
                                 <div id="plugMessages" class="p-3"></div>
+
+                                <!-- Message Editor -->
                                 <div id="messageCreationArea" class="position-relative">
 
+                                    <!-- Emojis -->
                                     <div class="position-relative">
                                         <div id="emojisDiv" class="position-absolute bottom-100 d-none">
-                                            <div id="emojis" >
+                                            <div id="emojis">
                                             </div>
                                         </div>
                                     </div>
 
+                                    <!-- Stickers -->
                                     <div class="position-relative">
                                         <div id="stickers" class="position-absolute bg-white bottom-100 rounded-top d-none">
                                             <div class="modal-header sticky-top bg-primary px-2 rounded-top">
@@ -118,15 +122,17 @@ else
                                         </div>
                                     </div>
 
+                                    <!-- Text Message -->
                                     <div id="messageSend" class="text-muted d-flex justify-content-start align-items-center pt-3">
                                         <img id="ownerAvatar" src="@ViewData["avatar"]" alt="owner" class="rounded-circle d-flex" style="width: 40px; height: 100%" />
                                         <div class="form-outline ms-3">
-                                            <textarea type="text" rows="2" class="form-control form-control-lg" id="newMessage" placeholder="Message" data-mdb-showcounter="true" maxlength="300" onkeydown="pressEnter(event, @ViewData["ownerId"])" style="resize: none;"></textarea>
+                                            <textarea type="text" rows="2" class="form-control form-control-lg" id="newMessage" placeholder="Message" data-mdb-showcounter="true" maxlength="300" onkeydown="pressEnter(event, @Model.Identity)" style="resize: none;"></textarea>
                                             <div class="form-helper"></div>
                                         </div>
                                         <a class="ms-3 btn btn-primary" role="button" href="#!" onclick="sendMessage()" title="Send"><i class="fa-solid fa-paper-plane fa-xl"></i></a>
                                     </div>
 
+                                    <!-- Nav Content Message -->
                                     <div id="contentSend" class="d-flex mt-4">
                                         <div id="btnEmojis" class="d-grid col-4 ps-0">
                                             <a class="btn btn-warning" role="button" href="#!" onclick="showHidenEmojis()" title="Emojis">Emojis<i class="fa-solid fa-smile fa-2xl ms-1"></i></a>
@@ -409,14 +415,20 @@ else
     </div>
 
     @section Scripts{
+@*    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr/dist/browser/signalr.min.js"
+        asp-fallback-src="/lib/microsoft/signalr/dist/browser/signalr.min.js">
+    </script>*@
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"
+        asp-fallback-src="~/lib/emoji-mart/dist/browser.js">
+    </script>
+
     <script src="~/js/Chat/sendMessage.js"></script>
     <script src="~/js/Chat/chatMessagesArea.js"></script>
     <script src="~/js/Chat/chatNavTabs.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js" 
-            asp-fallback-src="~/lib/emoji-mart/dist/browser.js">
-    </script>
     <script src="~/js/Chat/emoji.js"></script>
     <script src="~/js/Chat/media.js"></script>
+
+    <script src="~/js/Chat/SignalR/dialogues.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.js"></script>

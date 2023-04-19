@@ -19,7 +19,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<IEnumerable<SheetView>> GetSheetsAsync()
+        public async Task<List<SheetView>> GetSheetsAsync()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
@@ -38,7 +38,6 @@ namespace UI.Infrastructure.API
                         var sheets = individualSheets.Concat(cabinetsSheets);
 
                         var sheetsView = sheets.Where(s => s.IsActive).Select(s => (SheetView)s).ToList();
-                        await GettingStatusAndMedia(sheetsView);
                         return sheetsView;
                     }
                     else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -58,86 +57,9 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Sheet> GetSheetAsync(int sheetId)
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
-            try
-            {
-                var response = await httpClient.GetAsync($"Sheets/GetSheet?sheedId={sheetId}&sessionGuid={sessionGuid}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var sheet = await response.Content.ReadFromJsonAsync<Sheet>();
-                    return sheet;
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    SignOut();
-                }
-                else
-                {
-                    _logger.LogWarning("Error getting sheet with id: {sheetId}. HttpStatusCode {httpStatusCode}", sheetId, response.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting sheet with id: {sheetId}.", sheetId);
-            }
-            return null;
-        }
-
-        private async Task GettingStatusAndMedia(List<SheetView> sheetsView)
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
-            try
-            {
-                string ids = string.Join(",", sheetsView.Select(sw => sw.SheetId));
-                httpClient.DefaultRequestHeaders.Add("id", ids);
-                var response = await httpClient.PostAsync($"status", null);
-                if (response.IsSuccessStatusCode)
-                {
-                    var dictionary = await response.Content.ReadFromJsonAsync<Dictionary<int, SheetStatusAndMedia>>();
-                    foreach (var sam in dictionary)
-                    {
-                        var sheetView = sheetsView.FirstOrDefault(sw => sw.SheetId == sam.Key);
-                        if (sheetView != null)
-                        {
-                            sheetView.Photo = sam.Value.Photo;
-                            sheetView.PrivatePhoto = sam.Value.PrivatePhoto;
-                            sheetView.Video = sam.Value.Video;
-                            sheetView.Status = sam.Value.Status ? Status.Online : Status.Offline;
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Error getting status and media all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting status and media all the sheets.");
-            }
-        }
-
-        public async Task<Dictionary<int, int>> GetBalanceAsync(string name, Interval interval)
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            try
-            {
-                var url = $"/Operator/Balance?operator={name}&interval={interval}";
-                return await httpClient.GetFromJsonAsync<Dictionary<int, int>>(url);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting balance");
-                return null;
-            }
-        }
-
         #region Get operator Id
 
-        private async Task<int> GetOperatorIdAsync()
+        public async Task<int> GetOperatorIdAsync()
         {
             var member = await GetAgencyMemberByUserAsync();
             if (member != null)
@@ -232,8 +154,7 @@ namespace UI.Infrastructure.API
 
     public interface IOperatorClient
     {
-        Task<IEnumerable<SheetView>> GetSheetsAsync();
-        Task<Sheet> GetSheetAsync(int sheetId);
-        Task<Dictionary<int, int>> GetBalanceAsync(string name, Interval interval);
+        Task<List<SheetView>> GetSheetsAsync();
+        Task<int> GetOperatorIdAsync();
     }
 }

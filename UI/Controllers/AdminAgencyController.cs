@@ -1,5 +1,4 @@
-﻿using Core.Models.Agencies.Groups;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -14,16 +13,18 @@ namespace UI.Controllers
     public class AdminAgencyController : Controller
     {
         private readonly IAdminAgencyClient _adminAgencyClient;
-
+        private readonly ISheetClient _sheetClient;
+        private readonly IBalanceClient _balanceClient;
         private readonly IGroupClient _groupClient;
-
         private readonly ILogger<AdminAgencyController> _logger;
 
-        private readonly List<SelectListItem> _roles = new List<SelectListItem> { new("Admin Agency", "1"), new("Operator", "2"), new("User", "3") };
+        private readonly List<SelectListItem> _roles = new() { new("Admin Agency", "1"), new("Operator", "2"), new("User", "3") };
 
-        public AdminAgencyController(IAdminAgencyClient adminAgencyClient, IGroupClient groupClient, ILogger<AdminAgencyController> logger)
+        public AdminAgencyController(IAdminAgencyClient adminAgencyClient, ISheetClient sheetClient, IBalanceClient balanceClient, IGroupClient groupClient, ILogger<AdminAgencyController> logger)
         {
             _adminAgencyClient = adminAgencyClient;
+            _sheetClient = sheetClient;
+            _balanceClient = balanceClient;
             _groupClient = groupClient;
             _logger = logger;
         }
@@ -39,7 +40,7 @@ namespace UI.Controllers
                 }
             }
             var sheets = await _adminAgencyClient.GetSheets(agencyId);
-
+            await _sheetClient.GettingStatusAndMedia(sheets);
             var groups = await _groupClient.GetGroupsAsync(agencyId);
             var shifts = await _adminAgencyClient.GetShifts();
             var cabinets = await _adminAgencyClient.GetCabinets(agencyId);
@@ -48,6 +49,10 @@ namespace UI.Controllers
             {
                 foreach (var sheet in sheets)
                 {
+                    var endDateTime = DateTime.Now;
+                    var beginDatetime = endDateTime - TimeSpan.FromDays(30);
+                    sheet.Balance = (await _balanceClient.GetSheetBalance(sheet.Id, beginDatetime, endDateTime)).Sum(sb => sb.Cash);
+
                     if (cabinets?.Any(c => c.Sheets?.Any(acs => acs.Sheet.Id == sheet.Id) ?? false) ?? false)
                     {
                         sheet.Cabinet = (Cabinet)cabinets.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
@@ -70,7 +75,7 @@ namespace UI.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteSheets(int[] sheetsId)
         {
-            List<int> errorDelitingSheets = new List<int>();
+            var errorDelitingSheets = new List<int>();
             foreach (var sheetId in sheetsId)
             {
                 if (!await _adminAgencyClient.DeleteSheet(sheetId))

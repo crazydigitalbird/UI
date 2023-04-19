@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 using System.Text;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Services.AddSingleton<IChatClient, ApiChatClient>();
 builder.Services.AddSingleton<ISiteClient, ApiSiteClient>();
 builder.Services.AddSingleton<ICommentClient, ApiCommentClient>();
 builder.Services.AddSingleton<IGroupClient, ApiGroupClient>();
+builder.Services.AddSingleton<IBalanceClient, ApiBalanceClient>();
+builder.Services.AddSingleton<ISheetClient, ApiSheetClient>();
 
 builder.Services.AddHttpClient("api", client =>
 {
@@ -93,5 +96,6 @@ app.UseStatusCodePages(async context =>
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

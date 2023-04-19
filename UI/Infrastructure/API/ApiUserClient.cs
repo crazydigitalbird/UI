@@ -67,7 +67,7 @@ namespace UI.Infrastructure.API
 
                         var info = WebUtility.UrlEncode(JsonConvert.SerializeObject(sheetInfo, Formatting.Indented));
 
-                        var response = await httpClient.PutAsync($"Sheets/AddSheet?siteId={siteId}&credentials={credentials}&info={info}&sessionGuid={sessionGuid}", null);
+                        var response = await httpClient.PutAsync($"Sheets/AddSheet?siteId={siteId}&credentials={credentials}&identity={sheetInfo.Id}&info={info}&sessionGuid={sessionGuid}", null);
                         if (response.IsSuccessStatusCode)
                         {
                             var sheet = await response.Content.ReadFromJsonAsync<Sheet>();

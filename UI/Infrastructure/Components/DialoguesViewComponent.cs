@@ -18,6 +18,10 @@ namespace UI.Infrastructure.Components
         public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, string criteria = "", string cursor = "")
         {
             var messanger = await _chatClient.GetMessangerAsync(sheet, criteria, cursor);
+            if (messanger != null)
+            {
+                await _chatClient.GetManProfiles(sheet, messanger.Dialogs);
+            }
             return View(messanger);
         }
     }

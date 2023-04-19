@@ -11,6 +11,6 @@ namespace UI.Models
 
         public int Video { get; set; }            
 
-        public bool Status { get; set; }
+        public int Status { get; set; }
     }
 }

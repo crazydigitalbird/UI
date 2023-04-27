@@ -19,7 +19,9 @@
     $.post('/Chats/ManMessagesMails', { sheetId: owner.SheetId, idRegularUser: interlocutor.Id }, function (data) {
         $('#messagesLeft').text(data.messagesLeft);
         $('#mailsLeft').text(data.mailsLeft);
-    });    
+    });
+
+    initialMessages(owner.SheetId, interlocutor.Id);
 }
 
 function changeBookmarkChat(e) {    

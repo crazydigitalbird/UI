@@ -161,7 +161,7 @@ namespace UI.Infrastructure.API
                     {  
                         var info = WebUtility.UrlEncode(JsonConvert.SerializeObject(sheetInfo, Formatting.Indented));
 
-                        var response = await httpClien.PostAsync($"Sheets/UpdateSheet?sheedId={sheetId}&credentials={credentials}&info={info}&isActive=true&sessionGuid={sesstionGuid}", null);
+                        var response = await httpClien.PostAsync($"Sheets/UpdateSheet?sheedId={sheetId}&credentials={credentials}&identity={sheetInfo.Id}&info={info}&isActive=true&sessionGuid={sesstionGuid}", null);
                         if (response.IsSuccessStatusCode)
                         {
                             var sheetUpdated = await response.Content.ReadFromJsonAsync<SheetSite>();

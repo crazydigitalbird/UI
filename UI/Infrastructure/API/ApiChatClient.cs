@@ -15,7 +15,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<Messanger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10)
+        public async Task<Messenger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -32,9 +32,9 @@ namespace UI.Infrastructure.API
                 if (response.IsSuccessStatusCode)
                 {
                     var s = await response.Content.ReadAsStringAsync();
-                    var messanger = await response.Content.ReadFromJsonAsync<Messanger>();
+                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>();                    
                     //await AddPinAsync(sheet, 81171332, true);
-                    return messanger;
+                    return messenger;
                 }
                 else
                 {
@@ -91,13 +91,13 @@ namespace UI.Infrastructure.API
             }
         }
 
-        public async Task<Messanger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage)
+        public async Task<Messenger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
             {
                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                var messanger = new Messanger
+                var messanger = new Messenger
                 {
                     Sheet = info,
                     Dialogs = new List<Dialogue>()
@@ -149,7 +149,6 @@ namespace UI.Infrastructure.API
                 if (response.IsSuccessStatusCode)
                 {
                     var messagesAndmailsLeft = await response.Content.ReadFromJsonAsync<MessagesAndMailsLeft>();
-                    var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
                     return messagesAndmailsLeft;
                 }
                 else
@@ -332,7 +331,7 @@ namespace UI.Infrastructure.API
             try
             {
                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                var messanger = new Messanger
+                var messanger = new Messenger
                 {
                     Sheet = info,
                     Dialogs = new List<Dialogue>()
@@ -364,7 +363,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<object> AddPinAsync(Sheet sheet, int idRegularUser, bool addPin)
+        public async Task<bool> ChangePinAsync(Sheet sheet, int idRegularUser, bool addPin)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -374,11 +373,13 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
                 httpClient.DefaultRequestHeaders.Add("idInterlocutor", $"{idRegularUser}");
+                httpClient.DefaultRequestHeaders.Add("type", addPin ? "pin" : "unpin");
 
                 var response = await httpClient.PostAsync("pinned", null);
                 if (response.IsSuccessStatusCode)
                 {
                     var s = await response.Content.ReadAsStringAsync();
+                    return true;
                 }
                 else
                 {
@@ -389,10 +390,10 @@ namespace UI.Infrastructure.API
             {
                 _logger.LogError(ex, "Error pin dialogue with id: {idRegularUser}.Sheet with id: {sheetId}.", idRegularUser, sheet.Id);
             }
-            return null;
+            return false;
         }
 
-        public async Task<bool> AddBookmarkAsync(Sheet sheet, int idRegularUser, bool addBookmark)
+        public async Task<bool> ChangeBookmarkAsync(Sheet sheet, int idRegularUser, bool addBookmark)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -425,14 +426,16 @@ namespace UI.Infrastructure.API
 
     public interface IChatClient
     {
-        Task<Messanger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10);
+        Task<Messenger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10);
         Task GetManProfiles(Sheet sheet, List<Dialogue> dialogues);
-        Task<Messanger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage);
+        Task<Messenger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage);
         Task<MessagesAndMailsLeft> GetManMessagesMails(Sheet sheet, int idRegularUser);
         Task<List<StickerGroup>> GetStickersAsync(Sheet sheet);
         Task<Media> GetPhotosAsync(Sheet sheet, string cursor = "");
         Task<Media> GetVideosAsync(Sheet sheet, string cursor = "");
         Task<SendMessage> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message);
         Task<Dialogue> FindDialogueById(Sheet sheet, int idRegularUser);
+        Task<bool> ChangePinAsync(Sheet sheet, int idRegularUser, bool addPin);
+        Task<bool> ChangeBookmarkAsync(Sheet sheet, int idRegularUser, bool addBookmark);
     }
 }

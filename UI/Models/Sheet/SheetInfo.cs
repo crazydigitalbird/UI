@@ -6,6 +6,9 @@ namespace UI.Models
     {
         public int Id { get; set; }
 
+        [JsonIgnore]
+        public int SheetId { get; set; }
+
         [JsonPropertyName("is_online")]
         public bool IsOnline { get; set; }
 

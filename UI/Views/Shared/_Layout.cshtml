@@ -52,6 +52,12 @@
                                 <a class="nav-link" is-active-route asp-controller="Cabinet" asp-action="Index">Cabinets</a>
                             </li>
                         }
+                        else if (User.IsInRole(Role.Operator.ToString()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" is-active-route asp-controller="Chats" asp-action="Index">Chats</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

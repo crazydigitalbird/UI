@@ -1,0 +1,161 @@
+﻿@using Humanizer
+@model IEnumerable<(Dialogue Dialogue, SheetInfo SheetInfo)>
+
+@foreach (var sd in Model)
+{
+    //Проверяем кто написал последнее сообщение в диалоге, владелица анкеты или мужчина. Если условие выполняется, то сообщение написал владелица анкеты
+    if (sd.SheetInfo.Id == sd.Dialogue.LastMessage.IdUserFrom)
+    {
+        <div name="newMessage" class="bottom-block-body__item d-flex flex-row-reverse mt-2 align-items-center text-white row p-2 rounded"
+            data-sheet-id="@sd.SheetInfo.SheetId"
+            data-owner-id="@sd.SheetInfo.Id"
+            data-is-pinned="@sd.Dialogue.IsPinned"
+            data-is-bookmarked="@sd.Dialogue.IsBookmarked"            
+            data-online="@Status.Online" onclick="goToChat(this)">
+
+            <div class="other-user-block col-2">
+                <div class="standart-image-block position-relative">
+                    <img name="interlocutorAvatar" src="@sd.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+                    @if (sd.Dialogue.Status == Status.Online)
+                    {
+                        <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
+                    }
+                    else
+                    {
+                        <span class="status-circle-red other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
+                    }
+                </div>
+
+                <p name="interlocutorName" class="d-none">@sd.Dialogue.UserName</p>
+                <p name="interlocutorId" class="d-none">@sd.Dialogue.IdInterlocutor</p>
+
+                <p class="user-block-name-text small-text-opacity">
+                    @sd.Dialogue.DateUpdated.Humanize()
+                </p>
+            </div>
+            <div class="message-block col-6 text-start">
+                <p class="mb-1 other-name-text">
+                    @switch (sd.Dialogue.LastMessage.Type)
+                    {
+                        case MessageType.Message:
+                            @: @sd.Dialogue.LastMessage.Content
+                            break;
+
+                        case MessageType.Sticker:
+                            @:Sticker
+                            break;
+
+                        case MessageType.Photo:
+                            @:Photo
+                            break;
+                    }
+                </p>
+                <p class="user-block-name-text small-text-opacity">
+                    @sd.Dialogue.LastMessage.DateCreated.Humanize()
+                </p>
+            </div>
+            <div class="user-block d-flex align-items-center col-4 p-2">
+                <div class="standart-image-block me-3 position-relative">
+                    <img name="ownerAvatar" src="@sd.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+                    @if (sd.SheetInfo.IsOnline)
+                    {
+                        <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
+                    }
+                    else
+                    {
+                        <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
+                    }
+                </div>
+
+                <div class="user-block-info text-center col-4">
+                    <p name="ownerName" class="user-block-name-text">@sd.SheetInfo.Personal.Name</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div name="newMessage" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mt-2"
+            data-sheet-id="@sd.SheetInfo.SheetId"
+            data-owner-id="@sd.SheetInfo.Id"
+            data-is-pinned="@sd.Dialogue.IsPinned"
+            data-is-bookmarked="@sd.Dialogue.IsBookmarked"
+            data-message-type="@sd.Dialogue.LastMessage.Type"
+            data-online="@sd.Dialogue.Status"
+            onclick="goToChat(this)">
+
+            <div class="other-user-block col-2">
+                <div class="standart-image-block position-relative">
+                    <img name="interlocutorAvatar" src="@sd.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+                    @if (sd.Dialogue.Status == Status.Online)
+                    {
+                        <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
+                    }
+                    else
+                    {
+                        <span class="status-circle-red other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
+                    }
+                </div>
+
+                <p class="user-block-name-text small-text-opacity">
+                    @sd.Dialogue.DateUpdated.Humanize()
+                </p>
+            </div>
+            <div class="message-block col-6 text-start">
+                <p name="interlocutorName" class="mb-1 other-name-text">@sd.Dialogue.UserName</p>
+                <p name="interlocutorId" class="d-none">@sd.Dialogue.IdInterlocutor</p>
+                <p class="other-name-text">
+                    @switch (sd.Dialogue.LastMessage.Type)
+                    {
+                        case MessageType.Message:
+                            @: @sd.Dialogue.LastMessage.Content.Message
+                            break;
+
+                        case MessageType.Sticker:
+                            @:Sticker
+                            break;
+
+                        case MessageType.Photo:
+                        case MessageType.Photo_batch:
+                            @:Photo
+                            break;
+
+                        case MessageType.LikePhoto:
+                            @:Like Photo
+                            break;
+
+                        case MessageType.Like_NewsFeed_Post:
+                            @:Like Post
+                            break;
+
+                        case MessageType.Wink:
+                            @:Winked
+                            break;
+
+                        case MessageType.System:
+                            @:System
+                            break;
+                    }
+                </p>
+            </div>
+            <div class="user-block d-flex align-items-center col-4 p-2">
+                <div class="standart-image-block me-3 position-relative">
+                    <img name="ownerAvatar" src="@sd.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+                    @if (sd.SheetInfo.IsOnline)
+                    {
+                        <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
+                    }
+                    else
+                    {
+                        <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
+                    }
+                </div>
+
+                <div class="user-block-info text-center col-4">
+                    <p name="ownerName" class="user-block-name-text">@sd.SheetInfo.Personal.Name</p>
+                    <p class="user-block-timer-text timer" @*data-minutes-left="1"*@ data-seconds-left="70" data-sheetInfo-id="@sd.SheetInfo.Id" data-id-interlocutor="@sd.Dialogue.IdInterlocutor"></p>
+                </div>
+            </div>
+        </div>
+    }
+}

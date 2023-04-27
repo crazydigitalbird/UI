@@ -2,8 +2,10 @@
 
 namespace UI.Models
 {
-    public class Messanger
+    public class Messenger
     {
+        public int SheetId { get; set; }
+
         public SheetInfo Sheet { get; set; }
 
         public string Cursor { get; set; }

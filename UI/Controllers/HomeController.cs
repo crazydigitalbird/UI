@@ -29,7 +29,11 @@ namespace UI.Controllers
             }
             if (User.IsInRole(Role.Operator.ToString()))
             {
+#if DEBUGOFFLINE
+                return RedirectToAction("Index", "Chats");
+#else
                 return RedirectToAction("Index", "Operator");
+#endif
             }
             if (User.IsInRole(Role.User.ToString()))
             {

@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <section class="">
+        <div class="">
+            <div class="top-block w-100 text-white d-flex justify-content-end align-items-center">
+                <div class="top-block__container px-3 d-flex justify-content-end align-items-center">
+                    <div class="top-block__items d-flex justify-content-between align-items-center me-5">
+                        <div class="bell-block position-relative">
+                            <img src="~/image/layout/Alarm Bell.svg" alt="Bell">
+                            <span class="bell-status d-inline-block rounded-circle position-absolute"></span>
+                        </div>
+                        <img src="/image/layout/Layout Grid.svg" alt="Grid">
+                        <img src="/image/layout/Rectangle 5.png" alt="Person image" class="standart-image rounded-circle">
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-block overflow-hidden text-center">
+                <div class="bottom-block__items px-4 h-100 pt-3 pb-4 d-flex justify-content-between">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="/js/bootstrap.bundle.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

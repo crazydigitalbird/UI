@@ -25,7 +25,7 @@ namespace UI.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var sheets = await _operatorClient.GetSheetsAsync();
+            var sheets = await _operatorClient.GetSheetsViewAsync();
             if(sheets == null)
             {
                 return View();
@@ -33,14 +33,18 @@ namespace UI.Controllers
 
             await _sheetClient.GettingStatusAndMedia(sheets);
 
+            var operatorId = await _operatorClient.GetOperatorIdAsync();
+            var endDateTime = DateTime.Now;
+            var beginDateTime = endDateTime - TimeSpan.FromDays(30);
+            var balances = await _balanceClient.GetOperatorBalance(operatorId, beginDateTime, endDateTime);
+            foreach(var sheet in sheets)
+            {
+                sheet.Balance = balances.Where(b => b.Sheet.Id == sheet.Id).Sum(ob => ob.Cash);
+            }
+
             //var sheetsIsNewComments = new List<int>();
-            //var operatorId = await _operatorClient.GetOperatorIdAsync();
             //foreach (var sheet in sheets)
             //{
-            //    var endDateTime = DateTime.Now;
-            //    var beginDateTime = endDateTime - TimeSpan.FromDays(30);
-            //    //sheet.Balance = (await _balanceClient.GetOperatorBalance( operatorId, beginDateTime, endDateTime)).Sum(ob => ob.Cash);
-
             //    var newCommentsCount = await _commentClient.GetNewSheetCommentsCountAsync(sheet.Id);
             //    if(newCommentsCount > 0)
             //    {
@@ -48,6 +52,7 @@ namespace UI.Controllers
             //    }
             //}
             //ViewData["sheetsIsNewComments"] = sheetsIsNewComments;
+
             return View(sheets);
         }
 

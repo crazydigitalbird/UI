@@ -1,0 +1,149 @@
+﻿@using Newtonsoft.Json;
+@model List<Sheet>
+
+<div id="sheetsDialogues" class="small-block">
+    <div class="bottom-block__item h-100 p-2">
+        <ul class="d-flex justify-content-between text-white" id="sheetsDialogues" role="tablist">
+            <li class="block__nav-item" role="presentation">
+                <p class="nav-link active block__nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#all" role="tab" aria-controls="all" aria-selected="true">
+                    Профили
+                </p>
+            </li>
+            <li class="block__nav-item" role="presentation">
+                <p class="nav-link block__nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#history" role="tab" aria-controls="history" aria-selected="false" tabindex="-1">
+                    История
+                </p>
+            </li>
+            <li class="block__nav-item" role="presentation">
+                <p class="nav-link block__nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" aria-controls="bookmarked" aria-selected="false" tabindex="-1" role="tab">
+                    Букмарк
+                </p>
+            </li>
+            <li class="block__nav-item" role="presentation">
+                <p class="nav-link block__nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#all" role="tab" aria-controls="premium" aria-selected="false" tabindex="-1">
+                    Премиум
+                </p>
+            </li>
+            <li class="block__nav-item" role="presentation">
+                <p class="nav-link block__nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#all" role="tab" aria-controls="trash" aria-selected="false" tabindex="-1">
+                    Треш
+                </p>
+            </li>
+        </ul>
+
+        <div id="sheetsDialoguesSearch">
+            <div class="search-block d-flex justify-content-between align-items-center mt-3">
+                <div class="search-block__item me-2 position-relative">
+                    <input id="searchSheetInput" type="text" placeholder="Поиск профилей" class="form-control search-block__input rounded ps-5" aria-labelledby="passwordHelpBlock" oninput="searchSheet(this)">
+                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom" class="search-icon position-absolute">
+                    <div class="search-count p-1 d-flex justify-content-center align-items-center position-absolute rounded">
+                        @Model.Count
+                    </div>
+                </div>
+
+                <div class="search-block__item position-relative">
+                    <input id="searchMan" type="text" placeholder="Поиск мужчин" class="form-control search-block__input rounded ps-5" aria-labelledby="passwordHelpBlock" oninput="searchMan(this)">
+                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom" class="search-icon position-absolute">
+                </div>
+            </div>
+
+            <div class="status-block d-flex justify-content-end align-items-center mt-3">
+                <div class="status-block-item d-flex justify-content-between align-items-center">
+                    <input type="checkbox" checked class="status-icon-text-checkbox position-absolute opacity-0" id="isOnlineOnly" name="isOnlineOnly" value="yes" wfd-id="id2">
+                    <span class="status-icon rounded-circle"></span>
+                    <label for="isOnlineOnly" class="status-icon-text">Online</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="sheetsDialoguesTabContent" class="tab-content text-white mt-3 d-flex justify-content-end" data-old-tab="all">
+            <div class="accordion-items tab-pane active" id="all" role="tabpanel" aria-labelledby="home-tab">
+                @foreach (var sheet in Model)
+                {
+                    var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
+                    <div class="accordion-item tab-content-item p-2 rounded mt-2" data-sheet-identity="@sheet.Identity" data-sheet-id="@sheet.Id">
+                        <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
+                            <div class="accordion-image position-relative">
+                                <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+                                @if (info.IsOnline)
+                                {
+                                    <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+                                }
+                                else
+                                {
+                                    <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+                                }
+                            </div>
+                            <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
+                                <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
+                                    @info.Personal.Name
+                                </p>
+                                <p name="ownerId" class="accordion-info-text accordion-info-smalltext">
+                                    @info.Id
+                                </p>
+                            </div>
+                            <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
+                                <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
+                                    <div id="@($"count-dialogues-sheet-{sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center">
+                                    </div>
+                                    <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="@($"flush-collapse-{sheet.Id}")" class="accordion-collapse collapse mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
+                            <div id="@($"dialogues-{sheet.Id}")" name="dialogues" class="accordion-body">
+                                <vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="tab-pane" id="history" role="tabpanel" aria-labelledby="profile-tab" data-initialized="false">
+                Example2
+            </div>
+
+            @*            <div class="tab-pane" id="bookmark" role="tabpanel" aria-labelledby="messages-tab" data-initialized="false">
+            @foreach (var sheet in Model)
+            {
+            var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
+            <div class="accordion-item tab-content-item p-2 rounded mt-2" data-sheet-identity="@sheet.Identity" data-sheet-id="@sheet.Id">
+            <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-bookmark-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")">
+            <div class="accordion-image position-relative">
+            <img src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+            <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+            </div>
+            <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
+            <p class="accordion-info-text accordion-info-bigtext">
+            @info.Personal.Name
+            </p>
+            <p class="accordion-info-text accordion-info-smalltext">
+            @info.Id
+            </p>
+            </div>
+            <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
+            <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
+            <div id="@($"count-bookmarks-sheet-{sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center">
+            </div>
+            <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+            </div>
+            </div>
+            </div>
+            <div id="@($"flush-collapse-bookmark-{sheet.Id}")" class="accordion-collapse collapse mt-3" data-bs-parent="#accordionFlushExample">
+            <div id="@($"bookmarks-{sheet.Id}")" name="bookmarks" class="accordion-body">
+            </div>
+            </div>
+            </div>
+            }
+            </div>
+
+            <div class="tab-pane" id="premium" role="tabpanel" aria-labelledby="settings-tab" data-initialized="false">
+            Example4
+            </div>
+
+            <div class="tab-pane" id="trash" role="tabpanel" aria-labelledby="settings-tab" data-initialized="false">
+            Example5
+            </div>*@
+        </div>
+    </div>
+</div>

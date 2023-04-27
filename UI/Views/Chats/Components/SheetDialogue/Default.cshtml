@@ -1,0 +1,22 @@
+﻿@using Humanizer;
+@model Dialogue
+
+@if (Model != null)
+{
+    <div name="dialogue" class="accordion-body-item rounded w-100 p-2 d-flex justify-content-between align-items-center" data-id-interlocutor="@Model.IdInterlocutor">
+        <div class="accordion-body-image-info-block d-flex justify-content-between align-items-center">
+            <img src="@Model.Avatar" alt="No person" class="accordion-body-image rounded me-2">
+            <p class="accordion-body-text">@Model.UserName</p>
+        </div>
+        <div class="accordion-body-icons-block d-flex justify-content-between align-items-center">
+            <p class="me-1">@Model.IdInterlocutor</p>
+            <img src="/image/layout/Star.svg" alt="Star" class="me-1">
+            <img src="/image/layout/Heart.svg" alt="Heart">
+        </div>
+        <div class="accordion-body-time-block">
+            <p class="large-block__body-item-small-text">
+                @Model.DateUpdated.Humanize()
+            </p>
+        </div>
+    </div>
+}

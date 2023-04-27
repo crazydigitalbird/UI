@@ -19,7 +19,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<List<SheetView>> GetSheetsAsync()
+        public async Task<List<SheetView>> GetSheetsViewAsync()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
@@ -39,6 +39,42 @@ namespace UI.Infrastructure.API
 
                         var sheetsView = sheets.Where(s => s.IsActive).Select(s => (SheetView)s).ToList();
                         return sheetsView;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        SignOut();
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Error getting all the sheets. Operator with id: {operatorId}. HttpStatusCode {httpStatusCode}", operatorId, response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error getting all the sheets.");
+                }
+            }
+            return null;
+        }
+
+        public async Task<List<Sheet>> GetSheetsAsync()
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            var operatorId = await GetOperatorIdAsync();
+            if (operatorId > 0)
+            {
+                try
+                {
+                    var response = await httpClient.GetAsync($"Agencies/Operators/GetAgencyOperatorSessions?operatorId={operatorId}&sessionGuid={sessionGuid}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var agencyOperatorSessions = await response.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>();
+
+                        var individualSheets = agencyOperatorSessions.SelectMany(s => s.Session.Sheets).Select(ass => ass.Sheet);
+                        var cabinetsSheets = agencyOperatorSessions.SelectMany(s => s.Session.Cabinets).SelectMany(c => c.Cabinet?.Sheets).Select(s => s.Sheet);
+                        var sheets = individualSheets.Concat(cabinetsSheets).Where(s => s.IsActive).ToList();
+                        return sheets;
                     }
                     else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {
@@ -154,7 +190,8 @@ namespace UI.Infrastructure.API
 
     public interface IOperatorClient
     {
-        Task<List<SheetView>> GetSheetsAsync();
+        Task<List<SheetView>> GetSheetsViewAsync();
+        Task<List<Sheet>> GetSheetsAsync();
         Task<int> GetOperatorIdAsync();
     }
 }

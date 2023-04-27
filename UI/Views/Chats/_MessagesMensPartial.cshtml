@@ -1,0 +1,43 @@
+﻿@model List<Sheet>
+
+<div class="small-block">
+    <div class="bottom-block__item h-100 p-2">
+        <div class="bottom-block-header">
+            <ul class="d-flex justify-content-between text-white" role="tablist" id="allNewMessagesFromAllMens">
+                <li class="block__nav-item" role="presentation">
+                    <p class="nav-link active block__nav-link text-center" id="home-tab" data-filters="" data-bs-toggle="tab" data-bs-target="#all-left" role="tab" aria-controls="all-left" aria-selected="true">
+                        <span class="first-block__header-text d-inline-block">Все</span>
+                        <span id="countAllNewMessages" class="first-block__header-small-text d-inline-block">0</span>
+                    </p>
+                </li>
+                <li class="block__nav-item" role="presentation">
+                    <p class="nav-link block__nav-link" id="profile-tab" data-bs-toggle="tab" data-filters="Message;Photo;Photo_batch;Sticker" data-bs-target="#chats-left" role="tab" aria-controls="chats-left" aria-selected="false" tabindex="-1">
+                        <span class="first-block__header-text d-inline-block">Чаты</span>
+                        <span id="countChatNewMessages" class="first-block__header-small-text d-inline-block small-text-red">0</span>
+                    </p>
+                </li>
+                <li class="block__nav-item" role="presentation">
+                    <p class="nav-link block__nav-link" id="messages-tab" data-bs-toggle="tab" data-filters="LikePhoto;Like_NewsFeed_Post;Wink" data-bs-target="#reactions-left" type="button" aria-controls="reactions-left" aria-selected="false" tabindex="-1" role="tab">
+                        <span class="first-block__header-text d-inline-block">Реакции</span>
+                        <span id="countReactionNewMessages" class="first-block__header-small-text d-inline-block small-text-purple">0</span>
+                    </p>
+                </li>
+                <li class="block__nav-item" role="presentation">
+                    <p class="nav-link block__nav-link" id="settings-tab" data-bs-toggle="tab" data-filters="System" data-bs-target="#systems-left" role="tab" aria-controls="systems-left" aria-selected="false" tabindex="-1">
+                        <span class="first-block__header-text d-inline-block">Системные</span>
+                        <span id="countSystemNewMessages" class="first-block__header-small-text d-inline-block">0</span>
+                    </p>
+                </li>
+                <li class="block__nav-item" role="presentation" >
+                    <p id="onlineNewMessages" class="nav-link block__nav-link" id="settings-tab" data-filters="Online" data-bs-toggle="tab" data-bs-target="#online-left" role="tab" aria-controls="online-left" aria-selected="false" tabindex="-1">
+                        <span class="first-block__header-text d-inline-block">Онлайн</span>
+                        <span id="countOnlineNewMessages" class="first-block__header-small-text d-inline-block">0</span>
+                    </p>
+                </li>
+            </ul>
+        </div>
+        <div class="bottom-block-body mt-3 d-flex flex-column align-items-center" id="allNewMessages">
+            <vc:all-new-messages-from-all-men sheets="Model"></vc:all-new-messages-from-all-men>
+        </div>
+    </div>
+</div>

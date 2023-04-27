@@ -60,7 +60,7 @@ namespace UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Sheets(string criteria, string cursor = "")
         {
-            var sheets = await _operatorClient.GetSheetsAsync();
+            var sheets = await _operatorClient.GetSheetsViewAsync();
             await _sheetClient.GettingStatusAndMedia(sheets);
             if (sheets != null)
             {

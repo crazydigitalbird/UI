@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>cee58db6-bf84-4ef1-8219-f040c915150b</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <Configurations>Debug;Release;DebugOffline</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,10 @@
     <Reference Include="Models">
       <HintPath>Models.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\image\layout\" />
   </ItemGroup>
 
 </Project>

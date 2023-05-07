@@ -1,121 +1,108 @@
 ﻿let timerLoadingDialoguesId;
 
 $(function () {
-    $('#sheetsDialogues').find('p[data-bs-toggle="tab"]').each(function () {
-        this.addEventListener('shown.bs.tab', (event) => {
-            var $currentTab = $(event.target);
-            var nameTab = $currentTab.attr('aria-controls');
-            switch (nameTab) {
-                case 'history':
-                    $('#sheetsDialoguesSearch').addClass('d-none');
-                    break;
-
-                case 'all':
-                case 'bookmarked':
-                case 'premium':
-                case 'trash':
-                    $('#sheetsDialoguesSearch').removeClass('d-none');
-                    var oldNameTab = $('#sheetsDialoguesTabContent').data('old-tab');
-                    if (oldNameTab != nameTab) {
-                        $('#searchMan').val('');
-
-                        $('[name=dialogues]').each(function () {
-                            var sheetId = this.id.replace('dialogues-', '');
-                            getDialogues(sheetId, '', false);
-                        });
-
-                        $('#sheetsDialoguesTabContent').data('old-tab', nameTab);
-                    }
-                    break;
+    //Загрузка диалогов при разворачивании блока collapse
+    $('.accordion-collapse').each(function () {
+        this.addEventListener('show.bs.collapse', function () {
+            var currentTab = getCurrentTab();
+            var searchMan = $(`#searchMan-${currentTab}`).val();
+            if (!searchMan) {
+                let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+                var tab = result[1];
+                var sheetId = result[2];
+                getDialogues(sheetId, tab, '');
             }
         });
     });
 
-    $('#isOnlineOnly').on('change', function () {
-        $('#searchMan').val('');
+    //Обновление диалогов для раскрытых блоков collapse, при изменении статуса online/offline
+    $("[name=isOnlineOnly-active], [name=isOnlineOnly-bookmarked], [name=isOnlineOnly-premium], [name=isOnlineOnly-trash]").on('change', function () {
+        var tab = this.id.replace('isOnlineOnly-', '');
+        refreshSearchMan(tab); 
 
-        $('[name=dialogues]').each(function () {
-            var sheetId = this.id.replace('dialogues-', '');
-            getDialogues(sheetId, '', false);
+        $(this).closest('.tab-pane').find('.accordion-collapse.show').each(function () {
+            let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+            var tab = result[1];
+            var sheetId = result[2];
+            getDialogues(sheetId, tab, '');
         });
     });
 
-    $('[name=dialogues]').each(function () {
-        var sheetId = this.id.replace('dialogues-', '');
-        countDialoguesSheet(sheetId);
-    })
-
+    //Обновление диалогов по таймеру для раскрытых блоков collapse, только на текущей вкладке и если isOnline=true
     timerLoadingDialoguesId = setTimeout(function loadingDialogues() {
-        if (isOnline()) {
-           /* $('[name=btn-loading-dialogues] button').each(function () {*/
-                var searchMan = $('#searchMan').val();
-                if (!searchMan) {
-                    $('[name=dialogues]').each(function () {
-                        var sheetId = this.id.replace('dialogues-', '');
-                        getDialogues(sheetId, '', false);
-                    });
-                    /*$(this).click();*/
-                }
-            /*});*/
+        var currentTab = getCurrentTab();
+        if (isOnline(currentTab)) {
+            var searchMan = $(`#searchMan-${currentTab}`).val();
+            if (!searchMan) {
+                $('.accordion-collapse.show').each(function () {
+                    let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+                    var tab = result[1];
+                    //Обновление только на текущей вкладке
+                    if (tab === currentTab) {
+                        var sheetId = result[2];
+                        getDialogues(sheetId, tab, '');
+                    }
+                });
+            }
         }
         timerLoadingDialoguesId = setTimeout(loadingDialogues, 30000);
     }, 30000);
 });
 
-function getDialogues(sheetId, cursor, newLoading) {
-    var $divDialogues = $(`#dialogues-${sheetId}`);
+function getDialogues(sheetId, currentTab, cursor) {
+    var $divDialogues = $(`#dialogues-${currentTab}-${sheetId}`);
 
-    var criteria = getCriteria();
-    var online = isOnline();
+    var online = isOnline(currentTab);
 
-    var $btnLoadDialogues = $(`#btn-loading-dialogues-${sheetId}`).find("span");
-    enableSpinnerAll($btnLoadDialogues, sheetId);
+    enableSpinnerInCounter(sheetId, currentTab);
 
-    $.post("/Chats/Dialogues", { sheetId: sheetId, criteria: criteria, online: online, cursor: cursor }, function (data) {
-        if (criteria === getCriteria() && online === isOnline()) {
+    $.post("/Chats/Dialogues", { sheetId: sheetId, criteria: currentTab, online: online, cursor: cursor }, function (data) {
+        if (online === isOnline(currentTab)) {
             if (cursor === '') {
                 $divDialogues.empty();
             }
             else {
-                removeBtnLoadinDialogue(sheetId);
+                removeBtnLoadinDialogue(sheetId, currentTab);
             }
             $divDialogues.append(data);
-            countDialoguesSheet(sheetId);
+            countDialoguesSheet(sheetId, currentTab);
         }
-    }).done(function () {
-        disableSpinnerAll(sheetId);
+    }).fail(function () {
+        disableSpinnerAll(sheetId, currentTab);
     });
 }
 
 function getCriteria() {
-    var criteria = $('#sheetsDialogues').find('.active').attr('aria-controls');
+    var criteria = getCurrentTab();
     return criteria;
 }
 
-function isOnline() {
-    return document.getElementById('isOnlineOnly').checked;
+function isOnline(currentTab) {
+    return document.getElementById(`isOnlineOnly-${currentTab}`).checked;
 }
 
-function removeBtnLoadinDialogue(sheetId) {
-    $(`#btn-loading-dialogues-${sheetId}`).remove();
+function removeBtnLoadinDialogue(sheetId, currentTab) {
+    $(`#btn-loading-dialogues-${currentTab}-${sheetId}`).remove();
 }
 
-function enableSpinnerAll($e, sheetId) {
-    if (!$(`#spinnerSheetDialogue${sheetId}`).length) {
-        var spinner = $(`<div id="spinnerSheetDialogue${sheetId}" class="spinner-grow spinner-grow-sm ms-2" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>`);
-        $e.append(spinner);
-    }
+function enableSpinnerInCounter(sheetId, currentTab) {
+    var element = $(`#count-dialogues-${currentTab}-${sheetId}`);
+    var spinner = $(`<div class="spinner-grow spinner-grow-sm" role="status"></div>`);
+    element.html(spinner);
 }
 
-function disableSpinnerAll(sheetId) {
-    $(`#spinnerSheetDialogue${sheetId}`).remove();
+function disableSpinnerAll(sheetId, currentTab) {
+    $(`#count-dialogues-${currentTab}-${sheetId}`).empty();
 }
 
-function countDialoguesSheet(sheetId) {
-    var count = $(`#dialogues-${sheetId}`).find('[name=dialogue]').length;
-    $(`#count-dialogues-sheet-${sheetId}`).text(count);
+function countDialoguesSheet(sheetId, currentTab) {
+    var count = $(`#dialogues-${currentTab}-${sheetId}`).find('[name=dialogue]').length;
+    $(`#count-dialogues-${currentTab}-${sheetId}`).html(count);
+}
+
+function getCurrentTab() {
+    var currentTab = $('#sheetsDialogues').find('p[data-bs-toggle="tab"].active').attr('aria-controls');
+    return currentTab;
 }
 
 function goToChatFromSheetDialogues(event) {
@@ -147,8 +134,8 @@ function goToChatFromSheetDialogues(event) {
 function changeBookmark(e) {
     var $input = $(e).find('input').first();
     var idParts = $input[0].id.split('-');
-    var sheetId = idParts[2];
-    var idRegularUser = idParts[3];
+    var sheetId = idParts[3];
+    var idRegularUser = idParts[4];
     var addBookmark = $input.is(':checked');
     $.post('/Chats/ChangeBookmark', { sheetId: sheetId, idRegularUser: idRegularUser, addBookmark: addBookmark }, function () {
 
@@ -160,8 +147,8 @@ function changeBookmark(e) {
 function changePin(e) {
     var $input = $(e).find('input').first();
     var idParts = $input[0].id.split('-');
-    var sheetId = idParts[2];
-    var idRegularUser = idParts[3];
+    var sheetId = idParts[3];
+    var idRegularUser = idParts[4];
     var addPin = $input.is(':checked');
     $.post('/Chats/ChangePin', { sheetId: sheetId, idRegularUser: idRegularUser, addPin: addPin }, function () {
 

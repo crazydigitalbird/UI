@@ -4,7 +4,7 @@
         <partial name="_MessengerHeaderPartial" />
 
         <div class="large-block__body p-2 d-flex flex-column justify-content-end">
-            <div class="large-block__body-items mt-3">
+            <div id="messages" class="large-block__body-items mt-3" data-load-all-messages="false" data-id-last-message="" onscroll="loadHistoryChat(this)">
                 <vc:messages></vc:messages>
             </div>
             

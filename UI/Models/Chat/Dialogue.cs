@@ -49,7 +49,7 @@ namespace UI.Models
 
         public List<Message> Messages { get; set; }
 
-        public int Age { get; set; }
+        public object Age { get; set; }
     }
 
     public class Message
@@ -65,33 +65,59 @@ namespace UI.Models
         public int IdUserTo { get; set; }
 
         public MessageType Type { get; set; }
+
+        public MessageTimer Timer { get; set; }
     }
 
     public class SendMessage
     {
-        public long? IdMessage { get; set;}
+        public long? IdMessage { get; set; }
     }
+
 
     public class Content
     {
+        public int Id { get; set; }
+
         public string Message { get; set; }
 
-        public List<Photo> Photos { get; set; }
+        public List<PhotoVideo> Photos { get; set; }
+
+        public List<PhotoVideo> Videos { get; set; }
 
         public int PhotosTotalCount { get; set; }
 
         public string Url { get; set; }
-
-        public int Id { get; set; }
 
         public string Key { get; set; }
 
         public int IdPhoto { get; set; }
 
         public string Text { get; set; }
+
+        //----- Gift -----
+        // Используются так же поля: Id; Message.
+        public string AnimationSrc { get; set; }
+
+        public string ImageSrc { get; set; }
+
+        //----- Post =====
+        // Используются так же поля: Photos; Videos.
+        public int IdPost { get; set; }
+
+        public bool IsPurchased {get; set;}
+
+        public string TextPreview { get; set; }
+
+        public int Price { get; set; }
+
+        public int DiscountPercent { get; set; }
+
+        public int PriceWithDiscount { get; set; }
+
     }
 
-    public class Photo
+    public class PhotoVideo
     {
         public long Id { get; set; }
 
@@ -100,6 +126,10 @@ namespace UI.Models
         public string Url { get; set; }
     }
 
+    //При добавлении нового типа необходимо обновить данные:
+    //- _MessagesMensPartial.cshtml --> data-filters
+    //- allNewMessagesFromAllMen.js метод countNewMessages
+    //- Chats\Components\AllNewMessagesFromAllMen\Default.cshtml
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum MessageType
     {
@@ -110,7 +140,10 @@ namespace UI.Models
         Wink,
         Photo_batch,
         Like_NewsFeed_Post,
-        Photo
+        Photo,
+        Video,
+        Post,
+        Virtual_Gift
     }
 
     public class MessagesAndMailsLeft

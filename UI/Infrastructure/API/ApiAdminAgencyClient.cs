@@ -476,7 +476,9 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.PutAsync($"Agencies/Sessions/AddAgencySession?agencyId={agencyId}&sessionGuid={sessionGuid}", null);
                 if (response.IsSuccessStatusCode)
                 {
+#if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
+#endif
                     var agencySession = await response.Content.ReadFromJsonAsync<AgencySession>();
                     return agencySession;
                 }

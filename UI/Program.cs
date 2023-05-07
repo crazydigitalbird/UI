@@ -4,10 +4,10 @@ using Polly.Contrib.WaitAndRetry;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Text.Json.Serialization;
-using System.Text;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Hubs;
+using UI.Infrastructure.Repository;
+using UI.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +16,16 @@ string uriApiBot = builder.Configuration["UriApiBot"];
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+
+builder.Services.AddSingleton<IDictionaryRepository<SheetDialogKey, NewMessage>, DictionaryChatRepository>();
+
+builder.Services.AddSignalR(conf => conf.MaximumReceiveMessageSize = null);
+
+builder.Services.AddSingleton<ChatServices>();
+builder.Services.AddHostedService<BackgroundServiceStarter<ChatServices>>();
+
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
@@ -92,6 +102,8 @@ app.UseStatusCodePages(async context =>
         response.Redirect("/Account/LogOut");
     }
 });
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllerRoute(
     name: "default",

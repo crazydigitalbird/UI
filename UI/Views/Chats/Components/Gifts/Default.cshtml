@@ -1,0 +1,10 @@
+﻿@model List<StickerGroup>
+
+<div class="row text-start px-2 pt-2" style="max-height: 487px; width: 352px; overflow-y:auto;">
+    @foreach (var sticker in Model.SelectMany(sg => sg.Stickers))
+    {
+        <span class="col-auto mx-1 mb-2 sticker p-0">
+            <a href="#!" onclick="sendSticker(this, @sticker.Id)"><img src="@sticker.Url" style="width: 100px;"></a>
+        </span>
+    }
+</div>

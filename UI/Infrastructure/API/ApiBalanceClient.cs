@@ -26,7 +26,9 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Agencies/Balances/GetOperatorBalance?operatorId={operatorId}&dateBegin={begin:yyyy-MM-dd}&dateEnd={end:yyyy-MM-ddTHH:mm:ss.fff}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
+#if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
+#endif
                     List<OperatorBalance> operatorBalances = await response.Content.ReadFromJsonAsync<List<OperatorBalance>>();
                     return operatorBalances;
                 }
@@ -55,7 +57,9 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Agencies/Balances/GetSheetBalance?sheetId={sheetId}&dateBegin={begin:yyyy-MM-dd}&dateEnd={end:yyyy-MM-ddTHH:mm:ss.fff}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
+#if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
+#endif
                     List<SheetBalance> sheetBalances = await response.Content.ReadFromJsonAsync<List<SheetBalance>>();
                     return sheetBalances;
                 }

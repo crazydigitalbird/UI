@@ -17,7 +17,7 @@
             </div>
             <div class="text-start text-white user-block-name-text_block">
                 <p id="interlocutorNameChatHeader" class="other-name-text"></p>
-                <p id="interlocutorIdChatHeader" class="user-block-name-text half-opacity cursor-pointer"></p>
+                <p id="interlocutorIdChatHeader" class="user-block-name-text half-opacity cursor-pointer" onclick="copyId(this)"></p>
             </div>
             <div class="d-flex justify-content-center align-items-center">
                 <img class="large-block__header_users-icon-img cursor-pointer me-2" src="~/image/layout/Pencil.svg" alt="">
@@ -31,7 +31,7 @@
 
             <div class="text-start text-white user-block-name-text_block">
                 <p id="ownerNameChatHeader" class="other-name-text"></p>
-                <p id="ownerIdChatHeader" class="user-block-name-text half-opacity cursor-pointer"></p>
+                <p id="ownerIdChatHeader" class="user-block-name-text half-opacity cursor-pointer" onclick="copyId(this)"></p>
             </div>
             <div class=""></div>
         </div>
@@ -42,28 +42,28 @@
         <div class="large-block__header_menu dropdown-menu p-2 rounded">
             <div class="large-block__header_menu-item cursor-pointer" onclick="changeBookmarkChat(this)">
                 <svg width="15" height="21" class="col-2 me-1" id="bookmarkSVG">
-                    <use xlink:href="#bookmark"></use>
+                    <use xlink:href="#bookmark-svg"></use>
                 </svg>
                 <span class="d-inline-block text-white">Сохранить</span>
             </div>
 
             <div class="large-block__header_menu-item mt-2" onclick="changePremiumChat(this)">
                 <svg width="19" height="16" class="col-2 me-1" id="premiumSVG">
-                    <use xlink:href="#premium"></use>
+                    <use xlink:href="#premium-svg"></use>
                 </svg>
                 <span class="d-inline-block text-white">Премиум</span>
             </div>
 
             <div class="large-block__header_menu-item mt-2" onclick="changeBlockChat(this)">
                 <svg width="19" height="21" class="col-2 me-1" id="blockSVG">
-                    <use xlink:href="#block"></use>
+                    <use xlink:href="#block-svg"></use>
                 </svg>
                 <span class="d-inline-block text-white">Заблокировать</span>
             </div>
 
             <div class="large-block__header_menu-item mt-2" onclick="changeTrashChat(this)">
                 <svg width="21" height="22" class="col-2 me-1" id="trashSVG">
-                    <use xlink:href="#trash"></use>
+                    <use xlink:href="#trash-svg"></use>
                 </svg>
                 <span class="d-inline-block text-white">Удалить</span>
             </div>

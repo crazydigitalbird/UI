@@ -1,0 +1,21 @@
+﻿@model Media
+
+<input type="hidden" id="new-cursor-photos" value="@Model?.Cursor" />
+@if (Model != null && Model.Photos?.Count > 0)
+{
+    foreach (var photo in Model.Photos)
+    {
+        <div class="gallery-card" data-id="@photo.IdPhoto">
+            <img src="@photo.Urls.UrlPreview" alt="">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 19.25C4.89 19.25 0.75 15.11 0.75 10C0.75 4.89 4.89 0.75 10 0.75C15.11 0.75 19.25 4.89 19.25 10C19.25 15.11 15.11 19.25 10 19.25Z" fill="#7D6AF0"></path>
+                <path d="M9.54027 11.5803L7.78027 9.82031" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M13.06 8.06006L9.54004 11.5801" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </div>
+    }
+}
+else
+{
+    @*<div class="text-center">No photos</div>*@
+}

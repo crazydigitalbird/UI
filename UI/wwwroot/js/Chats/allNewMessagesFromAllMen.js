@@ -1,5 +1,6 @@
 ﻿let timerLoadingNewMessages;
 var timers = new Array();
+var updateSeconds = 30;
 
 $(function () {
 
@@ -20,10 +21,11 @@ $(function () {
             $('#allNewMessages').html(data);
             var dataFilters = $('#allNewMessagesFromAllMens').find('p.active').data('filters');
             filteringMessages(dataFilters);
+            countNewMessages();
             runTimers();
         });
-        timerLoadingNewMessages = setTimeout(loadingNewMessages, 1800000);
-    }, 1800000);
+        timerLoadingNewMessages = setTimeout(loadingNewMessages, updateSeconds * 1000);
+    }, updateSeconds * 1000);
 });
 
 function filteringMessages(dataFilters) {
@@ -65,6 +67,7 @@ function filteringMessages(dataFilters) {
             }
         });
     }
+    $('#allNewMessages').scrollTop(0);
 }
 
 //Подсчет количества сообщений по категориям: все; чат; реакции; системные; онлайн.
@@ -87,6 +90,9 @@ function countNewMessages() {
             case 'Sticker':
             case 'Photo':
             case 'Photo_batch':
+            case 'Video':
+            case 'Post':
+            case 'Virtual_Gift':
                 countChats++
                 break;
 

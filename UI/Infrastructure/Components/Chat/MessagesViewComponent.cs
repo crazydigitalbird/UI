@@ -16,11 +16,10 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(/*Sheet sheet, int chatId, long idLastMessage*/)
+        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, int idInterlocutor, long idLastMessage)
         {
-            //var messanger = await _chatClient.GetMessagesChatAsync(sheet, chatId, idLastMessage);
-            //return View(messanger);
-            return View();
+            var messanger = await _chatClient.GetMessagesChatAsync(sheet, idInterlocutor, idLastMessage);
+            return View(messanger);
         }
     }
 }

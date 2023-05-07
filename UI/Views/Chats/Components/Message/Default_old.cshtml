@@ -1,0 +1,59 @@
+﻿@using Humanizer
+@model Message
+
+@if (Model.Type == MessageType.Photo_batch)
+{
+    foreach (var photo in Model.Content.Photos)
+    {
+        <div class="large-block__body-item mt-2">
+            <div class="large-block__body-item-top d-flex align-items-end flex-row-reverse">
+                <div class="large-block__body-item-image ms-2 position-relative">
+                    <div class="standart-image-block position-relative">
+                        <img src="@ViewData["ownerAvatar"]" alt="No person image" class="small-image rounded">
+                        <span class="large-block-header-status-green d-inline-block position-absolute rounded-circle bottom-0 end-0"></span>
+                    </div>
+                </div>
+                <div name="message" class="large-block__body-item-message-answer p-2 rounded-top rounded-start" data-id-message="@Model.Id">
+                    <img src="@photo.Url" class="img-thumbnail" @*style="width: 100px;"*@ />
+                </div>
+            </div>
+
+            <p class="large-block__body-item-small-text text-end">
+                @Model.DateCreated.Humanize()
+            </p>
+        </div>
+    }
+}
+else
+{
+    <div class="large-block__body-item mt-2">
+        <div class="large-block__body-item-top d-flex align-items-end flex-row-reverse">
+            <div class="large-block__body-item-image ms-2 position-relative">
+                <div class="standart-image-block position-relative">
+                    <img src="@ViewData["ownerAvatar"]" alt="No person image" class="small-image rounded">
+                    <span class="large-block-header-status-green d-inline-block position-absolute rounded-circle bottom-0 end-0"></span>
+                </div>
+            </div>
+            @switch (Model.Type)
+            {
+                case MessageType.Message:
+                    <div name="message" class="large-block__body-item-message-answer d-flex align-items-center justify-content-start p-2 rounded-top rounded-start" data-id-message="@Model.Id">
+                        <p class="text-white large-block__body-item-text">
+                            @Model.Content.Message
+                        </p>
+                    </div>
+                    break;
+
+                case MessageType.Sticker:
+                    <div name="message" class="large-block__body-item-message-answer p-2 rounded-top rounded-start" data-id-message="@Model.Id">
+                        <img src="@Model.Content.Url" class="img-thumbnail" style="width: 100px;" />
+                    </div>
+                    break;
+            }
+        </div>
+
+        <p class="large-block__body-item-small-text text-end">
+            @Model.DateCreated.Humanize()
+        </p>
+    </div>
+}

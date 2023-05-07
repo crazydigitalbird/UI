@@ -1,0 +1,94 @@
+﻿<div class="pop-up gallery text-start d-none" data-id-sheet="" data-id-user="">
+    <div class="pop-up-content">
+        <span class="pop-up__close">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </span>
+        <div class="position-relative">
+            <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="avatar">
+                        <img alt="" class="avatar__img">
+                    </div>
+                    <p class="user__name"></p>
+                </div>
+                <p class="gallery__title">Media Gallery</p>
+            </div>
+            <div class="gallery-filter">
+                <div class="filter filter__btn d-flex align-items-center" data-radio="filter_1">
+                    <input type="radio" class="filter__inp" id="photo" name="filter" checked="">
+                    <label for="photo" class="filter__lab">
+                        <span id='spinner-gallery-photos' class="spinner-grow spinner-grow-sm d-none" role="status" style="margin-right: 14px; margin-left: 4px;"></span>
+                        <svg id="svg-gallery-photos" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.71 21.2499H8.48001C7.08001 21.2499 5.94 20.1099 5.94 18.7099V8.47995C5.94 7.07995 7.08001 5.93994 8.48001 5.93994H18.71C20.11 5.93994 21.25 7.07995 21.25 8.47995V18.7099C21.25 20.1099 20.11 21.2499 18.71 21.2499Z" stroke="white" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M3.48999 17.32C3.02999 16.86 2.75 16.22 2.75 15.52V5.29001C2.75 3.89001 3.89001 2.75 5.29001 2.75H15.52C16.31 2.75 17.02 3.10999 17.49 3.67999" stroke="white" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M5.94 18.1L8.87 15.17C9.37 14.67 10.18 14.67 10.67 15.17L11.42 15.92C11.92 16.42 12.73 16.42 13.22 15.92L16.52 12.62C17.02 12.12 17.83 12.12 18.32 12.62L21.25 15.55" stroke="white" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M10.41 8.42004C9.64003 8.42004 9.02002 9.04003 9.02002 9.81003C9.02002 10.58 9.64003 11.2 10.41 11.2C11.18 11.2 11.8 10.58 11.8 9.81003C11.8 9.04003 11.17 8.42004 10.41 8.42004Z" fill="white" fill-opacity="0.8"></path>
+                        </svg>
+                        Фото
+                    </label>
+                    <div class="filter-border"></div>
+                </div>
+                <div class="filter filter__btn d-flex align-items-center" data-radio="filter_2">
+                    <input type="radio" class="filter__inp" id="video" name="filter">
+                    <label for="video" class="filter__lab">
+                        <span id='spinner-gallery-videos' class="spinner-grow spinner-grow-sm d-none" role="status" style="margin-right: 14px; margin-left: 4px;"></span>
+                        <svg id="svg-gallery-videos" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 21.25C6.89 21.25 2.75 17.11 2.75 12C2.75 6.89 6.89 2.75 12 2.75C17.11 2.75 21.25 6.89 21.25 12C21.25 17.11 17.11 21.25 12 21.25Z" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M14.29 11.02L11.5 9.59C10.77 9.22 9.90002 9.75001 9.90002 10.57V13.43C9.90002 14.25 10.77 14.78 11.5 14.41L14.29 12.98C15.09 12.57 15.09 11.43 14.29 11.02Z" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                        Видео
+                    </label>
+                    <div class="filter-border"></div>
+                </div>
+                <div class="filter filter__btn d-flex align-items-center" data-radio="filter_3">
+                    <input type="radio" class="filter__inp" id="audio" name="filter">
+                    <label for="audio" class="filter__lab">
+                        <span id='spinner-gallery-audio' class="spinner-grow spinner-grow-sm d-none" role="status" style="margin-right: 14px; margin-left: 4px;"></span>
+                        <svg id="svg-gallery-audio" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                            
+                            <path d="M2.75 7.9V5.83C2.75 4.12 4.12999 2.75 5.82999 2.75H18.16C19.87 2.75 21.24 4.13 21.24 5.83V7.9" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M21.25 16.08V18.17C21.25 19.88 19.87 21.25 18.17 21.25H5.84C4.13 21.25 2.76001 19.87 2.76001 18.17V16.1" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M12 6.85999V17.14" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M8.92004 8.92004V15.08" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M5.82996 10.97V13.03" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M15.08 8.92004V15.08" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M18.17 10.97V13.03" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                        Аудио
+                    </label>
+                    <div class="filter-border"></div>
+                </div>
+                <div class="filter filter__btn d-flex align-items-center" data-radio="filter_4">
+                    <input type="radio" class="filter__inp" id="sent" name="filter">                    
+                    <label for="sent" class="filter__lab">
+                        <span id='spinner-gallery-sent' class="spinner-grow spinner-grow-sm d-none" role="status" style="margin-right: 14px; margin-left: 4px;"></span>
+                        <svg id="svg-gallery-sent" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.5 17L4.5 12" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M19.5 7L9.5 17" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                        Отправленные
+                    </label>
+                    <span id="counter-send-media" class="sent_num ms-1">(0)</span>
+                    <div class="filter-border"></div>
+                </div>
+            </div>
+            <div class="gallery-btns d-flex position-absolute">
+                <button id="markAsSent" class="btn attach-button rounded">Отметить как отправленные</button>
+                <button id="toSendMedia" class="btn chat-button rounded">Отправить <span id="counter-selected-media">0</span></button>
+            </div>
+        </div>
+
+        <div class="gallery-box">
+            <!-- filter photos -->
+            <div id="photos" class="filter_1 gallery-item" style="" data-cursor=""></div>
+            <!-- filter videos -->
+            <div id="videos" class="filter_2 gallery-item" style="display: none;"></div>
+            <!-- filter audio -->
+            <div id="audio" class="filter_3 gallery-item" style="display: none;"></div>
+            <!-- filter Отправленные -->
+            <div id="sentMedia" class="filter_4 gallery-item" style="display: none;"></div>
+        </div>
+    </div>
+</div>

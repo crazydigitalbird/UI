@@ -12,5 +12,10 @@ namespace UI.Models
         public int Video { get; set; }            
 
         public int Status { get; set; }
+
+        public string Name { get; set; }
+
+        [JsonPropertyName("avatar_small")]
+        public string AvatarSmall { get; set; }
     }
 }

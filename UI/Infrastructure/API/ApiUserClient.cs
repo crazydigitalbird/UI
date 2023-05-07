@@ -128,7 +128,9 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.PostAsync($"registrate", null);
                 if (response.IsSuccessStatusCode)
                 {
+#if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
+#endif
                     var sheetInfo = await response.Content.ReadFromJsonAsync<SheetInfo>();
                     return sheetInfo;
                 }

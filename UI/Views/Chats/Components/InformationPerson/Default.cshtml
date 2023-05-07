@@ -1,0 +1,157 @@
+﻿@model SheetInfo
+
+@{
+    var photos = (PhotosPerson)ViewData["photosPerson"];
+}
+
+<div class="information-man text-start">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex">
+            <div class="avatar">
+                <img src="@Model.Personal.AvatarSmall" alt="" class="avatar__img">
+            </div>
+            <div class="d-flex flex-column justify-content-between">
+                <div class="">
+                    <p class="user__name">@($"{Model.Personal.Name}, {Model.Personal.Age}")</p>
+                    <p class="data__year">@Model.Personal.DateBirth</p>
+                </div>
+                <p class="address">@Model.Personal.Country <span class="city">@Model.Personal.City</span></p>
+            </div>
+        </div>
+        <div class="information__id">ID: <span>@Model.Id</span></div>
+    </div>
+    <div class="information-man-box">
+        <ul class="information-item">
+            <li>
+                <span>Height</span>
+                <span>
+                    @(Model.Personal.Height > 0 ? $"{Model.Personal.Height} cm" : "Не указано")
+                </span>
+            </li>
+            <li>
+                <span>Weight</span>
+                <span>
+                    @(Model.Personal.Weight > 0 ? $"{Model.Personal.Weight}" : "Не указано")
+                </span>
+            </li>
+            <li>
+                <span>Body type</span>
+                <span>
+                    @(!string.IsNullOrWhiteSpace(Model.Personal.BodyType) ? Model.Personal.BodyType : "Не указано")
+                </span>
+            </li>
+            <li>
+                <span>Matirial status</span>
+                <span>
+                    @(!string.IsNullOrWhiteSpace(Model.Personal.MaritalStatus) ? Model.Personal.MaritalStatus : "Не указано")
+                </span>
+            </li>
+            <li>
+                <span>Children</span>
+                <span>
+                    @Model.Personal.CountChildren
+                </span>
+            </li>
+            <li>
+                <span>Smoking</span>
+                <span>
+                    @Model.Personal.Smoking.GetDisplayName()
+                </span>
+            </li>
+            <li>
+                <span>Drinking</span>
+                <span>
+                    @Model.Personal.Drinking.GetDisplayName()
+                </span>
+            </li>
+            <li>
+                <span>Education</span>
+                <span>
+                    @(!string.IsNullOrWhiteSpace(Model.Personal.Education) ? Model.Personal.Education : "Не указано")
+                </span>
+            </li>
+            <li>
+                <span>Occupation</span>
+                <span>
+                    @(!string.IsNullOrWhiteSpace(Model.Personal.Occupation) ? Model.Personal.Occupation : "Не указано")
+                </span>
+            </li>
+        </ul>
+        <p class="information-item__title">Perfect pather</p>
+        <ul class="information-item">
+            <li>
+                <span>Age</span>
+                <span>
+                    @Model.Preferences.Age()
+                </span>
+            </li>
+            <li>
+                <span>Height</span>
+                <span>
+                    @Model.Preferences.Height()
+                </span>
+            </li>
+            <li>
+                <span>Weight</span>
+                <span>
+                    @Model.Preferences.Weight()
+                </span>
+            </li>
+            <li>
+                <span>Body type</span>
+                <span>
+                    Не указано
+                    @*@(!string.IsNullOrWhiteSpace(Model.Preferences.BodyType) ? Model.Preferences.BodyType : "Не указано")*@
+                </span>
+            </li>
+            @*                        <li>
+            <span>Matirial status</span>
+            <span>Single</span>
+            </li>*@
+            <li>
+                <span>Children</span>
+                <span>
+                    @Model.Preferences.HasChildren
+                </span>
+            </li>
+            <li>
+                <span>Smoking</span>
+                <span>
+                    @Model.Preferences.Smokes.GetDisplayName()
+                </span>
+            </li>
+            <li>
+                <span>Drinking</span>
+                <span>
+                    @Model.Preferences.Drinks.GetDisplayName()
+                </span>
+            </li>
+            @*                        <li>
+            <span>Education</span>
+            <span>College</span>
+            </li>
+            <li>
+            <span>Occupation</span>
+            <span>Retired</span>
+            </li>*@
+        </ul>
+    </div>
+</div>
+<div class="information-photos">
+    <p class="information-photos__title text-center">Фото мужчины</p>
+    @if (photos?.Public?.Count > 0)
+    {
+        <div class="information-photos-box d-flex justify-content-start flex-wrap">
+            @foreach (var photo in photos.Public)
+            {
+            <div class="photo-man">
+                <img src="@photo.UrlStandart" alt="">
+            </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-center">Нет фотографий</p>
+    }
+</div>

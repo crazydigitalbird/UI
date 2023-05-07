@@ -40,7 +40,7 @@ namespace UI.Controllers
             {
                 switch (criteria)
                 {
-                    case "all":
+                    case "active":
                         return ViewComponent("SheetDialogues", new { sheet, online, cursor });
 
                     case "history":
@@ -61,12 +61,12 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FindDialogueById(int sheetId, int idRegularUser)
+        public async Task<IActionResult> FindDialogueById(int sheetId, int idRegularUser, string criteria)
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("SheetDialogue", new { sheet, idRegularUser });
+                return ViewComponent("SheetDialogue", new { sheet, idRegularUser, criteria});
             }
             return BadRequest();
         }
@@ -90,6 +90,17 @@ namespace UI.Controllers
             {
                 var messagesAndMailsLeft = await _chatClient.GetManMessagesMails(sheet, idRegularUser);                
                 return Ok(new { messagesAndMailsLeft?.MessagesLeft, messagesAndMailsLeft?.MailsLeft});
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InformationPerson(int sheetId, int idUser)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return ViewComponent("InformationPerson", new { sheet, idUser });
             }
             return BadRequest();
         }
@@ -122,9 +133,49 @@ namespace UI.Controllers
             return BadRequest();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> LoadMessages(int sheetId, int idInterlocutor, long idLastMessage)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return ViewComponent("Messages", new { sheet, idInterlocutor, idLastMessage });
+            }
+            return BadRequest();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Stickers(int sheetId)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return ViewComponent("Stickers", sheet);
+            }
+            return BadRequest();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> CheckGifts(int sheetId, int idInterlocutor)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return Ok(await _chatClient.CheckGiftsAsync(sheet, idInterlocutor));
+            }
+            return BadRequest();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Gifts(int sheetId)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return ViewComponent("Gifts", sheet);
+            }
+            return BadRequest();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Sheets(string criteria, string cursor = "")
@@ -138,47 +189,35 @@ namespace UI.Controllers
             return BadRequest();
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> LoadMessages(int sheetId, int chatId, long idLastMessage)
+        public async Task<IActionResult> MediaPhotos(int sheetId, int idUser, string cursor = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("Messages", new { sheet, chatId, idLastMessage });
+                return ViewComponent("MediaPhotos", new { sheet, cursor });
             }
             return BadRequest();
         }
 
         [HttpPost]
-        public async Task<IActionResult> MediaPhotos(int sheetId, string cursor = "")
+        public async Task<IActionResult> MediaVideos(int sheetId,int idUser, string cursor = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("Photos", new { sheet, cursor });
+                return ViewComponent("MediaVideos", new { sheet, cursor });
             }
             return BadRequest();
         }
 
         [HttpPost]
-        public async Task<IActionResult> MediaVideos(int sheetId, string cursor = "")
+        public async Task<IActionResult> SendMessage(int sheetId, int idRegularUser, MessageType messageType, string message, long idLastMessage = 0, string ownerAvatar = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("Videos", new { sheet, cursor });
-            }
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SendMessage(int sheetId, int idRegularUser, MessageType messageType, string message, string ownerAvatar)
-        {
-            var sheet = await _sheetClient.GetSheetAsync(sheetId);
-            if (sheet != null)
-            {
-                return ViewComponent("Message", new { sheet, idRegularUser, messageType, message, ownerAvatar });
+                return ViewComponent("Message", new { sheet, idRegularUser, messageType, message, idLastMessage, ownerAvatar });
             }
             return BadRequest();
         }

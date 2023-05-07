@@ -21,10 +21,18 @@ namespace UI.Infrastructure.Components
         public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, string criteria = "active", bool online = false, string cursor = "", string filter = "")
         {
             int limit = 20;
+            ViewData["criteria"] = criteria;
+
 #if DEBUGOFFLINE
             Messenger messenger = new Messenger
             {
-                Dialogs = new List<Dialogue> { new Dialogue
+                Dialogs = new List<Dialogue>()
+            };
+
+            for (int i = 0; i < 10; i++)
+            {
+                messenger.Dialogs.AddRange(new List<Dialogue> {
+                    new Dialogue
                 {
                     Status = Status.Offline,
                     Avatar = "/image/avatar1.webp",
@@ -56,9 +64,9 @@ namespace UI.Infrastructure.Components
                         Type = MessageType.LikePhoto,
                         IdUserTo = 11111
                     }
-                }}
-            };
-#else
+                }});
+            }
+#else            
             if (online)
             {
                 criteria = $"{criteria},online";
@@ -66,7 +74,8 @@ namespace UI.Infrastructure.Components
             var messenger = await _chatClient.GetMessangerAsync(sheet, criteria, cursor, limit) ?? new Messenger();
             if(filter == "premium")
             {
-                messenger.Dialogs = messenger.Dialogs.Where(d => d.IsPinned).ToList();
+                ViewData["criteria"] = filter;
+                messenger.Dialogs = messenger.Dialogs?.Where(d => d.IsPinned).ToList();
             }
             if(messenger.Dialogs?.Count < limit)
             {
@@ -75,7 +84,7 @@ namespace UI.Infrastructure.Components
 #endif
             messenger.SheetId = sheet.Id;
             messenger.Sheet = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-            messenger.Dialogs = messenger.Dialogs.Where(d => !d.IsBlocked).ToList();
+            messenger.Dialogs = messenger.Dialogs?.Where(d => !d.IsBlocked).ToList();
             await _chatClient.GetManProfiles(sheet, messenger.Dialogs);
             return View(messenger);
         }

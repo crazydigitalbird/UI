@@ -222,7 +222,7 @@ namespace UI.Controllers
                 }
                 else
                 {
-                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", excludeTags = "",cursor });
+                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", excludeTags = "erotic",cursor });
                 }
             }
             return BadRequest();

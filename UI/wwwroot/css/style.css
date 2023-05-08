@@ -327,7 +327,7 @@ section {
 .other-name-text-mutiline {
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 130%;
     overflow: hidden;
     -webkit-line-clamp: 2;
@@ -337,6 +337,11 @@ section {
 
 .small-text-opacity {
     opacity: 0.5;
+}
+
+.small-text-wrapp {
+    opacity: 0.5;
+    overflow: hidden;
 }
 
 .user-block-name-small-text {

@@ -28,31 +28,42 @@ namespace UI.Infrastructure.Components
                 IdUserTo = idRegularUser,
                 Type = messageType
             };
+            long? idNewMessage = null;
             switch (messageType)
             {
                 case MessageType.Message:
                     sendMessage.Content = new Content() { Message = message };
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
                     break;
 
                 case MessageType.Sticker:
                     var stickerOptions = message.Split(';');
                     message = stickerOptions[0];
                     sendMessage.Content = new Content() { Url = stickerOptions[1] };
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
+                    break;
+
+                case MessageType.Virtual_Gift:
+                    var giftOptions = message.Split(';');
+                    sendMessage.Content = new Content() { ImageSrc = giftOptions[1], Message = giftOptions[2] };
+                    idNewMessage = await _chatClient.SendGiftAsync(sheet, idRegularUser, giftOptions[0], giftOptions[2], idLastMessage);
                     break;
 
                 case MessageType.Photo:
                     var photoOptions = message.Split(';');
                     message = photoOptions[0];
                     sendMessage.Content = new Content { IdPhoto = int.Parse(photoOptions[0]), Url = photoOptions[1] };
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
                     break;
 
                 case MessageType.Video:
                     var videoOptions = message.Split(';');
                     message = videoOptions[0];
                     sendMessage.Content = new Content { IdPhoto = int.Parse(videoOptions[0]), Url = videoOptions[1] };
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
                     break;
             }
-            var idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
+            
             if (idNewMessage.HasValue)
             {
                 sendMessage.Id = idNewMessage;

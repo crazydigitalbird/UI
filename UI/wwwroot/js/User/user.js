@@ -14,7 +14,7 @@
     var newCard = $(`<div class="col">
                     <div class="card h-100 text-center">
                         <div class="bg-image hover-overlay ripple mt-3" data-mdb-ripple-color="light">
-                            <img src="${userInfo.Personal.Avatar}" class="img-fluid rounded-circle p-3" />
+                            <img src="${userInfo.Personal.AvatarSmall}" class="img-fluid rounded-circle p-3" />
                             <a href="#">
                                 <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                             </a>

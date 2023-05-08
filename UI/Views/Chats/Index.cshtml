@@ -44,32 +44,32 @@
 <partial name="_MediaGalleryPopupPartial" />
 
 @section Scripts{
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="~/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery"></script>
-    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js" asp-fallback-src="~/lib/emoji-mart/dist/browser.js" asp-fallback-test="window.EmojiMart"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js" asp-fallback-src="/lib/emoji-mart/dist/browser.js" asp-fallback-test="window.EmojiMart" asp-append-version="true"></script>
 
     @*<--- _SheetsDialoguesPartial --->*@
-    <script src="~/js/Chats/sheetsDialogues.js"></script>
-    <script src="~/js/Chats/search.js"></script>
+    <script src="/js/Chats/sheetsDialogues.js" asp-append-version="true"></script>
+    <script src="/js/Chats/search.js" asp-append-version="true"></script>
 
     @*<--- AllNewMessagesFromAllMenViewComponent --->*@
-    <script src="~/js/Chats/jquery-countdown-timer-control.js"></script>
-    <script src="~/js/Chats/allNewMessagesFromAllMen.js"></script>
+    <script src="/js/Chats/jquery-countdown-timer-control.js" asp-append-version="true"></script>
+    <script src="/js/Chats/allNewMessagesFromAllMen.js" asp-append-version="true"></script>
 
     @*<--- ManMessagesMailsPartial --->*@
-    <script src="~/js/Chats/manMessagesMails.js"></script>
-    <script src="~/js/Chats/messages.js"></script>
+    <script src="/js/Chats/manMessagesMails.js" asp-append-version="true"></script>
+    <script src="/js/Chats/messages.js" asp-append-version="true"></script>
 
     @*<--- MessengerEditorPartial --->*@
-    <script src="~/js/Chats/emoji.js"></script>
-    <script src="~/js/Chats/stickers.js"></script>
-    <script src="~/js/Chats/gifts.js"></script>
-    <script src="~/js/Chats/sendMessage.js"></script>
+    <script src="/js/Chats/emoji.js" asp-append-version="true"></script>
+    <script src="/js/Chats/stickers.js" asp-append-version="true"></script>
+    <script src="/js/Chats/gifts.js" asp-append-version="true"></script>
+    <script src="/js/Chats/sendMessage.js" asp-append-version="true"></script>
 
     @*<--- PopUpPartials --->*@
-    <script src="~/js/Chats/popUp.js"></script>
-    <script src="~/js/Chats/mediaGallery.js"></script>
+    <script src="/js/Chats/popUp.js" asp-append-version="true"></script>
+    <script src="/js/Chats/mediaGallery.js" asp-append-version="true"></script>
 
     @*<--- ChatHub --->*@
-    <script src="~/lib/SignalR/signalr.min.js"></script>
-    <script src="~/js/Chats/Hub/chatHub.js"></script>
+    <script src="/lib/SignalR/signalr.min.js" asp-append-version="true"></script>
+    <script src="/js/Chats/Hub/chatHub.js" asp-append-version="true"></script>
 }

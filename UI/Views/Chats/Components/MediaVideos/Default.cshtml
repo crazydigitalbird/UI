@@ -7,6 +7,13 @@
     {
         <div class="gallery-card video" data-id="@video.IdVideo">
             <img src="@video.Urls.UrlThumbnail" alt="">
+
+            <div class="embed-responsive embed-responsive-16by9 d-none">
+                <iframe class="embed-responsive-item" src="@video.Urls.UrlMp4Sd" allowfullscreen></iframe>
+            </div>
+
+            <input type="hidden" value="@video.Urls.UrlMp4Sd" />
+            <a name="play"></a>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 19.25C4.89 19.25 0.75 15.11 0.75 10C0.75 4.89 4.89 0.75 10 0.75C15.11 0.75 19.25 4.89 19.25 10C19.25 15.11 15.11 19.25 10 19.25Z" fill="#7D6AF0"></path>
                 <path d="M9.54027 11.5803L7.78027 9.82031" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>

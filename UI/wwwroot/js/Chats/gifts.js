@@ -26,10 +26,10 @@ $(document).on('click', function (e) {
     }
 })
 
-function sendGift(e, giftId) {
+function sendGift(e, giftId, giftName) {
     var giftUrl = $(e).find('img')[0].src;
-    var message = `${giftId};${giftUrl}`
-    send('Gift', message);
+    var message = `${giftId};${giftUrl};${giftName}`
+    send('Virtual_Gift', message);
 }
 
 function checkGifts(sheetId, idInterlocutor) {

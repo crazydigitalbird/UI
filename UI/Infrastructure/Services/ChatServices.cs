@@ -27,7 +27,7 @@ namespace UI.Infrastructure.Services
 
         private readonly IChatClient _chatClient;
         private readonly IAuthenticationClient _authenticationClient;
-        private readonly IOperatorClient _operatorClient;
+        private readonly IAdminClient _adminClient;
         private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
 
         public ChatServices(IServiceProvider serviceProvider,
@@ -35,7 +35,7 @@ namespace UI.Infrastructure.Services
             ILogger<ChatServices> logger,
             IChatClient chatClient,
             IAuthenticationClient authenticationClient,
-            IOperatorClient operatorClient,
+            IAdminClient adminClient,
             IDictionaryRepository<SheetDialogKey, NewMessage> dictionary)
         {
             _serviceProvider = serviceProvider;
@@ -43,13 +43,13 @@ namespace UI.Infrastructure.Services
             _logger = logger;
             _chatClient = chatClient;
             _authenticationClient = authenticationClient;
-            _operatorClient = operatorClient;
+            _adminClient = adminClient;
             _dictionary = dictionary;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(GetNewMessage, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
+            _timer = new Timer(UpdateOnlineStatus, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
             return Task.CompletedTask;
         }
 
@@ -68,7 +68,8 @@ namespace UI.Infrastructure.Services
             _started = true;
             try
             {
-                await _hubContext.Clients.All.SendAsync("Recive", "Hellow");
+                await GetNewMessage();
+                //await _hubContext.Clients.All.SendAsync("Recive", "Hellow");
             }
             catch (Exception ex)
             {
@@ -86,19 +87,14 @@ namespace UI.Infrastructure.Services
             GC.SuppressFinalize(this);
         }
 
-        public async void GetNewMessage(object state)
+        public async Task GetNewMessage()
         {
             return;
-            if (user == null)
-            {
-                user = await _authenticationClient.LogInAsync("operator", "1");
-            }
-            var sheets = await _operatorClient.GetSheetsAsync();
+            var sheets = await _adminClient.GetSheetsFast();
 
             Stopwatch stopwatch1 = new Stopwatch();
             Stopwatch stopwatch2 = new Stopwatch();
-
-
+            
             stopwatch1.Start();
             //---------------------------------1------------------------------
 

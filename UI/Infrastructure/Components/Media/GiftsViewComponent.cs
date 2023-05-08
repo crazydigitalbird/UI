@@ -17,8 +17,8 @@ namespace UI.Infrastructure.Components
 
         public async Task<IViewComponentResult> InvokeAsync(Sheet sheet)
         {
-            var giftsGroups = await _chatClient.GetGiftsAsync(sheet);
-            return View(giftsGroups);
+            var giftData = await _chatClient.GetGiftsAsync(sheet);
+            return View(giftData.Gifts);
         }
     }
 }

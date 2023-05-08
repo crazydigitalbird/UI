@@ -312,12 +312,12 @@ namespace UI.Infrastructure.API
                 }
                 else
                 {
-                    _logger.LogWarning("Error loading stikers in sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", sheet.Id, response.StatusCode);
+                    _logger.LogWarning("Error loading stickers in sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", sheet.Id, response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading stikers in sheet with id: {sheetId}.", sheet.Id);
+                _logger.LogError(ex, "Error loading stickers in sheet with id: {sheetId}.", sheet.Id);
             }
             return null;
         }
@@ -358,24 +358,29 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        public async Task<List<StickerGroup>> GetGiftsAsync(Sheet sheet)
+        public async Task<GiftData> GetGiftsAsync(Sheet sheet)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
             {
                 var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
-                httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
-                httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
-                httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("email", credentials.Login),
+                    new KeyValuePair<string, string>("password", credentials.Password),
+                    new KeyValuePair<string, string>("limit", "30"),
+                    new KeyValuePair<string, string>("cursor", "") };
 
-                var response = await httpClient.PostAsync("stikers", null);
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync("list_gifts", content);
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
 #endif
-                    var stickers = await response.Content.ReadFromJsonAsync<List<StickerGroup>>();
-                    return stickers;
+                    var giftData = await response.Content.ReadFromJsonAsync<GiftData>();
+                    return giftData;
                 }
                 else
                 {
@@ -389,7 +394,44 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Media> GetPhotosAsync(Sheet sheet, string cursor = "")
+        public async Task<long?> SendGiftAsync(Sheet sheet, int idUserTo, string idGift, string message, long idLastMessage)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("email", credentials.Login),
+                    new KeyValuePair<string, string>("password", credentials.Password),
+                    new KeyValuePair<string, string>("idUserTo", $"{idUserTo}"),
+                    new KeyValuePair<string, string>("idGift", idGift),
+                    new KeyValuePair<string, string>("message", message) };
+
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync("send_gifts", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    var sendMessage = await response.Content.ReadFromJsonAsync<SendMessage>();
+                    return sendMessage?.IdMessage;
+                }
+                else
+                {
+                    _logger.LogWarning("Error loading gifts in sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", sheet.Id, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading gifts in sheet with id: {sheetId}.", sheet.Id);
+            }
+            return null;
+        }
+
+        public async Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags="", string cursor = "")
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -400,9 +442,9 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
                 httpClient.DefaultRequestHeaders.Add("limit", "40");
                 httpClient.DefaultRequestHeaders.Add("criteria", "");
-                httpClient.DefaultRequestHeaders.Add("statuses", "");
-                httpClient.DefaultRequestHeaders.Add("tags", "");
-                httpClient.DefaultRequestHeaders.Add("excludeTags", "");
+                httpClient.DefaultRequestHeaders.Add("statuses", statuses);
+                httpClient.DefaultRequestHeaders.Add("tags", tags);
+                httpClient.DefaultRequestHeaders.Add("excludeTags", excludeTags);
                 httpClient.DefaultRequestHeaders.Add("cursor", cursor);
 
                 var response = await httpClient.PostAsync("media_photo", null);
@@ -426,7 +468,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Media> GetVideosAsync(Sheet sheet, string cursor = "")
+        public async Task<Media> GetVideosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -436,9 +478,9 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
                 httpClient.DefaultRequestHeaders.Add("limit", "40");
-                httpClient.DefaultRequestHeaders.Add("statuses", "");
-                httpClient.DefaultRequestHeaders.Add("tags", "");
-                httpClient.DefaultRequestHeaders.Add("excludeTags", "");
+                httpClient.DefaultRequestHeaders.Add("statuses", statuses);
+                httpClient.DefaultRequestHeaders.Add("tags", tags);
+                httpClient.DefaultRequestHeaders.Add("excludeTags", excludeTags);
                 httpClient.DefaultRequestHeaders.Add("cursor", cursor);
 
                 var response = await httpClient.PostAsync("media_video", null);
@@ -506,9 +548,15 @@ namespace UI.Infrastructure.API
                         break;
 
                     case MessageType.Photo:
-                        contentList.Add(new KeyValuePair<string, string>("type", "photo"));
-                        contentList.Add(new KeyValuePair<string, string>("message", ""));
+                        contentList.Add(new KeyValuePair<string, string>("type", "gallery-photo"));
+                        //contentList.Add(new KeyValuePair<string, string>("message", ""));
                         contentList.Add(new KeyValuePair<string, string>("idGalleryPhoto", message));
+                        break;
+
+                    case MessageType.Video:
+                        contentList.Add(new KeyValuePair<string, string>("type", "gallery-video"));
+                        //contentList.Add(new KeyValuePair<string, string>("message", ""));
+                        contentList.Add(new KeyValuePair<string, string>("idGalleryVideo", message));
                         break;
                 }
 
@@ -694,6 +742,7 @@ namespace UI.Infrastructure.API
             }
             return null;
         }
+
     }
 
     public interface IChatClient
@@ -711,10 +760,11 @@ namespace UI.Infrastructure.API
         Task<List<StickerGroup>> GetStickersAsync(Sheet sheet);
 
         Task<bool> CheckGiftsAsync(Sheet sheet, int idInterlocutor);
-        Task<List<StickerGroup>> GetGiftsAsync(Sheet sheet);
+        Task<GiftData> GetGiftsAsync(Sheet sheet);
+        Task<long?> SendGiftAsync(Sheet sheet, int idUserTo, string idGift, string message, long idLastMessage);
 
-        Task<Media> GetPhotosAsync(Sheet sheet, string cursor = "");
-        Task<Media> GetVideosAsync(Sheet sheet, string cursor = "");
+        Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
+        Task<Media> GetVideosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
         Task<long?> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message, long idLastMessage);
         Task<Dialogue> FindDialogueById(Sheet sheet, int idRegularUser);
         Task<bool> ChangePinAsync(Sheet sheet, int idRegularUser, bool addPin);

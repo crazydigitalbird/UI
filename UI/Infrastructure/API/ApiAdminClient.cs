@@ -1,4 +1,5 @@
 ﻿using Core.Models.Agencies;
+using Core.Models.Sheets;
 using Core.Models.Users;
 using System.Net;
 using System.Security.Principal;
@@ -221,6 +222,29 @@ namespace UI.Infrastructure.API
             return false;
         }
 
+        public async Task<List<Sheet>> GetSheetsFast()
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var response = await httpClient.GetAsync($"Sheets/GetSheetsFast");
+                if (response.IsSuccessStatusCode)
+                {
+                    var sheets = (await response.Content.ReadFromJsonAsync<List<Sheet>>()).Where(a => a.IsActive).ToList();
+                    return sheets;
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all the sheets.");
+            }
+            return null;
+        }
+
         private string GetSessionGuid()
         {
             var user = _httpContextAccessor.HttpContext.User;
@@ -244,5 +268,7 @@ namespace UI.Infrastructure.API
         Task<List<User>> GetUsers();
         Task<bool> DeleteAdmin(int adminId);
         Task<bool> AddAdmin(int agencyId);
+
+        Task<List<Sheet>> GetSheetsFast();
     }
 }

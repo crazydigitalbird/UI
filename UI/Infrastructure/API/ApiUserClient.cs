@@ -60,7 +60,7 @@ namespace UI.Infrastructure.API
                 if (site != null)
                 {
                     var sheetInfo = await Registrate(httpClientBot, site, login, password);
-                    sheetInfo = new SheetInfo { Id = 1111111, Personal = new Personal { Avatar = "/image/avatar.webp", AvatarSmall = "/image/avatar.webp", Name = "Diana" } };
+                    //sheetInfo = new SheetInfo { Id = 1111111, Personal = new Personal { Avatar = "/image/avatar.webp", AvatarSmall = "/image/avatar.webp", Name = "Diana" } };
                     if (sheetInfo != null)
                     {
                         var credentials = WebUtility.UrlEncode(JsonConvert.SerializeObject(new { login = login, password = password }, Formatting.Indented));

@@ -11,6 +11,15 @@ $('#toSendMedia').on('click', function () {
     }
 });
 
+//Воспроизведение видео
+$('[name=play]').on('click', function () {
+    $(this).prev().removeClass('d-none');
+});
+
+function showVideo(){
+    console.log('video');
+}
+
 function sendMedia(galleryCard) {
     var url = $(galleryCard).find('img')[0].src;
     var mediaId = $(galleryCard).data('id');
@@ -98,8 +107,9 @@ function getPhotos(sheetId, idUser, newLoading) {
         // Если новая загрузка или cursor не пустой, то отправляем запросо на получения фото
         if (newLoading || cursor) {
             isLoadingGallery[currentTab] = true;
+            var exclusivePost = false;
             enableSpinnerInGallery(currentTab);
-            $.post(`/Chats/Media${currentTab}`, { sheetId: sheetId, idUser: idUser, cursor: cursor }, function (data) {
+            $.post(`/Chats/Media${currentTab}`, { sheetId: sheetId, idUser: idUser, exclusivePost: exclusivePost, cursor: cursor }, function (data) {
                 isLoadingGallery[currentTab] = false;
                 var currentSheetId = $('#manMessagesMails').data('sheet-id');
                 var currentIdUser = $('#interlocutorIdChatHeader').text();
@@ -151,9 +161,12 @@ function setDataCursor(currentTab) {
 //Добавление обработчика событий при клике на медиа файле. Функционал выделения.
 function addEventListenerToCard() {
     let cards = document.querySelectorAll('.gallery-card');
+    $('[name=play]').click(function () {
+        console.log('click svg');
+    });
     cards.forEach(card => {
         $(card).unbind('click');
-        $(card).click(function () {
+        $(card).click(function (event) {
             $(this).toggleClass('checkedCard');
             var count = getCheckedCard();
             setCounterSelectedMedia(count);

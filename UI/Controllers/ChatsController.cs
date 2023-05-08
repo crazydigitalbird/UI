@@ -34,7 +34,7 @@ namespace UI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Dialogues(int sheetId, string criteria, bool online, string cursor = "")
-         {
+        {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
@@ -66,7 +66,7 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("SheetDialogue", new { sheet, idRegularUser, criteria});
+                return ViewComponent("SheetDialogue", new { sheet, idRegularUser, criteria });
             }
             return BadRequest();
         }
@@ -88,8 +88,8 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                var messagesAndMailsLeft = await _chatClient.GetManMessagesMails(sheet, idRegularUser);                
-                return Ok(new { messagesAndMailsLeft?.MessagesLeft, messagesAndMailsLeft?.MailsLeft});
+                var messagesAndMailsLeft = await _chatClient.GetManMessagesMails(sheet, idRegularUser);
+                return Ok(new { messagesAndMailsLeft?.MessagesLeft, messagesAndMailsLeft?.MailsLeft });
             }
             return BadRequest();
         }
@@ -111,7 +111,7 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                if(await _chatClient.ChangeBookmarkAsync(sheet, idRegularUser, addBookmark))
+                if (await _chatClient.ChangeBookmarkAsync(sheet, idRegularUser, addBookmark))
                 {
                     return Ok();
                 }
@@ -190,23 +190,40 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MediaPhotos(int sheetId, int idUser, string cursor = "")
+        public async Task<IActionResult> MediaPhotos(int sheetId, int idUser, bool exclusivePost, string cursor = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("MediaPhotos", new { sheet, cursor });
+                if (exclusivePost)
+                {
+                    var tags = "erotic";
+                    return ViewComponent("MediaPhotos", new { sheet, tags, cursor });
+                }
+                else
+                {
+                    var statuses = "approved,approved_by_ai";
+                    var excludeTags = "erotic";
+                    return ViewComponent("MediaPhotos", new { sheet, statuses, excludeTags, cursor });
+                }
             }
             return BadRequest();
         }
 
         [HttpPost]
-        public async Task<IActionResult> MediaVideos(int sheetId,int idUser, string cursor = "")
+        public async Task<IActionResult> MediaVideos(int sheetId, int idUser, bool exclusivePost, string cursor = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("MediaVideos", new { sheet, cursor });
+                if (exclusivePost)
+                {
+                    return ViewComponent("MediaVideos", new { sheet, tags = "erotic", cursor });
+                }
+                else
+                {
+                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", excludeTags = "",cursor });
+                }
             }
             return BadRequest();
         }

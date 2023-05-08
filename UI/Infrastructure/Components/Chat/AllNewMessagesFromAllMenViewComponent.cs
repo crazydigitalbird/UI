@@ -255,6 +255,11 @@ namespace UI.Infrastructure.Components
                 dialogues = dialogues.Union(messanger.Dialogs).ToList();
             } while (messanger.Dialogs.Count == limit && IsLoadDialogues(messanger, dateThreshold));
 
+            if(days.HasValue)
+            {
+                dialogues = dialogues.Where(d => d.DateUpdated >=  dateThreshold.Value).ToList();
+            }
+
             return new KeyValuePair<int, List<Dialogue>>(sheet.Id, dialogues);
         }
 

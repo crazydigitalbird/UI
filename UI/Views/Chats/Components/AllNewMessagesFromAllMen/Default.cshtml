@@ -21,7 +21,7 @@
              data-online="@ds.Dialogue.Status"
              onclick="goToChat(this)">
 
-            <div class="other-user-block col-2">
+            <div class="other-user-block col-2 pe-0">
                 <div class="standart-image-block position-relative">
                     <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
                     @if (ds.Dialogue.Status == Status.Online)
@@ -34,14 +34,14 @@
                     }
                 </div>
 
-                <p name="interlocutorName" class="d-none">@ds.Dialogue.UserName</p>
+                @*<p name="interlocutorName" class="d-none">@ds.Dialogue.UserName</p>*@
                 <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
 
-                <p class="user-block-name-text small-text-opacity">
+                <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
                     @ds.Dialogue.UserName
                 </p>
             </div>
-            <div class="message-block col-6 text-start">
+            <div class="message-block col-6 text-start pe-0">
                 <p class="mb-1 other-name-text-mutiline">
                     @switch (ds.Dialogue.LastMessage.Type)
                     {
@@ -115,7 +115,7 @@
     }
     else
     {
-        <div name="newMessage" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mt-2"
+        <div name="newMessage" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mb-2"
              data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
              data-owner-id="@($"{ds.SheetInfo.Id}")"
              data-is-pinned="@ds.Dialogue.IsPinned"
@@ -124,7 +124,7 @@
              data-online="@ds.Dialogue.Status"
              onclick="goToChat(this)">
 
-            <div class="other-user-block col-2">
+            <div class="other-user-block col-2 ps-0">
                 <div class="standart-image-block position-relative">
                     <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
                     @if (ds.Dialogue.Status == Status.Online)
@@ -137,13 +137,13 @@
                     }
                 </div>
 
-                @*                <p class="user-block-name-text small-text-opacity">
-        @sd.Dialogue.LastMessage.DateCreated.Humanize()
-        </p>*@
+                <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
+                    @ds.Dialogue.UserName
+                </p>
 
             </div>
-            <div class="message-block col-6 text-start">
-                <p name="interlocutorName" class="mb-1 other-name-text">@ds.Dialogue.UserName</p>
+            <div class="message-block col-6 text-start ps-0">
+                @*<p name="interlocutorName" class="mb-1 other-name-text">@ds.Dialogue.UserName</p>*@
                 <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
                 <p class="other-name-text-mutiline">
                     @switch (ds.Dialogue.LastMessage.Type)

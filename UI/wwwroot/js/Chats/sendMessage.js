@@ -55,7 +55,13 @@ function reduceMessagesLeft() {
 
 //Обновление счетчика размера текстового сообщения в TextArea
 function changeCounter() {
-    var count = $('#newMessage').val().length;
-    var messageCounter = $('#messageLength');
-    messageCounter.text(count);
+        var count = $('#newMessage').val().length;
+        var messageCounter = $('#messageLength');
+        messageCounter.text(count);
+}
+
+function sendEnter(event) {
+    if (event.keyCode == 13) {
+        sendMessage();
+    }
 }

@@ -342,6 +342,7 @@ section {
 .small-text-wrapp {
     opacity: 0.5;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .user-block-name-small-text {

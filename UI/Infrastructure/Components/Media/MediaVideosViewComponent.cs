@@ -15,9 +15,9 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, string cursor = "")
+        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
         {
-            var videos = await _chatClient.GetVideosAsync(sheet, cursor);
+            var videos = await _chatClient.GetVideosAsync(sheet, statuses, tags, excludeTags, cursor);
             return View(videos);
         }
     }

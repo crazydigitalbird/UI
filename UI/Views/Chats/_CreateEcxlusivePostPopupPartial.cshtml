@@ -1,0 +1,57 @@
+﻿<div id="post" class="pop-up create-post d-none" data-id-sheet="" data-id-user="">
+    <div class="pop-up-content" style="min-height: 650px;">
+        <p class="create-post__title">Create exclusive post</p>
+        <span class="pop-up__close">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </span>
+        <div class="create-post-text">
+            <textarea class="" placeholder="Сообщение" maxlength="3500" minlength="200"></textarea>
+            <span class="keypress_text">0</span>
+        </div>
+        <div class="d-flex justify-content-start">
+            <div class="upload-file d-flex align-items-center justify-content-center">
+                <button id="attachmentPost" type="button" class="btn answer-button attach-button rounded text-white">
+                    <img src="/image/layout/Attachment.svg" alt="">
+                    <span class="answer-button__text">Прикрепить файл</span>
+                </button>
+            </div>
+            <div class="uploaded-file d-flex flex-wrap ms-2">
+            </div>
+        </div>
+        <div class="create-post-btns d-flex align-items-center justify-content-between mt-2">
+            <div class="d-flex">
+                <button id="sentPost" class="btn answer-button chat-button rounded text-white me-2">Отправить</button>
+                <button id="previewPost" type="button" class="btn answer-button attach-button rounded text-white">
+                    <span class="answer-button__text">Preview</span>
+                </button>
+            </div>
+            <div class="requirements-box position-relative py-2">
+                <div class="view-requirements d-flex align-items-center">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 9V13.66" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M10 7.08008C10.4142 7.08008 10.75 6.74429 10.75 6.33008C10.75 5.91586 10.4142 5.58008 10 5.58008C9.58579 5.58008 9.25 5.91586 9.25 6.33008C9.25 6.74429 9.58579 7.08008 10 7.08008Z" fill="#9292A3"></path>
+                        <path d="M10 19.25C15.1086 19.25 19.25 15.1086 19.25 10C19.25 4.89137 15.1086 0.75 10 0.75C4.89137 0.75 0.75 4.89137 0.75 10C0.75 15.1086 4.89137 19.25 10 19.25Z" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    View Requirements
+                </div>
+                <ul class="requirements position-absolute text-start">
+                    <p class="requirements__title">Requirements:</p>
+                    <li class="requirements-list">To crate an exclusive post? choose and add media content.</li>
+                    <li class="requirements-list">Media content should consist of 4 photos or more / 1 video / 1 video + any amount of photos.</li>
+                    <li class="requirements-list">The text should be between 200 and 3500 characters long.</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="history__title pe-3">Posts history for Will <span id='spinner-hostory-posts' class="spinner-grow spinner-grow-sm ps-2 d-none" role="status"></span></p>
+        <div class="d-flex justify-content-center">
+            <div class="history-posts d-inline-flex flex-column">
+                <div id="historyPosts" class="history">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

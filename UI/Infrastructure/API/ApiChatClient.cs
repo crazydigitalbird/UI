@@ -1,6 +1,4 @@
 ﻿using Core.Models.Sheets;
-using Core.Models.Users;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Newtonsoft.Json;
 using UI.Models;
 
@@ -35,6 +33,10 @@ namespace UI.Infrastructure.API
                 {
                     httpClient.DefaultRequestHeaders.Add("operator", operatorId.ToString());
                 }
+                else
+                {
+                    httpClient.DefaultRequestHeaders.Add("operator", "");
+                }
 
                 var response = await httpClient.PostAsync("message_by_criteria", null);
                 if (response.IsSuccessStatusCode)
@@ -57,6 +59,41 @@ namespace UI.Infrastructure.API
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error receiving dialogs.");
+            }
+            return null;
+        }
+
+        public async Task<Messenger> GetMessangerPremiumAndTrashAsync(Sheet sheet, string criteria, string cursor = "", int limit = 20)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("idUser", sheet.Identity),
+                    new KeyValuePair<string, string>("type", criteria),
+                    new KeyValuePair<string, string>("cursor", cursor),
+                    new KeyValuePair<string, string>("limit", $"{limit}")};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync($"get_premium", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>();
+                    return messenger;
+                }
+                else
+                {
+                    _logger.LogWarning("Error receiving dialogs is criteria {criteria}. HttpStatusCode: {httpStatusCode}", criteria, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error receiving dialogs is criteria {criteria}.", criteria);
             }
             return null;
         }
@@ -90,7 +127,7 @@ namespace UI.Infrastructure.API
                                 chat.Avatar = sheetInfo.Personal.AvatarSmall;
                                 chat.UserName = sheetInfo.Personal.Name;
                                 chat.Status = sheetInfo.IsOnline ? Status.Online : Status.Offline;
-                                chat.Age = sheetInfo.Personal.Age;
+                                //chat.Age = sheetInfo.Personal.Age;
                             }
                         }
                     }
@@ -322,6 +359,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
+        #region Gifts
         public async Task<bool> CheckGiftsAsync(Sheet sheet, int idInterlocutor)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
@@ -430,8 +468,84 @@ namespace UI.Infrastructure.API
             }
             return null;
         }
+        #endregion
 
-        public async Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags="", string cursor = "")
+        #region Post
+        public async Task<bool> CheckPostAsync(Sheet sheet, int idInterlocutor)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("email", credentials.Login),
+                    new KeyValuePair<string, string>("password", credentials.Password),
+                    new KeyValuePair<string, string>("idInterlocutor", $"{idInterlocutor}")};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync($"get_posts", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    var limitPosts = await response.Content.ReadFromJsonAsync<LimitPost>();
+                    return limitPosts.AllowSendPost;
+                }
+                else
+                {
+                    _logger.LogWarning("Error checked post userFrom: {userFrom}, userTo: {userTo}. HttpStatusCode: {httpStatusCode}", sheet.Identity, idInterlocutor, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checked post userFrom: {userFrom}, userTo: {userTo}.", sheet.Identity, idInterlocutor);
+            }
+            return false;
+        }
+
+        public async Task<List<Post>> ListPostAsync(Sheet sheet, int idRegularUser, long idLastMessage = 0, int limit = 20)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("email", credentials.Login),
+                    new KeyValuePair<string, string>("password", credentials.Password),
+                    new KeyValuePair<string, string>("idRegularUser", $"{idRegularUser}"),
+                    new KeyValuePair<string, string>("idLastMessage", $"{idLastMessage}"),
+                    new KeyValuePair<string, string>("limit", $"{limit}")};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync($"list_posts", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    var posts = await response.Content.ReadFromJsonAsync<List<Post>>();
+                    return posts;
+                }
+                else
+                {
+                    _logger.LogWarning("Error checked post userFrom: {userFrom}, userTo: {userTo}. HttpStatusCode: {httpStatusCode}", sheet.Identity, idRegularUser, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checked post userFrom: {userFrom}, userTo: {userTo}.", sheet.Identity, idRegularUser);
+            }
+            return null;
+        }
+
+        #endregion
+
+        public async Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -687,6 +801,74 @@ namespace UI.Infrastructure.API
             return false;
         }
 
+        public async Task<bool> ChangePremiumAsync(Sheet sheet, int idInterlocutor, bool addPremium)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("type", addPremium ? "premium" : "unpremium"),
+                    new KeyValuePair<string, string>("idUser", sheet.Identity),
+                    new KeyValuePair<string, string>("idInterlocutor", $"{idInterlocutor}")};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync($"premium", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    return true;
+                }
+                else
+                {
+                    _logger.LogWarning("Error premium dialogue with id: {idRegularUser}.Sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", idInterlocutor, sheet.Id, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error premium dialogue with id: {idRegularUser}.Sheet with id: {sheetId}.", idInterlocutor, sheet.Id);
+            }
+            return false;
+        }
+
+        public async Task<bool> ChangeTrashAsync(Sheet sheet, int idInterlocutor, bool addTrash)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("type", addTrash ? "trash" : "untrash"),
+                    new KeyValuePair<string, string>("idUser", sheet.Identity),
+                    new KeyValuePair<string, string>("idInterlocutor", $"{idInterlocutor}")};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync($"premium", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    return true;
+                }
+                else
+                {
+                    _logger.LogWarning("Error trash dialogue with id: {idRegularUser}.Sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}.", idInterlocutor, sheet.Id, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trash dialogue with id: {idRegularUser}.Sheet with id: {sheetId}.", idInterlocutor, sheet.Id);
+            }
+            return false;
+        }
+
         public async Task<Dictionary<long, MessageTimer>> Timers(IEnumerable<long?> idLastMessages)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
@@ -748,6 +930,7 @@ namespace UI.Infrastructure.API
     public interface IChatClient
     {
         Task<Messenger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10, int operatorId = 0);
+        Task<Messenger> GetMessangerPremiumAndTrashAsync(Sheet sheet, string criteria, string cursor = "", int limit = 20);
 
         Task GetManProfiles(Sheet sheet, List<Dialogue> dialogues);
         Task<List<SheetInfo>> GetManProfiles(Sheet sheet, List<int> idDialogues);
@@ -763,12 +946,19 @@ namespace UI.Infrastructure.API
         Task<GiftData> GetGiftsAsync(Sheet sheet);
         Task<long?> SendGiftAsync(Sheet sheet, int idUserTo, string idGift, string message, long idLastMessage);
 
+        Task<bool> CheckPostAsync(Sheet sheet, int idInterlocutor);
+        Task<List<Post>> ListPostAsync(Sheet sheet, int idRegularUser, long idLastMessage = 0, int limit = 20);
+
         Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
         Task<Media> GetVideosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
         Task<long?> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message, long idLastMessage);
         Task<Dialogue> FindDialogueById(Sheet sheet, int idRegularUser);
+
         Task<bool> ChangePinAsync(Sheet sheet, int idRegularUser, bool addPin);
         Task<bool> ChangeBookmarkAsync(Sheet sheet, int idRegularUser, bool addBookmark);
+        Task<bool> ChangePremiumAsync(Sheet sheet, int idInterlocutor, bool addPremium);
+        Task<bool> ChangeTrashAsync(Sheet sheet, int idInterlocutor, bool addTrash);
+
         Task<Dictionary<long, MessageTimer>> Timers(IEnumerable<long?> idLastMessages);
         Task<MessageTimer> SystemTimer(int idUserFrom, int idUserTo);
     }

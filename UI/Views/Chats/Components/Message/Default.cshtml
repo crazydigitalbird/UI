@@ -3,10 +3,16 @@
 
 @{
     var chat = Model?.Dialogs?.FirstOrDefault();
+    bool newSendMessage = ViewData.ContainsKey("newSendMessage");
 }
 
 @if (chat != null)
 {
+    if (!newSendMessage)
+    {
+        <input type="hidden" id="temp_chat" data-id-last-message="@chat.Messages.FirstOrDefault()?.Id" data-load-all-messages="@(chat.Messages.Count < 15 ? true : false)" />
+    }
+
     foreach (var m in chat.Messages)
     {
         bool isOwner = m.IdUserFrom != chat.IdInterlocutor;
@@ -15,16 +21,18 @@
         {
             foreach (var photo in m.Content.Photos)
             {
-                <div class="large-block__body-item mt-2 me-2">
+                <div class="large-block__body-item mt-2 me-1">
                     <div class="large-block__body-item-top d-flex align-items-end @(isOwner? "flex-row-reverse" : "")">
-                        <div class="large-block__body-item-image me-2 @(isOwner? "position-relative" : "")">
+                        <div class="large-block__body-item-image  @(isOwner? "position-relative ms-2" : "me-2")">
                             <div class="standart-image-block position-relative">
                                 <img src="@(isOwner ? Model.Sheet.Personal.AvatarSmall: chat.Avatar)" alt="No person image" class="small-image rounded">
                                 @*<span class="large-block-header-status-green d-inline-block position-absolute rounded-circle bottom-0 end-0"></span>*@
                             </div>
                         </div>
-                        <div name="message" class="p-2 rounded-top @(isOwner ? "large-block__body-item-message-answer rounded-start" : "large-block__body-item-message rounded-end")" data-id-message="@m.Id">
-                            <img src="@photo.Url" class="img-thumbnail" style="width: 100px;" />
+                        <div name="message" class="@(isOwner ? "large-block__body-item-message-answer rounded-start" : "large-block__body-item-message rounded-end") d-flex align-items-center justify-content-start p-2 rounded-top" data-id-message="@m.Id">
+                            <p class="text-white large-block__body-item-text">
+                                <img src="@photo.Url" class="img-thumbnail" style="width: 100px;" />
+                            </p>
                         </div>
                     </div>
 
@@ -71,7 +79,15 @@
                                     break;
 
                                 case MessageType.Video:
-                                    @:Video Video Video Video Video Video Video Video Video
+                                    <span class="rounded video-msg" style="background-image: url(@m.Content.Url); background-size: auto 100%;">
+                                        <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                            <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                            <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                        </svg>
+                                    </span>
+                                    break;
+
+                                case MessageType.Photo_batch:
                                     break;
 
                                 case MessageType.Virtual_Gift:
@@ -220,230 +236,3 @@ else
         </div>
     </div>
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@*<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Hot Atletic Body you have!
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text fst-italic">
-                Майку нравиться Ваше
-                <a href="http://test1.ismail.website/#" class="fst-italic">фото</a>
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Sister is a young teen
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end flex-row-reverse">
-        <div class="large-block__body-item-image ms-2 position-relative">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-green d-inline-block position-absolute rounded-circle bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message-answer d-flex align-items-center justify-content-start p-2 rounded-top rounded-start">
-            <p class="text-white large-block__body-item-text">
-                Sister is a young teen
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-end">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Sister is a young teen
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Are you still away?
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Are you still away?
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Sister is a young teen
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Are you still away?
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>
-
-<div class="large-block__body-item mt-2">
-    <div class="large-block__body-item-top d-flex align-items-end">
-        <div class="large-block__body-item-image me-2">
-            <div class="standart-image-block position-relative">
-                <img src="~/image/layout/place-holder-b-person.jpg" alt="No person image" class="small-image rounded">
-                <span class="large-block-header-status-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            </div>
-        </div>
-        <div class="large-block__body-item-message d-flex align-items-center justify-content-start p-2 rounded-top rounded-end">
-            <p class="text-white large-block__body-item-text">
-                Are you still away?
-            </p>
-        </div>
-    </div>
-
-    <p class="large-block__body-item-small-text text-start">
-        3 ч назад
-    </p>
-</div>*@

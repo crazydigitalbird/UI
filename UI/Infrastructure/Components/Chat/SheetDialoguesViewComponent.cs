@@ -67,25 +67,41 @@ namespace UI.Infrastructure.Components
                 }});
             }
 #else            
-            if (online)
+            Messenger messenger = null;
+            if (criteria == "active" || criteria == "bookmarked")
             {
-                criteria = $"{criteria},online";
+                if (online)
+                {
+                    criteria = $"{criteria},online";
+                }
+                messenger = await _chatClient.GetMessangerAsync(sheet, criteria, cursor, limit) ?? new Messenger();
+                //if(filter == "premium")
+                //{
+                //    ViewData["criteria"] = filter;
+                //    messenger.Dialogs = messenger.Dialogs?.Where(d => d.IsPinned).ToList();
+                //}
+                messenger.Dialogs = messenger.Dialogs?.Where(d => !d.IsBlocked).ToList();
+                await _chatClient.GetManProfiles(sheet, messenger.Dialogs);
             }
-            var messenger = await _chatClient.GetMessangerAsync(sheet, criteria, cursor, limit) ?? new Messenger();
-            if(filter == "premium")
+            else
             {
-                ViewData["criteria"] = filter;
-                messenger.Dialogs = messenger.Dialogs?.Where(d => d.IsPinned).ToList();
+                messenger = await _chatClient.GetMessangerPremiumAndTrashAsync(sheet, criteria, cursor, limit) ?? new Messenger();
+                messenger.Dialogs = messenger.Dialogs?.Where(d => !d.IsBlocked).ToList();
+                await _chatClient.GetManProfiles(sheet, messenger.Dialogs);
+                if(online)
+                {
+                    messenger.Dialogs = messenger.Dialogs?.Where(d => d.Status == Status.Online).ToList();
+                }
             }
-            if(messenger.Dialogs?.Count < limit)
+
+            if (messenger.Dialogs?.Count < limit)
             {
                 messenger.Cursor = "";
             }
-#endif
+            #endif
+
             messenger.SheetId = sheet.Id;
             messenger.Sheet = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-            messenger.Dialogs = messenger.Dialogs?.Where(d => !d.IsBlocked).ToList();
-            await _chatClient.GetManProfiles(sheet, messenger.Dialogs);
             return View(messenger);
         }
     }

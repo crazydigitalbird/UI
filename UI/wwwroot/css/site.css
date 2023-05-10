@@ -375,3 +375,12 @@ em-emoji-picker {
     width: 130px;
     background: #7D6AF0;
 }
+
+.video-msg {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    top: 0;
+    justify-content: center;
+    align-items: center;
+}

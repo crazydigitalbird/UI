@@ -1,6 +1,7 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Filters;
@@ -41,20 +42,13 @@ namespace UI.Controllers
                 switch (criteria)
                 {
                     case "active":
-                        return ViewComponent("SheetDialogues", new { sheet, online, cursor });
+                    case "bookmarked":
+                    case "premium":
+                    case "trash":
+                        return ViewComponent("SheetDialogues", new { sheet, criteria, online, cursor });
 
                     case "history":
                         break;
-
-                    case "bookmarked":
-                        return ViewComponent("SheetDialogues", new { sheet, criteria, online, cursor });
-
-                    case "premium":
-                        return ViewComponent("SheetDialogues", new { sheet, online, cursor, filter = criteria });
-
-                    case "trash":
-                        return Content(string.Empty);
-
                 }
             }
             return BadRequest();
@@ -105,6 +99,21 @@ namespace UI.Controllers
             return BadRequest();
         }
 
+        #region Pin Bookmark Premium Trash
+        [HttpPost]
+        public async Task<IActionResult> ChangePin(int sheetId, int idRegularUser, bool addPin)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                if (await _chatClient.ChangePinAsync(sheet, idRegularUser, addPin))
+                {
+                    return Ok();
+                }
+            }
+            return BadRequest();
+        }
+
         [HttpPost]
         public async Task<IActionResult> ChangeBookmark(int sheetId, int idRegularUser, bool addBookmark)
         {
@@ -120,18 +129,33 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePin(int sheetId, int idRegularUser, bool addPin)
+        public async Task<IActionResult> ChangePremium(int sheetId, int idRegularUser, bool addPremium)
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                if (await _chatClient.ChangePinAsync(sheet, idRegularUser, addPin))
+                if (await _chatClient.ChangePremiumAsync(sheet, idRegularUser, addPremium))
                 {
                     return Ok();
                 }
             }
             return BadRequest();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeTrash(int sheetId, int idRegularUser, bool addTrash)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                if (await _chatClient.ChangeTrashAsync(sheet, idRegularUser, addTrash))
+                {
+                    return Ok();
+                }
+            }
+            return BadRequest();
+        }
+        #endregion
 
         [HttpPost]
         public async Task<IActionResult> LoadMessages(int sheetId, int idInterlocutor, long idLastMessage)
@@ -155,6 +179,7 @@ namespace UI.Controllers
             return BadRequest();
         }
 
+        #region Gifts
         [HttpPost]
         public async Task<IActionResult> CheckGifts(int sheetId, int idInterlocutor)
         {
@@ -176,6 +201,31 @@ namespace UI.Controllers
             }
             return BadRequest();
         }
+        #endregion
+
+        #region Post
+        [HttpPost]
+        public async Task<IActionResult> CheckPost(int sheetId, int idInterlocutor)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return Ok(await _chatClient.CheckPostAsync(sheet, idInterlocutor));
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Posts(int sheetId, int idInterlocutor, long idLastMessage)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return ViewComponent("HistoryPosts", new { sheet, idInterlocutor, idLastMessage});
+            }
+            return BadRequest();
+        }
+        #endregion
 
         [HttpPost]
         public async Task<IActionResult> Sheets(string criteria, string cursor = "")
@@ -195,14 +245,13 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
+                var statuses = "approved,approved_by_ai";
                 if (exclusivePost)
                 {
-                    var tags = "erotic";
-                    return ViewComponent("MediaPhotos", new { sheet, tags, cursor });
+                    return ViewComponent("MediaPhotos", new { sheet, statuses, cursor });
                 }
                 else
                 {
-                    var statuses = "approved,approved_by_ai";
                     var excludeTags = "erotic";
                     return ViewComponent("MediaPhotos", new { sheet, statuses, excludeTags, cursor });
                 }
@@ -218,11 +267,11 @@ namespace UI.Controllers
             {
                 if (exclusivePost)
                 {
-                    return ViewComponent("MediaVideos", new { sheet, tags = "erotic", cursor });
+                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", cursor });
                 }
                 else
                 {
-                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", excludeTags = "erotic",cursor });
+                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", excludeTags = "erotic", cursor });
                 }
             }
             return BadRequest();

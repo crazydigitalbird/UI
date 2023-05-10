@@ -121,8 +121,9 @@ function goToChatFromSheetDialogues(event) {
 
         var interlocutor = {
             Id: idInterlocutor,
-            IsPinned: $(`#premium-checkbox-${sheetId}-${idInterlocutor}`).is(':checked'),
-            IsBookmarked: $(`#bookmarked-checkbox-${sheetId}-${idInterlocutor}`).is(':checked'),
+            IsPremium: $(`#premium-checkbox-${getCurrentTab()}-${sheetId}-${idInterlocutor}`).is(':checked'),
+            IsBookmarked: $(`#bookmarked-checkbox-${getCurrentTab()}-${sheetId}-${idInterlocutor}`).is(':checked'),
+            IsTrash: getCurrentTab() === 'trash',
             Name: $divDialogue.find('[name=interlocutorName]').text(),
             Avatar: $divDialogue.find('[name=interlocutorAvatar]').attr('src')
         };
@@ -144,13 +145,13 @@ function changeBookmark(e) {
     });
 }
 
-function changePin(e) {
+function changePremium(e) {
     var $input = $(e).find('input').first();
     var idParts = $input[0].id.split('-');
     var sheetId = idParts[3];
     var idRegularUser = idParts[4];
-    var addPin = $input.is(':checked');
-    $.post('/Chats/ChangePin', { sheetId: sheetId, idRegularUser: idRegularUser, addPin: addPin }, function () {
+    var addPremium = $input.is(':checked');
+    $.post('/Chats/ChangePremium', { sheetId: sheetId, idRegularUser: idRegularUser, addPremium: addPremium }, function () {
 
     }).fail(function () {
         $input.prop('checked', !addPin);

@@ -2,23 +2,28 @@
 
 //Отправка медиа файлов.
 $('#toSendMedia').on('click', function () {
-    var count = getCheckedCard();
-    if (allowedSendMessages(count)) {
+    var isPost = $(popUpGallery).data('is-post');
+    if (isPost) {
         $('.gallery-card.checkedCard').each(function () {
-            sendMedia(this)
+            sendToPopUpPost(this);
         });
         popUpGallery.classList.add('d-none');
+    }
+    else {
+        var count = getCheckedCard();
+        if (allowedSendMessages(count)) {
+            $('.gallery-card.checkedCard').each(function () {
+                sendMedia(this);
+            });
+            popUpGallery.classList.add('d-none');
+        }
     }
 });
 
 //Воспроизведение видео
-$('[name=play]').on('click', function () {
-    $(this).prev().removeClass('d-none');
-});
-
-function showVideo(){
-    console.log('video');
-}
+//$('[name=play]').on('click', function () {
+//    $(this).prev().removeClass('d-none');
+//});
 
 function sendMedia(galleryCard) {
     var url = $(galleryCard).find('img')[0].src;
@@ -27,12 +32,22 @@ function sendMedia(galleryCard) {
 
     var messageType = 'photo';
     if ($(galleryCard).is('.video')) {
-        messageType = 'video'
+        messageType = 'video';
     } else if ($(galleryCard).is('.audio')) {
-        messageType = 'audio'
+        messageType = 'audio';
     }
-
     send(messageType, message);
+}
+
+function sendToPopUpPost(galleryCard) {
+    var url = $(galleryCard).find('img')[0].src;
+    var isVideo = $(galleryCard).is('.video');
+    var mediaId = $(galleryCard).data('id');
+    var file = $(`<div class="file" data-is-video="${isVideo}">
+                                <img src="${url}" alt="">
+                                <span class="remove-file" onclick="removeMediaFile(this)">&#x2715</span>
+                            </div>`);
+    $(post).find('.uploaded-file').append(file);
 }
 
 //Отправка выделенных медиа файлов на вкладку отправленные.
@@ -50,8 +65,9 @@ $('.gallery-box').on('scroll', function () {
     var currentTab = getCurrentTabGallery();
     if (Math.abs(this.scrollHeight - this.clientHeight - this.scrollTop) < 100 && !isLoadingGallery[currentTab]) {
         var sheetId = $('#manMessagesMails').data('sheet-id');
-        var idUser = $('#interlocutorIdChatHeader').text();
-        getPhotos(sheetId, idUser, false);
+        var idUser = $('#interlocutorIdChatHeader').text
+        var isPostPopup = $(popUpGallery).data('is-post');
+        getPhotos(sheetId, idUser, false, isPostPopup);
     }
 });
 
@@ -76,14 +92,15 @@ function setFilterGaller() {
     });
 }
 
-function showGallery(e) {
+function showGallery(isPost) {
     var sheetId = $('#manMessagesMails').data('sheet-id');
     var idUser = $('#interlocutorIdChatHeader').text();
     if (sheetId && idUser) {
         var idSheetPopup = $(popUpGallery).data('sheet-id');
         var idUserPopup = $(popUpGallery).data('id-user');
+        var isPostPopup = $(popUpGallery).data('is-post');
 
-        if (sheetId === idSheetPopup && idUser === idUserPopup) {
+        if (sheetId === idSheetPopup && idUser === idUserPopup && isPostPopup === isPost) {
             unCheckedCard();
             setCounterSelectedMedia(0);
             popUpGallery.classList.remove('d-none');
@@ -93,12 +110,12 @@ function showGallery(e) {
             clearGallery();
             $('.gallery-item').hide();
             $('.gallery-item:first-child').show();
-            getPhotos(sheetId, idUser, true)
+            getPhotos(sheetId, idUser, true, isPost)
         }
     }
 }
 
-function getPhotos(sheetId, idUser, newLoading) {
+function getPhotos(sheetId, idUser, newLoading, isPost) {
     popUpGallery.classList.remove('d-none');
     var currentTab = getCurrentTabGallery();
     if (!isLoadingGallery[currentTab]) {
@@ -107,15 +124,15 @@ function getPhotos(sheetId, idUser, newLoading) {
         // Если новая загрузка или cursor не пустой, то отправляем запросо на получения фото
         if (newLoading || cursor) {
             isLoadingGallery[currentTab] = true;
-            var exclusivePost = false;
             enableSpinnerInGallery(currentTab);
-            $.post(`/Chats/Media${currentTab}`, { sheetId: sheetId, idUser: idUser, exclusivePost: exclusivePost, cursor: cursor }, function (data) {
+            $.post(`/Chats/Media${currentTab}`, { sheetId: sheetId, idUser: idUser, exclusivePost: isPost, cursor: cursor }, function (data) {
                 isLoadingGallery[currentTab] = false;
                 var currentSheetId = $('#manMessagesMails').data('sheet-id');
                 var currentIdUser = $('#interlocutorIdChatHeader').text();
                 if (currentSheetId === sheetId && currentIdUser === idUser) {
                     $(popUpGallery).data('sheet-id', sheetId);
                     $(popUpGallery).data('id-user', idUser);
+                    $(popUpGallery).data('is-post', isPost);
                     disableSpinnerInGallery(currentTab);
                     $(`#${currentTab}`).append(data);
                     setDataCursor(currentTab);
@@ -167,9 +184,18 @@ function addEventListenerToCard() {
     cards.forEach(card => {
         $(card).unbind('click');
         $(card).click(function (event) {
-            $(this).toggleClass('checkedCard');
-            var count = getCheckedCard();
-            setCounterSelectedMedia(count);
+            if ($(event.target).parent().is('svg') || $(event.target).is('svg')) {
+                var videoUrl = $(event.target).closest('.video').data('video-url');
+                $videoPlayer = $('#videoPlayer');
+                $videoPlayer.find('source').attr('src', videoUrl);
+                $videoPlayer.find('video')[0].load();
+                $videoPlayer.removeClass('d-none');
+            }
+            else {
+                $(this).toggleClass('checkedCard');
+                var count = getCheckedCard();
+                setCounterSelectedMedia(count);
+            }
         });
     });
 }

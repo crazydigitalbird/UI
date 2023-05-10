@@ -1,7 +1,7 @@
 ﻿<div class="large-block__body-footer mt-3 d-flex justify-content-around">
     <div class="textarea-block h-100">
         <div class="form-floating position-relative h-100">
-            <textarea id="newMessage" class="large-block__textarea rounded ps-5 pt-3 pb-3 text-white" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter(this)"></textarea>
+            <textarea id="newMessage" class="large-block__textarea rounded ps-5 pt-3 pb-3 text-white" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter()" onkeypress="sendEnter(event)"></textarea>
             <p class="textarea-counter text-white position-absolute">
                 <span id="messageLength">0</span>/300
             </p>
@@ -37,8 +37,7 @@
 
                 <!-- Create Ecxlusive Post -->
                 <div>
-                    <img src="~/image/layout/Lightning.svg" alt="Smile" class="textarea-icon rounded-circle">
-
+                    <img id="btnPost" src="~/image/layout/Lightning.svg" alt="Smile" class="textarea-icon-disabled rounded-circle" onclick="showHidenPost()">
                 </div>
             </div>
         </div>

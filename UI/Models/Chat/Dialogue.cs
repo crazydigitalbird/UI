@@ -39,6 +39,8 @@ namespace UI.Models
 
         public bool IsPinned { get; set; }
 
+        public bool IsPremium { get; set; }
+
         public Message LastMessage { get; set; }
 
         public string UserName { get; set; }

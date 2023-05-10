@@ -1,0 +1,119 @@
+﻿@using System.Text;
+@using System.Text.Json;
+@model List<Post>
+
+@if (Model?.Count > 0)
+{
+    foreach (var post in Model)
+    {
+        var mediaVideo = post.Videos.Select(v => new { Id = v.Id, Url = v.Url, IsVideo = true });
+        var mediaPhoto = post.Photos.Select(p => new { Id = p.Id, Url = p.Url, IsVideo = false });
+        var media = mediaVideo.Concat(mediaPhoto).ToList();
+        var mediaBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(media)));
+
+        <div id="@($"post_{post.Id}")" class="history-item p-3" data-id-message="@post.idMessage" data-date="@post.DateSent.ToString("dd MMMM yyyy")" data-media="@mediaBase64">
+            <div class="d-flex justify-content-between">
+                @switch (media.Count)
+                {
+                    case 1:
+                        <div class="history-head w-100">
+                            <img src="@media[0].Url" alt="">
+                            @if (media[0].IsVideo)
+                            {
+                                <div class="video-post">
+                                    <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                        <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                        <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                    </svg>
+                                </div>
+                            }
+                        </div>
+                        break;
+
+                    case 2:
+                        <div class="history-head">
+                            <img src="@media[0].Url" alt="">
+                            @if (media[0].IsVideo)
+                            {
+                                <div class="video-post">
+                                    <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                        <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                        <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                    </svg>
+                                </div>
+                            }
+                        </div>
+                        <div class="history-head">
+                            <img src="@media[1].Url" alt="">
+                            @if (media[1].IsVideo)
+                            {
+                                <div class="video-post">
+                                    <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                        <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                        <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                    </svg>
+                                </div>
+                            }
+                        </div>
+                        break;
+
+                    default:
+                        <div class="history-head">
+                            <img src="@media[0].Url" alt="">
+                            @if (media[0].IsVideo)
+                            {
+                                <div class="video-post">
+                                    <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                        <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                        <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                    </svg>
+                                </div>
+                            }
+                        </div>
+                        <div class="history-main d-flex justify-content-between flex-column">
+                            <div class="history-main-sup">
+                                <img src="@media[1].Url" alt="">
+                                @if (media[1].IsVideo)
+                                {
+                                    <div class="video-post">
+                                        <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                            <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                            <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                        </svg>
+                                    </div>
+                                }
+                            </div>
+                            @if (media.Count > 3)
+                            {
+                                <div class="history-main-box position-relative">
+                                    <img src="@media[2].Url" alt="">
+                                    <div class="upload_count position-absolute">+<span class="count">@(media.Count - 3)</span></div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="history-main-sup position-relative)">
+                                    <img src="@media[2].Url" alt="">
+                                    @if (media[2].IsVideo)
+                                    {
+                                        <div class="video-post top-50">
+                                            <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                                <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                                <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                            </svg>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        break;
+                }
+            </div>
+            <p class="history-item__text">@post.TextPreview</p>
+            <div class="d-flex justify-content-end">
+                @*<button class="unseen">Unseen</button>*@
+                <button class="btn answer-button chat-button rounded text-white" onclick="previewHistoryPost('@($"post_{post.Id}")')">View post</button>
+            </div>
+        </div>
+    }
+}

@@ -278,8 +278,8 @@
     }
 
 .pop-up.create-post .uploaded-file {
-    width: 78%;
-    height: 210px;
+    /*width: 78%;*/
+    max-height: 210px;
     overflow-y: scroll;
 }
 
@@ -290,7 +290,7 @@
     .pop-up.create-post .uploaded-file .file {
         width: 100px;
         height: 100px;
-        margin: 0 10px 10px 0;
+        margin: 0 6px 6px 0;
         position: relative;
     }
 
@@ -310,7 +310,7 @@
             right: 0;
             top: 0;
             cursor: pointer;
-            display: none;
+            /*display: none;*/
             -webkit-box-align: center;
             -webkit-align-items: center;
             -ms-flex-align: center;
@@ -319,8 +319,10 @@
             -webkit-justify-content: center;
             -ms-flex-pack: center;
             justify-content: center;
-            background: #1E1E42;
-            color: #131334;
+            /*background: #1E1E42;*/
+            /*background-color: rgba(30, 30, 66, 0.5);*/
+            /*color: #131334;*/
+            color: whitesmoke;
         }
 
 .pop-up.create-post .submit,
@@ -380,6 +382,7 @@
 
 .pop-up.create-post .requirements-box:hover .requirements {
     display: block;
+    z-index: 3;
 }
 
 .pop-up.create-post .history-posts {
@@ -428,21 +431,42 @@
         height: 200px;
         -webkit-border-radius: 8px;
         border-radius: 8px;
+        position: relative;
     }
 
-        .pop-up.create-post .history-item .history-head img,
-        .pop-up.create-post .history-item .history-head video,
-        .pop-up.create-post .history-item .history-main img,
-        .pop-up.create-post .history-item .history-main video {
+        .pop-up.create-post .history-item .history-head .video-post {
             width: 100%;
             height: 100%;
-            -o-object-fit: cover;
-            object-fit: cover;
-            -o-object-position: center 35%;
-            object-position: center 35%;
-            -webkit-border-radius: 8px;
-            border-radius: 8px;
+            position: absolute;
+            display: flex;
+            top: 0px;
+            justify-content: center;
+            align-items: center;
         }
+
+    .pop-up.create-post .history-item .history-main-sup .video-post {
+        width: 100%;
+        height: 48.5%;
+        position: absolute;
+        display: flex;
+        top: 0px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pop-up.create-post .history-item .history-head img,
+    .pop-up.create-post .history-item .history-head video,
+    .pop-up.create-post .history-item .history-main img,
+    .pop-up.create-post .history-item .history-main video {
+        width: 100%;
+        height: 100%;
+        -o-object-fit: cover;
+        object-fit: cover;
+        -o-object-position: center 35%;
+        object-position: center 35%;
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+    }
 
     .pop-up.create-post .history-item .history-main-sup,
     .pop-up.create-post .history-item .history-main-box {
@@ -825,6 +849,11 @@
                 background: #7D6AF0;
             }
 
+            .pop-up.gallery .pop-up-content .gallery-btns button span {
+                display: inline-block;
+                width: 18px;
+            }
+
     .pop-up.gallery .pop-up-content .gallery-box {
         margin-top: 24px;
         height: 580px;
@@ -870,7 +899,7 @@
             border-radius: 4px;
         }
 
-        .pop-up.gallery .pop-up-content .gallery-card svg {
+        .pop-up.gallery .pop-up-content .gallery-card > svg {
             position: absolute;
             z-index: 3;
             top: 4px;
@@ -893,7 +922,7 @@
         }
 
     .pop-up.gallery .pop-up-content .video::after {
-        content: url(/image/layout/svg/play-big.svg);
+        /* content: url(/image/layout/svg/play-big.svg);*/
         position: absolute;
         top: 50%;
         left: 50%;
@@ -906,6 +935,24 @@
     .pop-up.gallery .pop-up-content .checkedCard svg {
         display: block;
     }
+
+    .pop-up.gallery .pop-up-content .video > div {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: flex;
+        top: 0;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .pop-up.gallery .pop-up-content .video > div svg {
+            z-index: 3;
+        }
+
+            .pop-up.gallery .pop-up-content .video > div svg:active {
+                opacity: 0.5;
+            }
 
 .pop-up.preview .pop-up-content {
     width: 580px;

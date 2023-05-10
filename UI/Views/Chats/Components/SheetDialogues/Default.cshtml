@@ -31,8 +31,8 @@
                     </label>
                 </span>
 
-                <span name="premium" class="accordion-body-text" onchange="changePin(this)">
-                    @if (dialog.IsPinned)
+                <span name="premium" class="accordion-body-text" onchange="changePremium(this)">
+                    @if (dialog.IsPremium)
                     {
                         <input type="checkbox" checked class="accordion_heart_svg_checkbox opacity-0" id="@($"premium-checkbox-{ViewData["criteria"]}-{Model.SheetId}-{dialog.IdInterlocutor}")" name="status-checkbox" value="yes" wfd-id="id4">
                     }

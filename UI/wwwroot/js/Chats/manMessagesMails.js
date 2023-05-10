@@ -16,8 +16,9 @@
             $('#chatDropdown').removeClass('disabled');
         }
 
-        $('#bookmark').toggleClass('symbol-checked', interlocutor.IsBookmarked);
-        $('#premium').toggleClass('symbol-checked', interlocutor.IsPinned);
+        $('#bookmark-svg').toggleClass('symbol-checked', interlocutor.IsBookmarked);
+        $('#premium-svg').toggleClass('symbol-checked', interlocutor.IsPremium);
+        $('#trash-svg').toggleClass('symbol-checked', interlocutor.IsTrash);
 
         $.post('/Chats/ManMessagesMails', { sheetId: owner.SheetId, idRegularUser: interlocutor.Id }, function (data) {
             $('#messagesLeft').text(data.messagesLeft || 0);
@@ -25,6 +26,7 @@
         });
 
         checkGifts(owner.SheetId, interlocutor.Id);
+        checkPost(owner.SheetId, interlocutor.Id);
     }
 
     clearMessageDiv();
@@ -45,8 +47,8 @@ function changeBookmarkChat(e) {
 function changePremiumChat(e) {
     var sheetId = $('#manMessagesMails').data('sheet-id');
     var idRegularUser = $('#interlocutorIdChatHeader').text();
-    var addPin = !$('#premium').hasClass('symbol-checked');
-    $.post('/Chats/ChangePin', { sheetId: sheetId, idRegularUser: idRegularUser, addPin: addPin }, function () {
+    var addPremium = !$('#premium-svg').hasClass('symbol-checked');
+    $.post('/Chats/ChangePremium', { sheetId: sheetId, idRegularUser: idRegularUser, addPremium: addPremium }, function () {
         $('#premium-svg').toggleClass('symbol-checked');
     }).fail(function () {
         console.log('fail change pin')
@@ -58,7 +60,14 @@ function changeBlockChat(e) {
 }
 
 function changeTrashChat(e) {
-    //$('#trash-svg').toggleClass('symbol-checked');
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    var idRegularUser = $('#interlocutorIdChatHeader').text();
+    var addTrash = !$('#trash-svg').hasClass('symbol-checked');
+    $.post('/Chats/ChangeTrash', { sheetId: sheetId, idRegularUser: idRegularUser, addTrash: addTrash }, function () {
+        $('#trash-svg').toggleClass('symbol-checked');
+    }).fail(function () {
+        console.log('fail change trash')
+    });
 }
 
 function copyId(e) {

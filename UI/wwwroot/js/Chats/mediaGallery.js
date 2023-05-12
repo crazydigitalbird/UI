@@ -8,6 +8,7 @@ $('#toSendMedia').on('click', function () {
             sendToPopUpPost(this);
         });
         popUpGallery.classList.add('d-none');
+        checkSendPost();
     }
     else {
         var count = getCheckedCard();
@@ -43,10 +44,25 @@ function sendToPopUpPost(galleryCard) {
     var url = $(galleryCard).find('img')[0].src;
     var isVideo = $(galleryCard).is('.video');
     var mediaId = $(galleryCard).data('id');
-    var file = $(`<div class="file" data-is-video="${isVideo}">
-                                <img src="${url}" alt="">
-                                <span class="remove-file" onclick="removeMediaFile(this)">&#x2715</span>
-                            </div>`);
+    var file;
+    if (isVideo) {
+        file = $(`<div class="file" data-is-video="true" data-id=${mediaId}>
+                    <img src="${url}" alt="">
+                    <span class="remove-file" onclick="removeMediaFile(this)">&#x2715</span>
+                    <div class="video-post">
+                        <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                            <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                            <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                        </svg>
+                    </div>
+                  </div>`);
+    }
+    else {
+        file = $(`<div class="file" data-is-video="false" data-id=${mediaId}>
+                    <img src="${url}" alt="">
+                    <span class="remove-file" onclick="removeMediaFile(this)">&#x2715</span>
+                  </div>`);
+    }
     $(post).find('.uploaded-file').append(file);
 }
 
@@ -125,7 +141,7 @@ function getPhotos(sheetId, idUser, newLoading, isPost) {
         if (newLoading || cursor) {
             isLoadingGallery[currentTab] = true;
             enableSpinnerInGallery(currentTab);
-            $.post(`/Chats/Media${currentTab}`, { sheetId: sheetId, idUser: idUser, exclusivePost: isPost, cursor: cursor }, function (data) {
+            $.post(`/Chats/Media${currentTab}`, { sheetId: sheetId, idRegularUser: idUser, exclusivePost: isPost, cursor: cursor }, function (data) {
                 isLoadingGallery[currentTab] = false;
                 var currentSheetId = $('#manMessagesMails').data('sheet-id');
                 var currentIdUser = $('#interlocutorIdChatHeader').text();
@@ -207,6 +223,7 @@ function clearGallery() {
         $(this).empty();
         $(this).data('cursor', '');
     });
+    setCounterSelectedMedia(0);
     setCounterSentMedia();
 }
 

@@ -12,6 +12,9 @@ using UI.Infrastructure.Hubs;
 using UI.Infrastructure.Repository;
 using UI.Models;
 using System.Diagnostics;
+using System.Net.Http;
+using Core.Models.Users;
+using System.Net;
 
 namespace UI.Infrastructure.Services
 {
@@ -19,10 +22,10 @@ namespace UI.Infrastructure.Services
     {
         private Timer _timer;
         private static volatile bool _started;
-        private ApplicationUser user;
 
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ChatServices> _logger;
 
         private readonly IChatClient _chatClient;
@@ -30,7 +33,12 @@ namespace UI.Infrastructure.Services
         private readonly IAdminClient _adminClient;
         private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
 
+        Stopwatch stopwatch1 = new Stopwatch();
+        Stopwatch stopwatch2 = new Stopwatch();
+        int count = 0;
+
         public ChatServices(IServiceProvider serviceProvider,
+            IHttpClientFactory httpClientFactory,
             IHubContext<ChatHub> hubContext,
             ILogger<ChatServices> logger,
             IChatClient chatClient,
@@ -39,6 +47,7 @@ namespace UI.Infrastructure.Services
             IDictionaryRepository<SheetDialogKey, NewMessage> dictionary)
         {
             _serviceProvider = serviceProvider;
+            _httpClientFactory = httpClientFactory;
             _hubContext = hubContext;
             _logger = logger;
             _chatClient = chatClient;
@@ -49,7 +58,7 @@ namespace UI.Infrastructure.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(UpdateOnlineStatus, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
+            _timer = new Timer(UpdateOnlineStatus, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
             return Task.CompletedTask;
         }
 
@@ -89,12 +98,30 @@ namespace UI.Infrastructure.Services
 
         public async Task GetNewMessage()
         {
-            return;
-            var sheets = await _adminClient.GetSheetsFast();
+            var sessionGuid = await LogInAsync("admin", "admin");
+            if (string.IsNullOrWhiteSpace(sessionGuid))
+            {
+                return;
+            }
 
-            Stopwatch stopwatch1 = new Stopwatch();
-            Stopwatch stopwatch2 = new Stopwatch();
-            
+            var sheets = await GetSheetsFast(sessionGuid);
+
+            sheets.ForEach(sheet => sheet.Site = new SheetSite { Configuration = "https://talkytimes.com/" });
+
+
+
+            count++;
+            stopwatch2.Start();
+            //---------------------------------2------------------------------
+
+            var onlineSheetsDialogsTempNew = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
+            var sheetIdDialogsOnlineTasksIEnumerableNew = sheets.Select(sheet => LoadOnlineDialogues(sheet, onlineSheetsDialogsTempNew, 5));
+            var sheetIdDialogsOnlineTasksNew = sheetIdDialogsOnlineTasksIEnumerableNew.ToArray();
+            await Task.WhenAll(sheetIdDialogsOnlineTasksNew);
+            //---------------------------------2------------------------------
+            stopwatch2.Stop();
+
+
             stopwatch1.Start();
             //---------------------------------1------------------------------
 
@@ -141,10 +168,11 @@ namespace UI.Infrastructure.Services
 
                 //Все активные диалоги(диалоги с возможностью отправки сообщений) и находящиеся онлайн за указанное количеств дней (365 дней).
                 //Отправитель сообщений не иммет значения т.к. отображаются все последние сообщения для диологов онлайн.
-                var dialoguesOnline = dialogsOnlineKeyValuePair.FirstOrDefault(kvp => kvp.Key == sheet.Id).Value.Where(d => !(d.HasNewMessage || d.LastMessage?.Type == MessageType.System));
+                var dialoguesOnline = dialogsOnlineKeyValuePair.FirstOrDefault(kvp => kvp.Key == sheet.Id).Value;
                 foreach (var dialog in dialoguesOnline)
                 {
                     var key = new SheetDialogKey(sheet.Id, dialog.IdInterlocutor);
+                    dialog.Status = Status.Online;
                     onlineSheetsDialogsTemp.TryAdd(key, new NewMessage { Dialogue = dialog });
                 }
             }
@@ -152,22 +180,10 @@ namespace UI.Infrastructure.Services
             //---------------------------------1------------------------------
             stopwatch1.Stop();
 
-            stopwatch2.Start();
-            //---------------------------------2------------------------------
 
 
-            var onlineSheetsDialogsTempNew = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
-            var sheetIdDialogsOnlineTasksIEnumerableNew = sheets.Select(sheet => LoadOnlineDialogues(sheet, onlineSheetsDialogsTempNew, 5));
-            var sheetIdDialogsOnlineTasksNew = sheetIdDialogsOnlineTasksIEnumerableNew.ToArray();
-            await Task.WhenAll(sheetIdDialogsOnlineTasksNew);
-
-
-            //---------------------------------2------------------------------
-            stopwatch2.Stop();
-
-
-            var res1 = stopwatch1.ElapsedMilliseconds;
-            var res2 = stopwatch2.ElapsedMilliseconds;
+            var res1 = TimeSpan.FromMilliseconds(stopwatch1.ElapsedMilliseconds).TotalSeconds / count;
+            var res2 = TimeSpan.FromMilliseconds(stopwatch2.ElapsedMilliseconds).TotalSeconds / count;
 
             // Получаем все ключи первой последовательности, которых нет во второй последовательности. Эти диалоги необходимо удалить т.к. пользователи уже не в онлайне
             var removeOnlineSheetDialogKeys = _dictionary.Online.Keys.Except(onlineSheetsDialogsTemp.Keys);
@@ -227,6 +243,7 @@ namespace UI.Infrastructure.Services
                 }
             }
         }
+
         private async Task<KeyValuePair<int, List<Dialogue>>> LoadDialogues(Sheet sheet, string criteria, int? days, int operatorId, int limit)
         {
             //Вычисляем пороговое значение даты. Это дата до которой будут загружаться диалоги.
@@ -248,7 +265,7 @@ namespace UI.Infrastructure.Services
                     break;
                 }
                 dialogues = dialogues.Union(messanger.Dialogs).ToList();
-            } while (messanger.Dialogs.Count == limit && IsLoadDialogues(messanger, dateThreshold));
+            } while (messanger.Dialogs.Count == limit); //&& IsLoadDialogues(messanger, dateThreshold)
 
             return new KeyValuePair<int, List<Dialogue>>(sheet.Id, dialogues.Where(d => !d.IsBlocked).ToList());
         }
@@ -259,6 +276,25 @@ namespace UI.Infrastructure.Services
             //Все диалоги у которых значение поля DateUpdate страше dateThreshodl, будут отбрасывтаься.
             //Если days равно null, то критерий прогового значения даты не учитывается и загружаются все имеющиеся диалоги.
 
+            //Messenger messanger = null;
+            //do
+            //{
+            //    messanger = await _chatClient.GetMessangerAsync(sheet, "active,online", messanger?.Cursor, limit);
+            //    if (messanger == null || messanger.Dialogs == null || messanger.Dialogs.Count == 0)
+            //    {
+            //        break;
+            //    }
+            //    messanger.Dialogs
+            //        .Where(d => !d.IsBlocked)
+            //        .ToList()
+            //        .ForEach(dialogue =>
+            //        {
+            //            dialogue.Status = Status.Online;
+            //            dictionary.TryAdd(new SheetDialogKey(sheet.Id, dialogue.IdInterlocutor), new NewMessage { Dialogue = dialogue });
+            //        });
+            //} while (true);
+
+            var dialogues = new List<Dialogue>();
             Messenger messanger = null;
             do
             {
@@ -267,11 +303,16 @@ namespace UI.Infrastructure.Services
                 {
                     break;
                 }
-                messanger.Dialogs
-                    .Where(d => d.HasNewMessage || d.LastMessage?.Type == MessageType.System)
-                    .ToList()
-                    .ForEach(d => dictionary.TryAdd(new SheetDialogKey(sheet.Id, d.IdInterlocutor), new NewMessage { Dialogue = d }));
+                dialogues = dialogues.Union(messanger.Dialogs).ToList();
             } while (messanger.Dialogs.Count == limit);
+            dialogues.ForEach(dialogue =>
+            {
+                if (!dialogue.IsBlocked)
+                {
+                    dialogue.Status = Status.Online;
+                    dictionary.TryAdd(new SheetDialogKey(sheet.Id, dialogue.IdInterlocutor), new NewMessage { Dialogue = dialogue });
+                }
+            });
         }
 
         //Возвращаем true если у всех диалогов значение поля DateUpdate младше dateThreshodl
@@ -285,5 +326,46 @@ namespace UI.Infrastructure.Services
             return true;
         }
 
+        private async Task<string> LogInAsync(string login, string passowrd)
+        {
+            var client = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength=8766", null);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var userSession = await response.Content.ReadFromJsonAsync<UserSession>();
+                    return userSession.Guid;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "An error occurred while logging in: {ErrorMessage}. Login: {login}.", ex.Message, login);
+            }
+            return null;
+        }
+
+        private async Task<List<Sheet>> GetSheetsFast(string sessionGuid)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var response = await httpClient.GetAsync($"Sheets/GetSheetsFast?sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var sheets = (await response.Content.ReadFromJsonAsync<List<Sheet>>()).Where(a => a.IsActive).ToList();
+                    return sheets;
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all the sheets.");
+            }
+            return null;
+        }
     }
 }

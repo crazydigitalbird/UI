@@ -1,5 +1,8 @@
 ﻿using Core.Models.Sheets;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 using UI.Models;
 
 namespace UI.Infrastructure.API
@@ -7,11 +10,13 @@ namespace UI.Infrastructure.API
     public class ApiChatClient : IChatClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<ApiChatClient> _logger;
 
-        public ApiChatClient(IHttpClientFactory httpClientFactory, ILogger<ApiChatClient> logger)
+        public ApiChatClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ApiChatClient> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
@@ -325,6 +330,9 @@ namespace UI.Infrastructure.API
             {
                 _logger.LogError(ex, "Error loading messages and mails left in sheet with id: {sheetId}.", sheet.Id);
             }
+#if DEBUGOFFLINE
+            return new MessagesAndMailsLeft { MailsLeft = 10, MessagesLeft = 20};
+#endif
             return null;
         }
 
@@ -444,7 +452,8 @@ namespace UI.Infrastructure.API
                     new KeyValuePair<string, string>("password", credentials.Password),
                     new KeyValuePair<string, string>("idUserTo", $"{idUserTo}"),
                     new KeyValuePair<string, string>("idGift", idGift),
-                    new KeyValuePair<string, string>("message", message) };
+                    new KeyValuePair<string, string>("message", message),
+                    new KeyValuePair<string, string>("operator", GetUserId())};
 
                 var content = new FormUrlEncodedContent(contentList);
 
@@ -543,9 +552,52 @@ namespace UI.Infrastructure.API
             return null;
         }
 
+        public async Task<long?> SendPostAsync(Sheet sheet, int idRegularUser, string text, List<long> videos, List<long> photos)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
+
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                    new KeyValuePair<string, string>("email", credentials.Login),
+                    new KeyValuePair<string, string>("password", credentials.Password),
+                    new KeyValuePair<string, string>("idRegularUser", $"{idRegularUser}"),
+                    new KeyValuePair<string, string>("text", text),
+                    new KeyValuePair<string, string>("idsGalleryVideos", string.Join(",", videos)),
+                    new KeyValuePair<string, string>("idsGalleryPhotos", string.Join(",", photos)),
+                    new KeyValuePair<string, string>("operator", GetUserId())};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync($"send_superpost", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    var s = await response.Content.ReadAsStringAsync();
+#endif
+                    var sendMessage = await response.Content.ReadFromJsonAsync<SendMessage>();
+                    return sendMessage?.IdMessage;
+                }
+                else
+                {
+                    _logger.LogWarning("Error send post userFrom: {userFrom}, userTo: {userTo}. HttpStatusCode: {httpStatusCode}", sheet.Identity, idRegularUser, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checked post userFrom: {userFrom}, userTo: {userTo}.", sheet.Identity, idRegularUser);
+            }
+
+#if DEBUGOFFLINE
+            return (new Random()).Next();
+#endif
+
+            return null;
+        }
         #endregion
 
-        public async Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
+        public async Task<Media> GetPhotosAsync(Sheet sheet, int idRegularUser, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -554,6 +606,7 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
                 httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                httpClient.DefaultRequestHeaders.Add("idRegularUser", $"{idRegularUser}");
                 httpClient.DefaultRequestHeaders.Add("limit", "40");
                 httpClient.DefaultRequestHeaders.Add("criteria", "");
                 httpClient.DefaultRequestHeaders.Add("statuses", statuses);
@@ -582,7 +635,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Media> GetVideosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
+        public async Task<Media> GetVideosAsync(Sheet sheet, int idRegularUser, string statuses = "", string tags = "", string excludeTags = "", string cursor = "")
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -591,6 +644,7 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
                 httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
+                httpClient.DefaultRequestHeaders.Add("idRegularUser", $"{idRegularUser}");
                 httpClient.DefaultRequestHeaders.Add("limit", "40");
                 httpClient.DefaultRequestHeaders.Add("statuses", statuses);
                 httpClient.DefaultRequestHeaders.Add("tags", tags);
@@ -634,7 +688,8 @@ namespace UI.Infrastructure.API
                     new KeyValuePair<string, string>("email", credentials.Login),
                     new KeyValuePair<string, string>("password", credentials.Password),
                     new KeyValuePair<string, string>("idRegularUser", $"{idRegularUser}"),
-                    new KeyValuePair<string, string>("idLastMessage", idLastMessage.ToString())
+                    new KeyValuePair<string, string>("idLastMessage", idLastMessage.ToString()),
+                    new KeyValuePair<string, string>("operator", GetUserId())
                 };
                 //httpClient.DefaultRequestHeaders.Add("site", sheet.Site.Configuration);
                 //httpClient.DefaultRequestHeaders.Add("email", credentials.Login);
@@ -694,6 +749,10 @@ namespace UI.Infrastructure.API
             {
                 _logger.LogError(ex, "Error send message by user with id: {idRegularUser}. Message type: {messageType}. Sheet with id: {sheetId}.", idRegularUser, messageType, sheet.Id);
             }
+
+#if DEBUGOFFLINE
+            return (new Random()).Next();
+#endif
             return null;
         }
 
@@ -871,6 +930,9 @@ namespace UI.Infrastructure.API
 
         public async Task<Dictionary<long, MessageTimer>> Timers(IEnumerable<long?> idLastMessages)
         {
+#if DEBUGOFFLINE || DEBUG
+            string s;
+#endif
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
             {
@@ -880,7 +942,7 @@ namespace UI.Infrastructure.API
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
-                    var s = await response.Content.ReadAsStringAsync();
+                    s = await response.Content.ReadAsStringAsync();
 #endif
                     var messagestimers = await response.Content.ReadFromJsonAsync<Dictionary<long, MessageTimer>>();
                     return messagestimers;
@@ -925,6 +987,13 @@ namespace UI.Infrastructure.API
             return null;
         }
 
+        private string GetUserId()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+            var userId = user.FindFirst("Id")?.Value;
+            return userId;
+        }
+
     }
 
     public interface IChatClient
@@ -948,9 +1017,10 @@ namespace UI.Infrastructure.API
 
         Task<bool> CheckPostAsync(Sheet sheet, int idInterlocutor);
         Task<List<Post>> ListPostAsync(Sheet sheet, int idRegularUser, long idLastMessage = 0, int limit = 20);
+        Task<long?> SendPostAsync(Sheet sheet, int idRegularUser, string text, List<long> videos, List<long> photos);
 
-        Task<Media> GetPhotosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
-        Task<Media> GetVideosAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
+        Task<Media> GetPhotosAsync(Sheet sheet, int idRegularUser, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
+        Task<Media> GetVideosAsync(Sheet sheet, int idRegularUser, string statuses = "", string tags = "", string excludeTags = "", string cursor = "");
         Task<long?> SendMessageAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message, long idLastMessage);
         Task<Dialogue> FindDialogueById(Sheet sheet, int idRegularUser);
 

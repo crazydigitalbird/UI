@@ -10,8 +10,8 @@ function send(messageType, message) {
         var idRegularUser = $('#interlocutorIdChatHeader').text();
         var sheetId = $('#manMessagesMails').data('sheet-id');
         var idLastMessage = $('#messages').find('[name=message]').last().data('id-message');
-        var ownerAvatar = $('#ownerAvatarChatHeader').attr('src');
-        $.post('/Chats/SendMessage', { sheetId: sheetId, idRegularUser: idRegularUser, messageType: messageType, message: message, idLastMessage: idLastMessage, ownerAvatar: ownerAvatar }, function (data) {
+        //var ownerAvatar = $('#ownerAvatarChatHeader').attr('src');
+        $.post('/Chats/SendMessage', { sheetId: sheetId, idRegularUser: idRegularUser, messageType: messageType, message: message, idLastMessage: idLastMessage }, function (data) {
             var idRegularUserCurrent = $('#interlocutorIdChatHeader').text();
             var sheetIdCurrent = $('#manMessagesMails').data('sheet-id');
             if (idRegularUser === idRegularUserCurrent && sheetId === sheetIdCurrent) {

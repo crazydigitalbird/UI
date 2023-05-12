@@ -68,7 +68,7 @@ function getDialogues(sheetId, currentTab, cursor) {
             countDialoguesSheet(sheetId, currentTab);
         }
     }).fail(function () {
-        disableSpinnerAll(sheetId, currentTab);
+        disableSpinnerInCounter(sheetId, currentTab);
     });
 }
 
@@ -91,7 +91,7 @@ function enableSpinnerInCounter(sheetId, currentTab) {
     element.html(spinner);
 }
 
-function disableSpinnerAll(sheetId, currentTab) {
+function disableSpinnerInCounter(sheetId, currentTab) {
     $(`#count-dialogues-${currentTab}-${sheetId}`).empty();
 }
 

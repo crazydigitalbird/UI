@@ -221,7 +221,34 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("HistoryPosts", new { sheet, idInterlocutor, idLastMessage});
+                return ViewComponent("HistoryPosts", new { sheet, idInterlocutor, idLastMessage });
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendPost(int sheetId, int idRegularUser, long idLastMessage, string text, List<PhotoVideo> videos, List<PhotoVideo> photos)
+        {
+            if (text?.Length >= 200 && text?.Length <= 3500 && (videos?.Count >= 1 || photos?.Count >= 4))
+            {
+                var sheet = await _sheetClient.GetSheetAsync(sheetId);
+                if (sheet != null)
+                {
+                    Message newMessage = new Message()
+                    {
+                        DateCreated = DateTime.Now,
+                        IdUserFrom = sheet.User.Id,
+                        IdUserTo = idRegularUser,
+                        Type = MessageType.Post,
+                        Content = new Content
+                        {
+                            TextPreview = text,
+                            Photos = photos,
+                            Videos = videos
+                        }
+                    };
+                    return ViewComponent("Message", new { sheet, newMessage, idLastMessage });
+                }
             }
             return BadRequest();
         }
@@ -240,7 +267,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MediaPhotos(int sheetId, int idUser, bool exclusivePost, string cursor = "")
+        public async Task<IActionResult> MediaPhotos(int sheetId, int idRegularUser, bool exclusivePost, string cursor = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
@@ -248,42 +275,77 @@ namespace UI.Controllers
                 var statuses = "approved,approved_by_ai";
                 if (exclusivePost)
                 {
-                    return ViewComponent("MediaPhotos", new { sheet, statuses, cursor });
+                    return ViewComponent("MediaPhotos", new { sheet, idRegularUser, statuses, cursor });
                 }
                 else
                 {
                     var excludeTags = "erotic";
-                    return ViewComponent("MediaPhotos", new { sheet, statuses, excludeTags, cursor });
+                    return ViewComponent("MediaPhotos", new { sheet, idRegularUser, statuses, excludeTags, cursor });
                 }
             }
             return BadRequest();
         }
 
         [HttpPost]
-        public async Task<IActionResult> MediaVideos(int sheetId, int idUser, bool exclusivePost, string cursor = "")
+        public async Task<IActionResult> MediaVideos(int sheetId, int idRegularUser, bool exclusivePost, string cursor = "")
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
                 if (exclusivePost)
                 {
-                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", cursor });
+                    return ViewComponent("MediaVideos", new { sheet, idRegularUser, statuses = "approved", cursor });
                 }
                 else
                 {
-                    return ViewComponent("MediaVideos", new { sheet, statuses = "approved", excludeTags = "erotic", cursor });
+                    return ViewComponent("MediaVideos", new { sheet, idRegularUser, statuses = "approved", excludeTags = "erotic", cursor });
                 }
             }
             return BadRequest();
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMessage(int sheetId, int idRegularUser, MessageType messageType, string message, long idLastMessage = 0, string ownerAvatar = "")
+        public async Task<IActionResult> SendMessage(int sheetId, int idRegularUser, MessageType messageType, string message, long idLastMessage = 0)
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("Message", new { sheet, idRegularUser, messageType, message, idLastMessage, ownerAvatar });
+                Message newMessage = new Message()
+                {
+                    DateCreated = DateTime.Now,
+                    IdUserFrom = sheet.User.Id,
+                    IdUserTo = idRegularUser,
+                    Type = messageType
+                };
+                switch (messageType)
+                {
+                    case MessageType.Message:
+                        newMessage.Content = new Content() { Message = message };
+                        break;
+
+                    case MessageType.Sticker:
+                        var stickerOptions = message.Split(';');
+                        newMessage.Content = new Content() { Id = int.Parse(stickerOptions[0]), Url = stickerOptions[1] };
+                        break;
+
+                    case MessageType.Virtual_Gift:
+                        var giftOptions = message.Split(';');
+                        newMessage.Content = new Content() { Id = int.Parse(giftOptions[0]), ImageSrc = giftOptions[1], Message = giftOptions[2] };
+                        break;
+
+                    case MessageType.Photo:
+                        var photoOptions = message.Split(';');
+                        message = photoOptions[0];
+                        newMessage.Content = new Content { IdPhoto = int.Parse(photoOptions[0]), Url = photoOptions[1] };
+                        break;
+
+                    case MessageType.Video:
+                        var videoOptions = message.Split(';');
+                        newMessage.Content = new Content { IdPhoto = int.Parse(videoOptions[0]), Url = videoOptions[1] };
+                        break;
+                }
+
+                return ViewComponent("Message", new { sheet, newMessage, idLastMessage });
             }
             return BadRequest();
         }

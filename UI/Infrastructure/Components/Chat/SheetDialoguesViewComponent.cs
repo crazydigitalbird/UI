@@ -94,10 +94,10 @@ namespace UI.Infrastructure.Components
                 }
             }
 
-            if (messenger.Dialogs?.Count < limit)
-            {
-                messenger.Cursor = "";
-            }
+            //if (messenger.Dialogs?.Count < limit)
+            //{
+            //    messenger.Cursor = "";
+            //}
             #endif
 
             messenger.SheetId = sheet.Id;

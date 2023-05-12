@@ -1,8 +1,6 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text.Json.Serialization;
 using UI.Infrastructure.API;
 using UI.Models;
 
@@ -19,63 +17,51 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, int idRegularUser, MessageType messageType, string message, long idLastMessage)
+        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, Message newMessage, long idLastMessage)
         {
-            Message sendMessage = new Message()
-            {
-                DateCreated = DateTime.Now,
-                IdUserFrom = sheet.User.Id,
-                IdUserTo = idRegularUser,
-                Type = messageType
-            };
             long? idNewMessage = null;
-            switch (messageType)
+            switch (newMessage.Type)
             {
                 case MessageType.Message:
-                    sendMessage.Content = new Content() { Message = message };
-                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, newMessage.IdUserTo, MessageType.Message, newMessage.Content.Message, idLastMessage);
                     break;
 
                 case MessageType.Sticker:
-                    var stickerOptions = message.Split(';');
-                    message = stickerOptions[0];
-                    sendMessage.Content = new Content() { Url = stickerOptions[1] };
-                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, newMessage.IdUserTo, MessageType.Sticker, $"{newMessage.Content.Id}", idLastMessage);
                     break;
 
                 case MessageType.Virtual_Gift:
-                    var giftOptions = message.Split(';');
-                    sendMessage.Content = new Content() { ImageSrc = giftOptions[1], Message = giftOptions[2] };
-                    idNewMessage = await _chatClient.SendGiftAsync(sheet, idRegularUser, giftOptions[0], giftOptions[2], idLastMessage);
+                    idNewMessage = await _chatClient.SendGiftAsync(sheet, newMessage.IdUserTo, $"{newMessage.Content.Id}", newMessage.Content.Message, idLastMessage);
                     break;
 
                 case MessageType.Photo:
-                    var photoOptions = message.Split(';');
-                    message = photoOptions[0];
-                    sendMessage.Content = new Content { IdPhoto = int.Parse(photoOptions[0]), Url = photoOptions[1] };
-                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, newMessage.IdUserTo, MessageType.Photo, $"{newMessage.Content.IdPhoto}", idLastMessage);
                     break;
 
                 case MessageType.Video:
-                    var videoOptions = message.Split(';');
-                    message = videoOptions[0];
-                    sendMessage.Content = new Content { IdPhoto = int.Parse(videoOptions[0]), Url = videoOptions[1] };
-                    idNewMessage = await _chatClient.SendMessageAsync(sheet, idRegularUser, messageType, message, idLastMessage);
+                    idNewMessage = await _chatClient.SendMessageAsync(sheet, newMessage.IdUserTo, MessageType.Video, $"{newMessage.Content.IdPhoto}", idLastMessage);
+                    break;
+
+                case MessageType.Post:
+                    var text = newMessage.Content.TextPreview;
+                    var videos = newMessage.Content.Videos.Select(v => v.Id).ToList();
+                    var photos = newMessage.Content.Photos.Select(p => p.Id).ToList();
+                    idNewMessage = await _chatClient.SendPostAsync(sheet, newMessage.IdUserTo, text, videos, photos);
                     break;
             }
-            
+
             if (idNewMessage.HasValue)
             {
-                sendMessage.Id = idNewMessage;
-                
+                newMessage.Id = idNewMessage;
+
                 Messenger messenger = new Messenger
                 {
                     Dialogs = new List<Dialogue> { new Dialogue
                     {
-                        Messages= new List<Message> { sendMessage }
+                        Messages= new List<Message> { newMessage }
                     } },
                     Sheet = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info)
-            };
+                };
 
                 ViewData["newSendMessage"] = true;
                 return View(messenger);

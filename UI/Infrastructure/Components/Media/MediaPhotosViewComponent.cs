@@ -15,9 +15,9 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, string statuses = "", string tags = "", string excludeTags= "", string cursor = "")
+        public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, int idRegularUser, string statuses = "", string tags = "", string excludeTags= "", string cursor = "")
         {
-            var photos = await _chatClient.GetPhotosAsync(sheet, statuses, tags, excludeTags, cursor);
+            var photos = await _chatClient.GetPhotosAsync(sheet, idRegularUser, statuses, tags, excludeTags, cursor);
             return View(photos);
         }
     }

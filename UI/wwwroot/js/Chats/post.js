@@ -1,21 +1,28 @@
 ﻿var isLoadingHistoryPosts = false;
 const $post = $('#post'),
-    previewBtn = document.querySelector('#previewPost');
-$btnPost = $('#btnPost');
+    previewBtn = document.querySelector('#previewPost'),
+    $btnPost = $('#btnPost');
 
+//Сортировка фото и видео путем перетаскивания элементов на новые позиции.
+$('.uploaded-file').sortable({
+    revert: true,
+    opacity: 0.5
+});
 
+//Отображает окно создания эксклюзивного поста
 function showHidenPost() {
     if ($btnPost.hasClass('textarea-icon')) {
         var sheetId = $('#manMessagesMails').data('sheet-id');
         var idInterlocutor = $('#interlocutorIdChatHeader').text();
         if (sheetId && idInterlocutor) {
             var idSheetPopup = $post.data('sheet-id');
-            var idInterlocutorPopup = $post.data('id-user');
-            //createExclusivePostClear();
+            var idInterlocutorPopup = $post.data('id-user');            
             if (sheetId === idSheetPopup && idInterlocutor === idInterlocutorPopup) {
 
             }
             else {
+                createExclusivePostClear();
+                historyPostsClear();
                 getHistoryPosts(sheetId, idInterlocutor, 0);
             }
             $post.removeClass('d-none');
@@ -23,6 +30,7 @@ function showHidenPost() {
     }
 }
 
+//Загрузка истории экслюзивных постов
 function getHistoryPosts(sheetId, idInterlocutor, idLastMessage) {
     enableSpinnerInHistoryPosts();
     isLoadingHistoryPosts = true;
@@ -151,6 +159,7 @@ function previewPost(date, text, media) {
 function removeMediaFile(e) {
     $(e).closest('div .file').hide(1000, function () {
         $(this).remove();
+        checkSendPost();
     });
 }
 
@@ -162,9 +171,83 @@ function previewPostClear() {
     $(popUpPreviewPost).find('.preview-body-media').empty();
 }
 
+function historyPostsClear() {
+    $('#historyPosts').empty();
+}
+
 function createExclusivePostClear() {
     $(post).find('textarea').val('');
     $(post).find('.uploaded-file').empty();
     $(`#sentPost`).addClass('disabled');
-    $(`#previewPost`).addClass('disabled');
+}
+
+//<----- Send Post ----->
+$('#sentPost').on('click', sendPost);
+$(post).find('textarea').on('input', checkSendPost);
+
+
+function checkSendPost() {
+    var textLength = $(post).find('textarea').val().length;
+    var countVideo = 0;
+    var countPhoto = 0;
+
+    var textPostLength = $('#textPostLength');
+    textPostLength.text(textLength);
+
+    $(post).find('.uploaded-file .file').each(function () {
+        var isVideo = $(this).data('is-video');
+        if (isVideo) {
+            countVideo = countVideo + 1;
+        }
+        else {
+            countPhoto = countPhoto + 1;
+        }
+    });
+    
+    if (allowedSendMessages(1) && textLength >= 200 && textLength <= 3500 && (countVideo >= 1 || countPhoto >= 4)) {
+        if($('#sentPost').hasClass('disabled'))
+        {
+            $('#sentPost').removeClass('disabled')
+        }
+    }
+    else{
+        if (!$('#sentPost').hasClass('disabled')) {
+            $('#sentPost').addClass('disabled')
+        }
+    }
+}
+
+function sendPost() {
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    var idRegularUser = $('#interlocutorIdChatHeader').text();
+    var idLastMessage = $('#messages').find('[name=message]').last().data('id-message');
+    var text = $(post).find('textarea').val();
+    var videos = [];
+    var photos = [];
+
+    $(post).find('.uploaded-file .file').each(function () {
+        var isVideo = $(this).data('is-video');
+        var url = $(this).find('img')[0].src;
+        var id = $(this).data('id');
+        if (isVideo) {
+            videos.push({Id: id, Url: url});
+        }
+        else {
+            photos.push({ Id: id, Url: url });
+        }
+    });
+
+    $.post('/Chats/SendPost', { sheetId, idRegularUser, idLastMessage, text, videos, photos }, function (data) {
+        var idRegularUserCurrent = $('#interlocutorIdChatHeader').text();
+        var sheetIdCurrent = $('#manMessagesMails').data('sheet-id');
+        if (sheetId === sheetIdCurrent && idRegularUser === idRegularUserCurrent) {
+            $(`#messages`).append(data);
+            scrollToEndMessages();
+            reduceMessagesLeft()
+        }
+        createExclusivePostClear();
+    }).fail(function () {
+
+    });
+    $post.addClass('d-none');
 }

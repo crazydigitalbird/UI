@@ -9,7 +9,7 @@
         </span>
         <div class="create-post-text">
             <textarea class="" placeholder="Сообщение" maxlength="3500" minlength="200"></textarea>
-            <span class="keypress_text">0</span>
+            <span id="textPostLength" class="keypress_text">0</span>
         </div>
         <div class="d-flex justify-content-start">
             <div class="upload-file d-flex align-items-center justify-content-center">
@@ -23,7 +23,7 @@
         </div>
         <div class="create-post-btns d-flex align-items-center justify-content-between mt-2">
             <div class="d-flex">
-                <button id="sentPost" class="btn answer-button chat-button rounded text-white me-2">Отправить</button>
+                <button id="sentPost" class="btn disabled answer-button chat-button rounded text-white me-2">Отправить</button>
                 <button id="previewPost" type="button" class="btn answer-button attach-button rounded text-white">
                     <span class="answer-button__text">Preview</span>
                 </button>
@@ -46,9 +46,9 @@
             </div>
         </div>
 
-        <p class="history__title pe-3">Posts history for Will <span id='spinner-hostory-posts' class="spinner-grow spinner-grow-sm ps-2 d-none" role="status"></span></p>
+        <p class="history__title">Posts history for Will<span id='spinner-hostory-posts' class="spinner-grow spinner-grow-sm ms-1 d-none" role="status"></span></p>
         <div class="d-flex justify-content-center">
-            <div class="history-posts d-inline-flex flex-column">
+            <div class="history-posts w-50 d-inline-flex flex-column">
                 <div id="historyPosts" class="history">
                 </div>
             </div>

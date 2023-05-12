@@ -4,6 +4,7 @@ using Polly.Contrib.WaitAndRetry;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using UI.Infrastructure;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Hubs;
 using UI.Infrastructure.Repository;
@@ -20,12 +21,8 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddSingleton<IDictionaryRepository<SheetDialogKey, NewMessage>, DictionaryChatRepository>();
 
-builder.Services.AddSignalR(conf => conf.MaximumReceiveMessageSize = null);
-
 builder.Services.AddSingleton<ChatServices>();
 builder.Services.AddHostedService<BackgroundServiceStarter<ChatServices>>();
-
-
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
@@ -43,6 +40,8 @@ builder.Services.AddSingleton<ICommentClient, ApiCommentClient>();
 builder.Services.AddSingleton<IGroupClient, ApiGroupClient>();
 builder.Services.AddSingleton<IBalanceClient, ApiBalanceClient>();
 builder.Services.AddSingleton<ISheetClient, ApiSheetClient>();
+
+builder.Services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
 
 builder.Services.AddHttpClient("api", client =>
 {
@@ -69,6 +68,12 @@ builder.Services.AddHttpClient("apiBot", client =>
     }
     return hadler;
 })/*.AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)))*/;
+
+builder.Services.AddSignalR(conf =>
+{
+    conf.MaximumReceiveMessageSize = null;
+    conf.EnableDetailedErrors = true;
+});
 
 static bool ValidateServerCetification(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)
 {

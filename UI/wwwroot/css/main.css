@@ -323,6 +323,7 @@
             /*background-color: rgba(30, 30, 66, 0.5);*/
             /*color: #131334;*/
             color: whitesmoke;
+            z-index: 3;
         }
 
 .pop-up.create-post .submit,
@@ -402,14 +403,14 @@
     margin: 12px 0;
 }
 
-.pop-up.create-post .history {
-    width: 570px;
-    margin-top: 12px;
-}
+/*.pop-up.create-post .history__title span {*/
+/*position: fixed;*/
+/*width: 16px;
+}*/
 
-    .pop-up.create-post .history:first-child {
-        margin-top: 0;
-    }
+.pop-up.create-post .history:first-child {
+    margin-top: 0;
+}
 
 .pop-up.create-post .history-item {
     max-height: 310px;
@@ -434,7 +435,9 @@
         position: relative;
     }
 
-        .pop-up.create-post .history-item .history-head .video-post {
+        .pop-up.create-post .history-item .history-head .video-post,
+        .history .history-item .history-head .video-post,
+        .pop-up.create-post .uploaded-file .file .video-post {
             width: 100%;
             height: 100%;
             position: absolute;
@@ -443,6 +446,10 @@
             justify-content: center;
             align-items: center;
         }
+
+            .pop-up.create-post .uploaded-file .file .video-post svg {
+                height: 25px;
+            }
 
     .pop-up.create-post .history-item .history-main-sup .video-post {
         width: 100%;
@@ -501,18 +508,30 @@
             font-weight: 600;
         }
 
+.history .history-item .history-main-sup .video-post {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    top: 0px;
+    justify-content: center;
+    align-items: center;
+}
+
 .pop-up.create-post .history-item__text {
     font-size: 16px;
     line-height: 22px;
     margin: 8px 0 12px;
     overflow-wrap: break-word;
     overflow: hidden;
-    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     display: -webkit-box;
     width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: anywhere;
 }
 
 .pop-up.create-post .history-item .unseen,
@@ -1107,6 +1126,10 @@
             margin-top: 10px;
             opacity: 0.95;
             padding-right: 10px;
+            -moz-hyphens: auto;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            word-wrap: anywhere;
         }
 
 @-webkit-keyframes animPopUp {

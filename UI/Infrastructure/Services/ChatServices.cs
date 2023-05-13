@@ -105,7 +105,7 @@ namespace UI.Infrastructure.Services
                 return;
             }
 
-            var sheets = await GetSheetsFast(sessionGuid);
+            List<SheetChat> sheets = await GetSheetsFast(sessionGuid);
 
             sheets.ForEach(sheet => sheet.Site = new SheetSite { Configuration = "https://talkytimes.com/" });
 
@@ -147,6 +147,14 @@ namespace UI.Infrastructure.Services
 
             // Получаем все ключи первой последовательности, которых нет во второй последовательности. Эти диалоги необходимо добавить т.к. появились новые действия со стороны мужчины
             var newActiveSheetDialogKeys = activeSheetsDialogsTemp.Keys.Except(_dictionary.Active.Keys);
+            foreach (var key in newActiveSheetDialogKeys)
+            {
+                var sheet = sheets.FirstOrDefault(s => s.Id == key.SheetId);
+                if (sheet != null)
+                {
+                    activeSheetsDialogsTemp[key].SheetInfo = sheet.SheetInfo;
+                }
+            }
 
             //Получаем все ключи общие для обоих коллекций, но имеющие разные Id LastMessage. Данные диалоги необходимо обновить.
             var updateActiveSheetDialogKeys = _dictionary.Active.Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id)
@@ -157,7 +165,7 @@ namespace UI.Infrastructure.Services
             #endregion
 
             var allNewDialogs = newActiveSheetDialogKeys.Select(key => key.IdInterlocutor).Distinct().ToList();
-            
+
             await FillingInNewDialoguesProfiles(sheets.First(), allNewDialogs);
 
             stopwatch1.Stop();
@@ -167,7 +175,7 @@ namespace UI.Infrastructure.Services
 
         private async Task FillingInNewDialoguesProfiles(Sheet sheet, List<int> allNewDialogs)
         {
-            if(allNewDialogs.Count == 0)
+            if (allNewDialogs.Count == 0)
             {
                 return;
             }
@@ -312,7 +320,7 @@ namespace UI.Infrastructure.Services
             return null;
         }
 
-        private async Task<List<Sheet>> GetSheetsFast(string sessionGuid)
+        private async Task<List<SheetChat>> GetSheetsFast(string sessionGuid)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             try
@@ -320,7 +328,7 @@ namespace UI.Infrastructure.Services
                 var response = await httpClient.GetAsync($"Sheets/GetSheetsFast?sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
-                    var sheets = (await response.Content.ReadFromJsonAsync<List<Sheet>>()).Where(a => a.IsActive).ToList();
+                    var sheets = (await response.Content.ReadFromJsonAsync<List<SheetChat>>()).Where(a => a.IsActive).ToList();
                     return sheets;
                 }
                 else

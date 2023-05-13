@@ -29,16 +29,18 @@ namespace UI.Infrastructure.Hubs
                 return;
             }
 
-            var active = _dictionary.Active.Where(kvp => sheets.Any(sheet => sheet.Id == kvp.Key.SheetId));
-            var online = _dictionary.Online.Where(kvp => sheets.Any(sheet => sheet.Id == kvp.Key.SheetId));
-
-            var newMesssages = online.Union(active).Select(x => x.Value).ToList();
+            var allMessages = _dictionary.Active.Where(kvp => sheets.Any(sheet => sheet.Id == kvp.Key.SheetId)).Select(kvp => {
+                if(kvp.Value.Dialogue.LastMessage.Type == MessageType.System)
+                {
+                    kvp.Value.Dialogue.LastMessage.DateCreated = kvp.Value.Dialogue.DateUpdated;
+                }
+                return kvp.Value;
+            }).OrderByDescending(m => m.Dialogue.LastMessage.DateCreated);
 
             Stopwatch s = new Stopwatch();
             s.Start();
-
             
-            var body = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", "");
+            var body = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", allMessages);
 
             s.Stop();
 

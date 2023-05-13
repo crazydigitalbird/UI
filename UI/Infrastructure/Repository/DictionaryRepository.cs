@@ -56,6 +56,7 @@ namespace UI.Infrastructure.Repository
 
     public class NewMessage
     {
+        public SheetInfo SheetInfo { get; set; }
         public Dialogue Dialogue { get; set; }
     }
 }

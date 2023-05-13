@@ -1,5 +1,6 @@
 ﻿@using Humanizer
-@model IEnumerable<(Dialogue Dialogue, SheetInfo SheetInfo)>
+@using UI.Infrastructure.Repository;
+@model IEnumerable<NewMessage>
 
 @{
     var timers = (Dictionary<long, MessageTimer>)ViewData["timers"];

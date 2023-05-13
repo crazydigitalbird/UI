@@ -7,11 +7,18 @@ namespace UI.Infrastructure.Repository
 {
     public class DictionaryChatRepository : IDictionaryRepository<SheetDialogKey, NewMessage>
     {
-        private readonly ConcurrentDictionary<SheetDialogKey, NewMessage> _dictionaryActive = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
+        private ConcurrentDictionary<SheetDialogKey, NewMessage> _dictionaryActive = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
 
         private ConcurrentDictionary<SheetDialogKey, NewMessage> _dictionaryOnline = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
 
-        public ConcurrentDictionary<SheetDialogKey, NewMessage> Active => _dictionaryActive;
+        public ConcurrentDictionary<SheetDialogKey, NewMessage> Active
+        {
+            get => _dictionaryOnline;
+            set
+            {
+                _dictionaryOnline = value;
+            }
+        }
 
         public ConcurrentDictionary<SheetDialogKey, NewMessage> Online
         {

@@ -1,4 +1,4 @@
-﻿@using Humanizer
+﻿@*@using Humanizer*@
 @using UI.Infrastructure.Repository;
 @model IEnumerable<NewMessage>
 
@@ -8,19 +8,17 @@
 
 @foreach (var ds in Model)
 {
-
     //Проверяем кто написал последнее сообщение в диалоге, владелица анкеты или мужчина. Если условие выполняется, то сообщение написал владелица анкеты
-    if (ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom)
-    @*if (!ds.Dialogue.HasNewMessage)*@
+    if (ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom && ds.Dialogue.LastMessage.Type != MessageType.System)
     {
-        <div name="newMessage" class="bottom-block-body__item d-flex flex-row-reverse mb-2 align-items-center text-white row p-2 rounded"
-             data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
-             data-owner-id="@($"{ds.SheetInfo.Id}")"
-             data-is-pinned="@ds.Dialogue.IsPinned"
-             data-is-bookmarked="@ds.Dialogue.IsBookmarked"
-             data-message-type="@(ds.Dialogue.LastMessage.Type == MessageType.System ? MessageType.System : "")"
-             data-online="@ds.Dialogue.Status"
-             onclick="goToChat(this)">
+        <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}-{ds.Dialogue.LastMessage.Id}")" class="bottom-block-body__item d-flex flex-row-reverse mb-2 align-items-center text-white row p-2 rounded"
+     data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
+     data-owner-id="@($"{ds.SheetInfo.Id}")"
+     data-is-pinned="@ds.Dialogue.IsPinned"
+     data-is-bookmarked="@ds.Dialogue.IsBookmarked"
+     data-message-type=""
+     data-online="@ds.Dialogue.Status"
+     onclick="goToChat(this)">
 
             <div class="other-user-block col-2 pe-0">
                 <div class="standart-image-block position-relative">
@@ -83,16 +81,25 @@
                             @:Winked
                             break;
 
-                        case MessageType.System:
+@*                        case MessageType.System:
                             @ds.Dialogue.LastMessage.Content.Message
-                            break;
+                            break;*@
 
                         default:
                             break;
                     }
                 </p>
-                <p class="user-block-name-text small-text-opacity">
-                    @ds.Dialogue.LastMessage.DateCreated.Humanize()
+                <p name="date-created" class="user-block-name-text small-text-opacity" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
+                    @*@ds.Dialogue.LastMessage.DateCreated.Humanize()*@
+                    @*                    @if (ds.Dialogue.LastMessage.Type == MessageType.System)
+            {
+            @:@ds.Dialogue.DateUpdated.Humanize()
+            }
+            else
+            {
+            @:@ds.Dialogue.LastMessage.DateCreated.Humanize()
+            }*@
+                    @*@ds.Dialogue.LastMessage.DateCreated.Humanize()*@
                 </p>
             </div>
             <div class="user-block d-flex align-items-center col-4 p-2">
@@ -108,7 +115,7 @@
             }*@
                 </div>
 
-                <div class="user-block-info text-center col-4">
+                <div class="user-block-info text-center col-6">
                     <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
                 </div>
             </div>
@@ -116,14 +123,14 @@
     }
     else
     {
-        <div name="newMessage" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mb-2"
-             data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
-             data-owner-id="@($"{ds.SheetInfo.Id}")"
-             data-is-pinned="@ds.Dialogue.IsPinned"
-             data-is-bookmarked="@ds.Dialogue.IsBookmarked"
-             data-message-type="@ds.Dialogue.LastMessage.Type"
-             data-online="@ds.Dialogue.Status"
-             onclick="goToChat(this)">
+        <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}-{ds.Dialogue.LastMessage.Id}")" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mb-2"
+     data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
+     data-owner-id="@($"{ds.SheetInfo.Id}")"
+     data-is-pinned="@ds.Dialogue.IsPinned"
+     data-is-bookmarked="@ds.Dialogue.IsBookmarked"
+     data-message-type="@ds.Dialogue.LastMessage.Type"
+     data-online=""
+     onclick="goToChat(this)">
 
             <div class="other-user-block col-2 ps-0">
                 <div class="standart-image-block position-relative">
@@ -194,15 +201,16 @@
                             break;
                     }
                 </p>
-                <p class="user-block-name-text small-text-opacity">
-                    @if (ds.Dialogue.LastMessage.Type == MessageType.System)
-                    {
-                        @:@ds.Dialogue.DateUpdated.Humanize()
-                    }
-                    else
-                    {
-                        @:@ds.Dialogue.LastMessage.DateCreated.Humanize()
-                    }
+                <p name="date-created" class="user-block-name-text small-text-opacity" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
+                    @* @ds.Dialogue.LastMessage.DateCreated.Humanize()*@
+                    @*                    @if (ds.Dialogue.LastMessage.Type == MessageType.System)
+            {
+            @:@ds.Dialogue.DateUpdated.Humanize()
+            }
+            else
+            {
+            @:@ds.Dialogue.LastMessage.DateCreated.Humanize()
+            }*@
                 </p>
             </div>
             <div class="user-block d-flex align-items-center col-4 p-2">
@@ -218,9 +226,27 @@
             }*@
                 </div>
 
-                <div class="user-block-info text-center col-4">
+                <div class="user-block-info text-center col-6">
                     <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
-                    <p class="user-block-timer-text timer" @*data-minutes-left="1"*@ data-seconds-left="@(ds.Dialogue.LastMessage.Timer?.TimeLeft() ?? 0)" data-sheetInfo-id="@ds.SheetInfo.Id" data-id-interlocutor="@ds.Dialogue.IdInterlocutor"></p>
+                    @if (ds.Dialogue.LastMessage.Timer != null)
+                    {
+                        <p class="user-block-timer-text timer"
+                           data-sheetInfo-id="@ds.SheetInfo.Id"
+                           data-id-interlocutor="@ds.Dialogue.IdInterlocutor"
+                           data-id-lastmessage="@ds.Dialogue.LastMessage.Id"
+                           data-type-lastmessage="@ds.Dialogue.LastMessage.Type"
+                           data-seconds-left="@ds.Dialogue.LastMessage.Timer.TimeLeft()">
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="user-block-timer-text timer"
+                           data-sheetInfo-id="@ds.SheetInfo.Id"
+                           data-id-interlocutor="@ds.Dialogue.IdInterlocutor"
+                           data-id-lastmessage="@ds.Dialogue.LastMessage.Id"
+                           data-type-lastmessage="@ds.Dialogue.LastMessage.Type">
+                        </p>
+                    }
                 </div>
             </div>
         </div>

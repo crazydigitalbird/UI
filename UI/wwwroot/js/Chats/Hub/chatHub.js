@@ -13,6 +13,7 @@ connection.onreconnecting(error => {
 connection.onreconnected(connectionId => {
     console.assert(connection.state === signalR.HubConnectionState.Connected);
     console.log(`Connection reestablished. Connected with connectionId "${connectionId}"`);
+    initial();
 });
 
 async function start() {
@@ -44,10 +45,34 @@ async function initial() {
     }
 }
 
+async function AddToGroup(sheetId, idInterlocutor) {
+    try {
+        await connection.invoke("AddToGroup", sheetId, idInterlocutor);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function RemoveFromGroup(sheetId, idInterlocutor) {
+    try {
+        await connection.invoke("RemoveFromGroup", sheetId, idInterlocutor);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 connection.on("ReceiveInitialAllNewMessagesFromAllMen", (data) => {
-    $('#allNewMessages').html(data);
+    initialAllNewMessagesFromAllMan(data);
 });
 
-//connection.on('Recive', function (data) {
-//    console.log(data);
-//});
+connection.on('AddDialog', function (data) {
+    addDialog(data);
+});
+
+connection.on('DeleteDialog', function (sheetId, idInterlocutor, idLastMessage) {
+    DeleteDialog(sheetId, idInterlocutor, idLastMessage);
+});
+
+connection.on('NewMessage', function (sheetId, idInterlocutor, idNewMessage) {
+    LoadNewMessages(sheetId, idInterlocutor, idNewMessage);
+});

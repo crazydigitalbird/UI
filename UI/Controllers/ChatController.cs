@@ -126,7 +126,7 @@ namespace UI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> SendMessage(int sheetId, int idRegularUser, MessageType messageType, string message, string ownerAvatar)
-        {
+        {           
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {

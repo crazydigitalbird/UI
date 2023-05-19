@@ -98,14 +98,8 @@
                                 <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-active-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
                                     <div class="accordion-image position-relative">
                                         <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        @if (info.IsOnline)
-                                        {
-                                            <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
+                                        <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
                                     </div>
                                     <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
                                         <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
@@ -134,8 +128,7 @@
             </div>
 
             @*<---------- History ---------->*@
-            <div class="tab-pane position-relative w-100" id="history" role="tabpanel" aria-labelledby="history-tab" data-initialized="false">
-                History
+            <div class="tab-pane w-100 overflow-y-auto overflow-x-hidden" id="history" role="tabpanel" aria-labelledby="history-tab" data-initialized="false">
             </div>
 
             @*<---------- bookmarked --------->*@
@@ -176,14 +169,8 @@
                                 <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-bookmarked-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
                                     <div class="accordion-image position-relative">
                                         <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        @if (info.IsOnline)
-                                        {
-                                            <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
+                                        <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
                                     </div>
                                     <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
                                         <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
@@ -249,14 +236,8 @@
                                 <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-premium-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
                                     <div class="accordion-image position-relative">
                                         <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        @if (info.IsOnline)
-                                        {
-                                            <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
+                                        <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
                                     </div>
                                     <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
                                         <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
@@ -322,14 +303,8 @@
                                 <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-trash-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
                                     <div class="accordion-image position-relative">
                                         <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        @if (info.IsOnline)
-                                        {
-                                            <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        }
+                                        <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
+                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
                                     </div>
                                     <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
                                         <p name="ownerName" class="accordion-info-text accordion-info-bigtext">

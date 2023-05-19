@@ -1,6 +1,10 @@
 ﻿using Core.Models.Agencies;
 using Core.Models.Agencies.Operators;
 using Core.Models.Sheets;
+using Core.Models.Users;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net;
 using System.Security.Principal;
 using UI.Models;
 
@@ -175,6 +179,27 @@ namespace UI.Infrastructure.API
 
         #endregion
 
+        public async Task<List<ApplicationUser>> GetUsersLogins(IEnumerable<int> idUsers)
+        {
+            var client = _httpClientFactory.CreateClient("api");
+            string sessionGuid = GetSessionGuid();
+            try
+            {
+                var httpContent = JsonContent.Create(idUsers);
+                var response = await client.PostAsync($"Users/GetUsersLogins?sessionGuid={sessionGuid}", httpContent);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var users = await response.Content.ReadFromJsonAsync<List<ApplicationUser>>();
+                    return users;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error getting user loggings with id users: {idUsers}.", string.Join(',', idUsers));
+            }
+            return null;
+        }
+
         private string GetSessionGuid()
         {
             var user = _httpContextAccessor.HttpContext.User;
@@ -193,5 +218,6 @@ namespace UI.Infrastructure.API
         Task<List<SheetView>> GetSheetsViewAsync();
         Task<List<Sheet>> GetSheetsAsync();
         Task<int> GetOperatorIdAsync();
+        Task<List<ApplicationUser>> GetUsersLogins(IEnumerable<int> idUsers);
     }
 }

@@ -9,6 +9,8 @@ namespace UI.Models
     {        
         public new int Id { get; set; }
 
+        public string Login { get; set; }
+
         public int MemeberId { get; internal set; }
 
         public string SesstionGuid { get; set; }
@@ -84,7 +86,6 @@ namespace UI.Models
 
             return appUser;
         }
-
     }
 
     public class MyApplicationUserIsUpdateRoleComparer : IEqualityComparer<ApplicationUser>

@@ -1,5 +1,34 @@
 ﻿var $messagesDiv = $('#messages');
 
+// Загрузка новых сообщений
+function LoadNewMessages(sheetId, idInterlocutor, idNewMessage) {
+    // проверяем что пользователь за время запроса осталься в том же диалоге
+    if (CheckCurrentChat(sheetId, idInterlocutor)) {
+        // Получаем id самого нового сообщения
+        var idLastMessage = $('#messages').find('[name=message]').last().data('id-message');
+
+        //Проверяем что id нового сообщения больше самого нового сообщения в окне чата 
+        if (idNewMessage > idLastMessage) {
+            $.post("/Chats/LoadMessages", { sheetId, idInterlocutor, idLastMessage, isNew: true }, function (messages) {
+                // проверяем что пользователь за время запроса осталься в том же диалоге и наличию новых сообщений в ответе от сервера
+                if (CheckCurrentChat(sheetId, idInterlocutor) && messages) {
+                    // Получаем id самого нового сообщения
+                    var currentIdLastMessage = $('#messages').find('[name=message]').last().data('id-message');
+                    // Сверяем id самого нового сообщения до загрузки и после загрузки новых сообщений
+                    // Если id совпадают то пользователь не осуществлял действий, которые могли привести к обновлению окна переписки
+                    if (idLastMessage === currentIdLastMessage) {
+                        $messagesDiv.append(messages);
+                        updateAllDateHumanize();
+                        scroll();
+                        ManMessagesMailsLeft(sheetId, idInterlocutor);
+                    }
+                }
+            }).fail(function (error) {
+            });
+        }
+    }
+}
+
 function loadMessages(sheetId, idInterlocutor, newLoading) {
     var loadAllMessages = $messagesDiv.data('load-all-messages').toLowerCase();
     if (loadAllMessages === 'false') {
@@ -17,6 +46,7 @@ function loadMessages(sheetId, idInterlocutor, newLoading) {
                     scroll(oldHeight);
                 }
                 updateDataInMessageDiv();
+                updateAllDateHumanize();
             }
         }).done(function () {
             disableSpinnerLoadMessages();

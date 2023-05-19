@@ -5,12 +5,14 @@ $(function () {
     $('.accordion-collapse').each(function () {
         this.addEventListener('show.bs.collapse', function () {
             var currentTab = getCurrentTab();
-            var searchMan = $(`#searchMan-${currentTab}`).val();
-            if (!searchMan) {
-                let result = this.id.match(/flush-collapse-(.+)-(.+)/);
-                var tab = result[1];
-                var sheetId = result[2];
-                getDialogues(sheetId, tab, '');
+            if (currentTab != 'history') {
+                var searchMan = $(`#searchMan-${currentTab}`).val();
+                if (!searchMan) {
+                    let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+                    var tab = result[1];
+                    var sheetId = result[2];
+                    getDialogues(sheetId, tab, '');
+                }
             }
         });
     });
@@ -18,7 +20,7 @@ $(function () {
     //Обновление диалогов для раскрытых блоков collapse, при изменении статуса online/offline
     $("[name=isOnlineOnly-active], [name=isOnlineOnly-bookmarked], [name=isOnlineOnly-premium], [name=isOnlineOnly-trash]").on('change', function () {
         var tab = this.id.replace('isOnlineOnly-', '');
-        refreshSearchMan(tab); 
+        refreshSearchMan(tab);
 
         $(this).closest('.tab-pane').find('.accordion-collapse.show').each(function () {
             let result = this.id.match(/flush-collapse-(.+)-(.+)/);
@@ -31,18 +33,20 @@ $(function () {
     //Обновление диалогов по таймеру для раскрытых блоков collapse, только на текущей вкладке и если isOnline=true
     timerLoadingDialoguesId = setTimeout(function loadingDialogues() {
         var currentTab = getCurrentTab();
-        if (isOnline(currentTab)) {
-            var searchMan = $(`#searchMan-${currentTab}`).val();
-            if (!searchMan) {
-                $('.accordion-collapse.show').each(function () {
-                    let result = this.id.match(/flush-collapse-(.+)-(.+)/);
-                    var tab = result[1];
-                    //Обновление только на текущей вкладке
-                    if (tab === currentTab) {
-                        var sheetId = result[2];
-                        getDialogues(sheetId, tab, '');
-                    }
-                });
+        if (currentTab != 'history') {
+            if (isOnline(currentTab)) {
+                var searchMan = $(`#searchMan-${currentTab}`).val();
+                if (!searchMan) {
+                    $('.accordion-collapse.show').each(function () {
+                        let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+                        var tab = result[1];
+                        //Обновление только на текущей вкладке
+                        if (tab === currentTab) {
+                            var sheetId = result[2];
+                            getDialogues(sheetId, tab, '');
+                        }
+                    });
+                }
             }
         }
         timerLoadingDialoguesId = setTimeout(loadingDialogues, 30000);
@@ -66,6 +70,9 @@ function getDialogues(sheetId, currentTab, cursor) {
             }
             $divDialogues.append(data);
             countDialoguesSheet(sheetId, currentTab);
+        }
+        else {
+            disableSpinnerInCounter(sheetId, currentTab);
         }
     }).fail(function () {
         disableSpinnerInCounter(sheetId, currentTab);

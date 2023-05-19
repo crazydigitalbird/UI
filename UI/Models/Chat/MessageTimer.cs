@@ -4,13 +4,13 @@
     {
         public DateTime DateViewed { get; set; }
 
-        public DateTime DateUTC { get; set; }
+        //public DateTime DateUTC { get; set; }
 
         public MessageType MessageType { get; set; }
 
         public int TimeLeft()
         {
-            var timeLeftSeconds = (DateUTC - DateViewed).TotalSeconds;
+            var timeLeftSeconds = (DateTime.UtcNow - DateViewed).TotalSeconds;
             switch (MessageType)
             {
                 case MessageType.System:

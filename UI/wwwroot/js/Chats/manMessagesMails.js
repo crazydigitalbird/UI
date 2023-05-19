@@ -20,17 +20,35 @@
         $('#premium-svg').toggleClass('symbol-checked', interlocutor.IsPremium);
         $('#trash-svg').toggleClass('symbol-checked', interlocutor.IsTrash);
 
-        $.post('/Chats/ManMessagesMails', { sheetId: owner.SheetId, idRegularUser: interlocutor.Id }, function (data) {
-            $('#messagesLeft').text(data.messagesLeft || 0);
-            $('#mailsLeft').text(data.mailsLeft || 0);
-        });
-
-        checkGifts(owner.SheetId, interlocutor.Id);
-        checkPost(owner.SheetId, interlocutor.Id);
+        AddToGroupAndRemoveFromGroupSignalR(sheetId, idInterlocutor, owner.SheetId, interlocutor.Id);
     }
+
+    ManMessagesMailsLeft(owner.SheetId, interlocutor.Id);
+
+    checkGifts(owner.SheetId, interlocutor.Id);
+    checkPost(owner.SheetId, interlocutor.Id);
+
 
     clearMessageDiv();
     loadMessages(owner.SheetId, interlocutor.Id, true);
+}
+
+function AddToGroupAndRemoveFromGroupSignalR(sheetIdOld, idInterlocutorOld, sheetIdNew, idInterlocutorNew) {
+    if (sheetIdOld && idInterlocutorOld > 0) {
+        RemoveFromGroup(sheetIdOld, idInterlocutorOld);
+    }
+    AddToGroup(sheetIdNew, idInterlocutorNew);
+}
+
+function ManMessagesMailsLeft(sheetId, idRegularUser) {
+    $.post('/Chats/ManMessagesMails', { sheetId, idRegularUser }, function (data) {
+        var currentSheetId = $('#manMessagesMails').data('sheet-id');
+        var currentIdInterlocutor = Number($('#interlocutorIdChatHeader').text());
+        if (currentSheetId === sheetId && currentIdInterlocutor === idRegularUser) {
+            $('#messagesLeft').text(data.messagesLeft || 0);
+            $('#mailsLeft').text(data.mailsLeft || 0);
+        }
+    });
 }
 
 function changeBookmarkChat(e) {

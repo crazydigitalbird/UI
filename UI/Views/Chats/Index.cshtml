@@ -45,6 +45,7 @@
 <partial name="_PreviewEcxlusivePostPopupPartial" />
 <partial name="_MediaGalleryPopupPartial" />
 <partial name="_VideoPopupPartial" />
+<partial name="_MailPartial" />
 
 @section Scripts{
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
@@ -53,17 +54,23 @@
     @*<--- JQuery UI Sortabel Drag & Drop --->*@
     <script src="/lib/jquery-ui-1.13.2.custom/jquery-ui.min.js" asp-append-version="true"></script>
 
+    @*<--- Moment --->*@
+    <script src="/js/moment-with-locales.min.js" asp-append-version="true"></script>
+
     @*<--- _SheetsDialoguesPartial --->*@
     <script src="/js/Chats/sheetsDialogues.js" asp-append-version="true"></script>
     <script src="/js/Chats/search.js" asp-append-version="true"></script>
+    <script src="/js/Chats/history.js" asp-append-version="true"></script>
 
     @*<--- AllNewMessagesFromAllMenViewComponent --->*@
     <script src="/js/Chats/jquery-countdown-timer-control.js" asp-append-version="true"></script>
+    <script src="/js/Chats/timers.js" asp-append-version="true"></script>
     <script src="/js/Chats/allNewMessagesFromAllMen.js" asp-append-version="true"></script>
 
     @*<--- ManMessagesMailsPartial --->*@
     <script src="/js/Chats/manMessagesMails.js" asp-append-version="true"></script>
     <script src="/js/Chats/messages.js" asp-append-version="true"></script>
+    <script src="/js/Chats/mail.js" asp-append-version="true"></script>
 
     @*<--- MessengerEditorPartial --->*@
     <script src="/js/Chats/emoji.js" asp-append-version="true"></script>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Hubs;
 using UI.Models;
 
 namespace UI.Infrastructure.Components
@@ -10,11 +11,13 @@ namespace UI.Infrastructure.Components
     {
         private readonly IChatClient _chatClient;
         private readonly ILogger<MessagesViewComponent> _logger;
+        private readonly IChatHub _chatHub;
 
-        public MessageViewComponent(IChatClient chatClient, ILogger<MessagesViewComponent> logger)
+        public MessageViewComponent(IChatClient chatClient, ILogger<MessagesViewComponent> logger, IChatHub chatHub)
         {
             _chatClient = chatClient;
             _logger = logger;
+            _chatHub = chatHub;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(Sheet sheet, Message newMessage, long idLastMessage)
@@ -52,6 +55,8 @@ namespace UI.Infrastructure.Components
 
             if (idNewMessage.HasValue)
             {
+                await _chatHub.ReplyToNewMessage(sheet.Id, newMessage.IdUserTo, idLastMessage, idNewMessage.Value);
+
                 newMessage.Id = idNewMessage;
 
                 Messenger messenger = new Messenger

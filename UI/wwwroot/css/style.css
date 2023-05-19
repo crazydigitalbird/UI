@@ -297,6 +297,8 @@ section {
     font-weight: 400;
     font-size: 12px;
     line-height: 130%;
+    overflow:hidden;
+    white-space: nowrap;
 }
 
 .user-block-name-text_block {

@@ -81,7 +81,7 @@ $('.gallery-box').on('scroll', function () {
     var currentTab = getCurrentTabGallery();
     if (Math.abs(this.scrollHeight - this.clientHeight - this.scrollTop) < 100 && !isLoadingGallery[currentTab]) {
         var sheetId = $('#manMessagesMails').data('sheet-id');
-        var idUser = $('#interlocutorIdChatHeader').text
+        var idUser = $('#interlocutorIdChatHeader').text();
         var isPostPopup = $(popUpGallery).data('is-post');
         getPhotos(sheetId, idUser, false, isPostPopup);
     }

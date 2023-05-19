@@ -11,7 +11,12 @@ function send(messageType, message) {
         var sheetId = $('#manMessagesMails').data('sheet-id');
         var idLastMessage = $('#messages').find('[name=message]').last().data('id-message');
         //var ownerAvatar = $('#ownerAvatarChatHeader').attr('src');
+
         $.post('/Chats/SendMessage', { sheetId: sheetId, idRegularUser: idRegularUser, messageType: messageType, message: message, idLastMessage: idLastMessage }, function (data) {
+
+            //Timer
+            stopTimer(sheetId, idRegularUser, idLastMessage);
+
             var idRegularUserCurrent = $('#interlocutorIdChatHeader').text();
             var sheetIdCurrent = $('#manMessagesMails').data('sheet-id');
             if (idRegularUser === idRegularUserCurrent && sheetId === sheetIdCurrent) {
@@ -23,8 +28,17 @@ function send(messageType, message) {
                 scrollToEndMessages();
                 reduceMessagesLeft()
             }
-        }).fail(function () {
 
+
+            ////SignalR
+            //replyToNewMessage(sheetId, Number(idRegularUser), idLastMessage);
+
+            ////Remove
+            //$(`#${sheetId}-${idRegularUser}-${idLastMessage}`).animate({ opacity: 0.25 }, 3000, function () {
+            //    $(this).remove();
+            //});
+
+        }).fail(function () {
         });
     }
 }

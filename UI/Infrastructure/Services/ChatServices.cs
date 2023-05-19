@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using Core.Models.Users;
 using System.Net;
+using Humanizer;
 
 namespace UI.Infrastructure.Services
 {
@@ -24,7 +25,6 @@ namespace UI.Infrastructure.Services
         private static volatile bool _started;
 
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHubContext<ChatHub> _hubContext;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ChatServices> _logger;
 
@@ -39,7 +39,6 @@ namespace UI.Infrastructure.Services
 
         public ChatServices(IServiceProvider serviceProvider,
             IHttpClientFactory httpClientFactory,
-            IHubContext<ChatHub> hubContext,
             ILogger<ChatServices> logger,
             IChatClient chatClient,
             IAuthenticationClient authenticationClient,
@@ -48,7 +47,6 @@ namespace UI.Infrastructure.Services
         {
             _serviceProvider = serviceProvider;
             _httpClientFactory = httpClientFactory;
-            _hubContext = hubContext;
             _logger = logger;
             _chatClient = chatClient;
             _authenticationClient = authenticationClient;
@@ -99,6 +97,9 @@ namespace UI.Infrastructure.Services
         public async Task GetNewMessage()
         {
             stopwatch1.Start();
+            using var scope = _serviceProvider.CreateScope();
+            var _chatHub = scope.ServiceProvider.GetRequiredService<IChatHub>();
+
             var sessionGuid = await LogInAsync("admin", "admin");
             if (string.IsNullOrWhiteSpace(sessionGuid))
             {
@@ -122,6 +123,7 @@ namespace UI.Infrastructure.Services
 
             await Task.WhenAll(sheetIdDialogsOnlineTasks.Concat(sheetIdDialogsActiveTasks));
 
+            stopwatch2.Start();
 
             #region Processing online
             ////Исключаем
@@ -142,45 +144,86 @@ namespace UI.Infrastructure.Services
             #endregion
 
             #region Processing active
-            // Получаем все ключи первой последовательности, которых нет во второй последовательности. Эти диалоги могут быть в случае устаревания, старше установленной даты (5 дней). 
-            var removeActiveSheetDialogKeys = _dictionary.Active.Keys.Except(activeSheetsDialogsTemp.Keys);
+            // Получаем все ключи первой последовательности, которых нет во второй последовательности.
+            // Из первой последовательности отбираются только диалоги из категории Онлайн, т.е. отправителем сообщения выступает девушка. 
+            var removeActiveSheetDialogs = _dictionary.Active
+                //.Where(kvp => kvp.Value.Dialogue.LastMessage.IdUserFrom != kvp.Key.IdInterlocutor)
+                .ExceptBy(activeSheetsDialogsTemp.Keys, kvp => kvp.Key)
+                .ToDictionary(kvp => kvp.Key, kvp=>kvp.Value.Dialogue.LastMessage.Id);
+
+            foreach (var sheetDialog in removeActiveSheetDialogs)
+            {
+                _dictionary.Active.TryRemove(sheetDialog.Key, out NewMessage message);
+            }
 
             // Получаем все ключи первой последовательности, которых нет во второй последовательности. Эти диалоги необходимо добавить т.к. появились новые действия со стороны мужчины
-            var newActiveSheetDialogKeys = activeSheetsDialogsTemp.Keys.Except(_dictionary.Active.Keys);
-            foreach (var key in newActiveSheetDialogKeys)
+            var newActiveSheetDialogs = activeSheetsDialogsTemp.ExceptBy(_dictionary.Active.Keys, kvp => kvp.Key);
+
+            foreach (var sheetDialog in newActiveSheetDialogs)
             {
-                var sheet = sheets.FirstOrDefault(s => s.Id == key.SheetId);
+                var sheet = sheets.FirstOrDefault(s => s.Id == sheetDialog.Key.SheetId);
                 if (sheet != null)
                 {
-                    activeSheetsDialogsTemp[key].SheetInfo = sheet.SheetInfo;
+                    sheetDialog.Value.SheetInfo = sheet.SheetInfo;
                 }
+            }
+            await FillingInNewDialoguesProfiles(sheets.First(), newActiveSheetDialogs);
+            foreach (var sheetDialog in newActiveSheetDialogs)
+            {
+                _dictionary.Active.TryAdd(sheetDialog.Key, sheetDialog.Value);
             }
 
             //Получаем все ключи общие для обоих коллекций, но имеющие разные Id LastMessage. Данные диалоги необходимо обновить.
-            var updateActiveSheetDialogKeys = _dictionary.Active.Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id)
-                .Select(kvp => kvp.Key)
-                .ToList();
+            var oldUpdateActiveSheetDialogs = _dictionary.Active
+                .Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id).ToDictionary(kvp => kvp.Key, kvp=> kvp.Value.Dialogue.LastMessage.Id);
 
-            _dictionary.Active = activeSheetsDialogsTemp;
+            var newUpdateActiveSheetDialogs = activeSheetsDialogsTemp
+                .Where(kvp => _dictionary.Active.ContainsKey(kvp.Key) && _dictionary.Active[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id);
+
+            foreach (var a in _dictionary.Active)
+            {
+                if (activeSheetsDialogsTemp.ContainsKey(a.Key))
+                {
+                    if (activeSheetsDialogsTemp[a.Key].Dialogue.LastMessage.Id != a.Value.Dialogue.LastMessage.Id)
+                    {
+
+                    }
+                }
+            }
+
+            foreach (var sheetDialog in newUpdateActiveSheetDialogs)
+            {
+                _dictionary.Active.AddOrUpdate(sheetDialog.Key, sheetDialog.Value, (key, oldMessage) =>
+                {
+                    oldMessage.Dialogue.DateUpdated = sheetDialog.Value.Dialogue.DateUpdated;
+                    oldMessage.Dialogue.LastMessage = sheetDialog.Value.Dialogue.LastMessage;
+                    return oldMessage;
+                });
+            }
             #endregion
 
-            var allNewDialogs = newActiveSheetDialogKeys.Select(key => key.IdInterlocutor).Distinct().ToList();
+            var deleteTask = _chatHub.DeleteDialogs(removeActiveSheetDialogs);
+            var addTask = _chatHub.AddDialogs(newActiveSheetDialogs);
+            var updateTask = _chatHub.UpdateDialogs(oldUpdateActiveSheetDialogs, newUpdateActiveSheetDialogs);
 
-            await FillingInNewDialoguesProfiles(sheets.First(), allNewDialogs);
+            await Task.WhenAll(deleteTask, addTask, updateTask);
 
+            stopwatch2.Stop();
             stopwatch1.Stop();
             count++;
             var rez = TimeSpan.FromMilliseconds(stopwatch1.ElapsedMilliseconds).TotalSeconds / count;
+            var rezCollection = TimeSpan.FromMilliseconds(stopwatch2.ElapsedMilliseconds).TotalSeconds / count;
         }
 
-        private async Task FillingInNewDialoguesProfiles(Sheet sheet, List<int> allNewDialogs)
+        private async Task FillingInNewDialoguesProfiles(Sheet sheet, IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> dictionary)
         {
-            if (allNewDialogs.Count == 0)
+            if (dictionary.Count() == 0)
             {
                 return;
             }
 
             List<SheetInfo> sheetInfos = null;
+            var allNewDialogs = dictionary.Select(key => key.Value.Dialogue.IdInterlocutor).Distinct().ToList();
 
             if (allNewDialogs.Count > 50)
             {
@@ -200,25 +243,28 @@ namespace UI.Infrastructure.Services
             {
                 sheetInfos = await _chatClient.GetManProfiles(sheet, allNewDialogs);
             }
-            foreach (var sheetInfo in sheetInfos)
+            if (sheetInfos != null)
             {
-                var findActive = _dictionary.Active.Where(kvp => kvp.Key.IdInterlocutor == sheetInfo.Id);
-                foreach (var active in findActive)
+                foreach (var sheetInfo in sheetInfos)
                 {
-                    active.Value.Dialogue.Avatar = sheetInfo.Personal.AvatarSmall;
-                    active.Value.Dialogue.UserName = sheetInfo.Personal.Name;
-                    if (active.Value.Dialogue.Status != Status.Online)
+                    var findActive = dictionary.Where(kvp => kvp.Key.IdInterlocutor == sheetInfo.Id);
+                    foreach (var active in findActive)
                     {
-                        active.Value.Dialogue.Status = sheetInfo.IsOnline ? Status.Online : Status.Offline;
+                        active.Value.Dialogue.Avatar = sheetInfo.Personal.AvatarSmall;
+                        active.Value.Dialogue.UserName = sheetInfo.Personal.Name;
+                        if (active.Value.Dialogue.Status != Status.Online)
+                        {
+                            active.Value.Dialogue.Status = sheetInfo.IsOnline ? Status.Online : Status.Offline;
+                        }
                     }
+                    //var findOnline = _dictionary.Online.Where(kvp => kvp.Key.IdInterlocutor == sheetInfo.Id);
+                    //foreach (var online in findOnline)
+                    //{
+                    //    online.Value.Dialogue.Avatar = sheetInfo.Personal.AvatarSmall;
+                    //    online.Value.Dialogue.UserName = sheetInfo.Personal.Name;
+                    //    online.Value.Dialogue.Status = Status.Online;
+                    //}
                 }
-                //var findOnline = _dictionary.Online.Where(kvp => kvp.Key.IdInterlocutor == sheetInfo.Id);
-                //foreach (var online in findOnline)
-                //{
-                //    online.Value.Dialogue.Avatar = sheetInfo.Personal.AvatarSmall;
-                //    online.Value.Dialogue.UserName = sheetInfo.Personal.Name;
-                //    online.Value.Dialogue.Status = Status.Online;
-                //}
             }
         }
 
@@ -267,6 +313,7 @@ namespace UI.Infrastructure.Services
             {
                 if (!dialogue.IsBlocked && dialogue.DateUpdated >= dateThreshold && (dialogue.IdInterlocutor == dialogue.LastMessage?.IdUserFrom || dialogue.LastMessage?.Type == MessageType.System))
                 {
+                    CheckAndUpdateDateCreatedSystemLastMessage(dialogue);
                     dictionary.TryAdd(new SheetDialogKey(sheet.Id, dialogue.IdInterlocutor), new NewMessage { Dialogue = dialogue });
                 }
             });
@@ -290,6 +337,7 @@ namespace UI.Infrastructure.Services
                 if (!dialogue.IsBlocked)
                 {
                     dialogue.Status = Status.Online;
+                    CheckAndUpdateDateCreatedSystemLastMessage(dialogue);
                     dictionary.TryAdd(new SheetDialogKey(sheet.Id, dialogue.IdInterlocutor), new NewMessage { Dialogue = dialogue });
                 }
             });
@@ -299,6 +347,14 @@ namespace UI.Infrastructure.Services
         private bool IsLoadDialogues(Messenger messanger, DateTime dateThreshold)
         {
             return messanger.Dialogs.Last().DateUpdated > dateThreshold;
+        }
+
+        private void CheckAndUpdateDateCreatedSystemLastMessage(Dialogue dialogue)
+        {
+            if (dialogue.LastMessage.Type == MessageType.System)
+            {
+                dialogue.LastMessage.DateCreated = dialogue.DateUpdated;
+            }
         }
 
         private async Task<string> LogInAsync(string login, string passowrd)

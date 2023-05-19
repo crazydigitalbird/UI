@@ -170,66 +170,66 @@ namespace UI.Infrastructure.Components
 
         private async Task SetTimerToLastMessages(List<Dialogue> dialogues)
         {
-            var idLastMessages = dialogues.Where(d => d.LastMessage.Type != MessageType.System).Select(d => d.LastMessage.Id);
-            if (idLastMessages.Count() > 0)
-            {
-                Dictionary<long, MessageTimer> timers = await _chatClient.Timers(idLastMessages);
-
-                foreach (var t in timers)
-                {
-                    var dialogue = dialogues.FirstOrDefault(d => d.LastMessage.Id == t.Key);
-                    if (dialogue != null)
-                    {
-                        t.Value.MessageType = dialogue.LastMessage.Type;
-                        dialogue.LastMessage.Timer = t.Value;
-                    }
-                }
-            }
-
-            //var dialogueesContainsSystemLastMessages = dialogues.Where(d => d.LastMessage.Type == MessageType.System);
-            //foreach (var dialogue in dialogueesContainsSystemLastMessages)
+            //var idLastMessages = dialogues.Where(d => d.LastMessage.Type != MessageType.System).Select(d => d.LastMessage.Id);
+            //if (idLastMessages.Count() > 0)
             //{
-            //    MessageTimer timer = await _chatClient.SystemTimer(dialogue.LastMessage.IdUserFrom, dialogue.LastMessage.IdUserTo);
-            //    if (timer != null)
-            //    {
-            //        timer.MessageType = MessageType.System;
-            //        dialogue.LastMessage.Timer = timer;
+            //    Dictionary<long, MessageTimer> timers = await _chatClient.Timers(idLastMessages);
 
-            //        dialogues.FirstOrDefault(d => d.LastMessage.Id == dialogue.LastMessage.Id).LastMessage.Timer = timer;
+            //    foreach (var t in timers)
+            //    {
+            //        var dialogue = dialogues.FirstOrDefault(d => d.LastMessage.Id == t.Key);
+            //        if (dialogue != null)
+            //        {
+            //            t.Value.MessageType = dialogue.LastMessage.Type;
+            //            dialogue.LastMessage.Timer = t.Value;
+            //        }
             //    }
             //}
+
+            ////var dialogueesContainsSystemLastMessages = dialogues.Where(d => d.LastMessage.Type == MessageType.System);
+            ////foreach (var dialogue in dialogueesContainsSystemLastMessages)
+            ////{
+            ////    MessageTimer timer = await _chatClient.SystemTimer(dialogue.LastMessage.IdUserFrom, dialogue.LastMessage.IdUserTo);
+            ////    if (timer != null)
+            ////    {
+            ////        timer.MessageType = MessageType.System;
+            ////        dialogue.LastMessage.Timer = timer;
+
+            ////        dialogues.FirstOrDefault(d => d.LastMessage.Id == dialogue.LastMessage.Id).LastMessage.Timer = timer;
+            ////    }
+            ////}
         }
 
         private async Task SetTimerToLastMessages(List<(Dialogue Dialogue, SheetInfo SheetInfo)> dialoguesSheetInfo)
         {
-            var idLastMessages = dialoguesSheetInfo.Select(ds=> ds.Dialogue).Where(d => d.LastMessage.Type != MessageType.System).Select(d => d.LastMessage.Id);
-            if (idLastMessages.Count() > 0)
-            {
-                Dictionary<long, MessageTimer> timers = await _chatClient.Timers(idLastMessages);
-
-                foreach (var timer in timers)
-                {
-                    var dialogue = dialoguesSheetInfo.FirstOrDefault(ds => ds.Dialogue.LastMessage.Id == timer.Key).Dialogue;
-                    if (dialogue != null)
-                    {
-                        timer.Value.MessageType = dialogue.LastMessage.Type;
-                        dialogue.LastMessage.Timer = timer.Value;
-                    }
-                }
-            }
-
-            //var dialogueesContainsSystemLastMessages = dialoguesSheetInfo.Select(ds => ds.Dialogue).Where(d => d.LastMessage.Type == MessageType.System);
-            //foreach (var dialogue in dialogueesContainsSystemLastMessages)
+            //var idLastMessages = dialoguesSheetInfo.Select(ds => ds.Dialogue).Where(d => d.LastMessage.Type != MessageType.System).Select(d => d.LastMessage.Id);
+            //if (idLastMessages.Count() > 0)
             //{
-            //    MessageTimer timer = await _chatClient.SystemTimer(dialogue.LastMessage.IdUserFrom, dialogue.LastMessage.IdUserTo);
-            //    if (timer != null)
-            //    {
-            //        timer.MessageType = MessageType.System;
-            //        dialogue.LastMessage.Timer = timer;
+            //    Dictionary<long, MessageTimer> timers = await _chatClient.Timers(idLastMessages);
 
-            //        dialoguesSheetInfo.FirstOrDefault(d => d.Dialogue.LastMessage.Id == dialogue.LastMessage.Id).Dialogue.LastMessage.Timer = timer;
+            //    foreach (var timer in timers)
+            //    {
+            //        var dialogue = dialoguesSheetInfo.FirstOrDefault(ds => ds.Dialogue.LastMessage.Id == timer.Key).Dialogue;
+            //        if (dialogue != null)
+            //        {
+            //            timer.Value.MessageType = dialogue.LastMessage.Type;
+            //            dialogue.LastMessage.Timer = timer.Value;
+            //        }
             //    }
             //}
+
+            ////var dialogueesContainsSystemLastMessages = dialoguesSheetInfo.Select(ds => ds.Dialogue).Where(d => d.LastMessage.Type == MessageType.System);
+            ////foreach (var dialogue in dialogueesContainsSystemLastMessages)
+            ////{
+            ////    MessageTimer timer = await _chatClient.SystemTimer(dialogue.LastMessage.IdUserFrom, dialogue.LastMessage.IdUserTo);
+            ////    if (timer != null)
+            ////    {
+            ////        timer.MessageType = MessageType.System;
+            ////        dialogue.LastMessage.Timer = timer;
+
+            ////        dialoguesSheetInfo.FirstOrDefault(d => d.Dialogue.LastMessage.Id == dialogue.LastMessage.Id).Dialogue.LastMessage.Timer = timer;
+            ////    }
+            ////}
         }
 
         private async Task<KeyValuePair<int, List<Dialogue>>> LoadDialogues(Sheet sheet, string criteria, int? days, int operatorId, int limit)

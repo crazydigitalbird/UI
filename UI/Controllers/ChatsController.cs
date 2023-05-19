@@ -1,8 +1,5 @@
-﻿using Core.Models.Sheets;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Filters;
 using UI.Models;
@@ -14,19 +11,21 @@ namespace UI.Controllers
     public class ChatsController : Controller
     {
         private readonly IChatClient _chatClient;
+        private readonly IMailClient _mailClient;
         private readonly IOperatorClient _operatorClient;
         private readonly ISheetClient _sheetClient;
         private readonly ILogger<ChatController> _logger;
 
-        public ChatsController(IChatClient chatClient, IOperatorClient operatorClient, ISheetClient sheetClient, ILogger<ChatController> logger)
+        public ChatsController(IChatClient chatClient, IMailClient mailClient, IOperatorClient operatorClient, ISheetClient sheetClient, ILogger<ChatController> logger)
         {
             _chatClient = chatClient;
+            _mailClient = mailClient;
             _operatorClient = operatorClient;
             _sheetClient = sheetClient;
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(int sheetId)
+        public async Task<IActionResult> Index()
         {
             var sheets = await _operatorClient.GetSheetsAsync() ?? new();
             //ViewData["stickers"] = await _chatClient.GetStickersAsync(sheet);
@@ -158,15 +157,16 @@ namespace UI.Controllers
         #endregion
 
         [HttpPost]
-        public async Task<IActionResult> LoadMessages(int sheetId, int idInterlocutor, long idLastMessage)
+        public async Task<IActionResult> LoadMessages(int sheetId, int idInterlocutor, long idLastMessage, bool isNew = false)
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("Messages", new { sheet, idInterlocutor, idLastMessage });
+                return ViewComponent("Messages", new { sheet, idInterlocutor, idLastMessage, isNew});
             }
             return BadRequest();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Stickers(int sheetId)
@@ -234,7 +234,7 @@ namespace UI.Controllers
                 var sheet = await _sheetClient.GetSheetAsync(sheetId);
                 if (sheet != null)
                 {
-                    Message newMessage = new Message()
+                    Message newMessage = new()
                     {
                         DateCreated = DateTime.Now,
                         IdUserFrom = sheet.User.Id,
@@ -310,7 +310,7 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                Message newMessage = new Message()
+                Message newMessage = new()
                 {
                     DateCreated = DateTime.Now,
                     IdUserFrom = sheet.User.Id,
@@ -335,7 +335,6 @@ namespace UI.Controllers
 
                     case MessageType.Photo:
                         var photoOptions = message.Split(';');
-                        message = photoOptions[0];
                         newMessage.Content = new Content { IdPhoto = int.Parse(photoOptions[0]), Url = photoOptions[1] };
                         break;
 
@@ -346,6 +345,32 @@ namespace UI.Controllers
                 }
 
                 return ViewComponent("Message", new { sheet, newMessage, idLastMessage });
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Timer(int sheetId, int idInterlocutor, long idLastMessage, MessageType messageType)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                var seconds = await _chatClient.Timer(sheet, idInterlocutor, idLastMessage, messageType);
+                if (seconds.HasValue)
+                {
+                    return Ok(seconds.Value);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> History(string cursor)
+        {
+            var sheets = await _operatorClient.GetSheetsAsync();
+            if (sheets != null)
+            {
+                return ViewComponent("History", new {sheets, cursor});
             }
             return BadRequest();
         }

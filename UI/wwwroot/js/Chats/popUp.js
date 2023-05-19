@@ -1,14 +1,14 @@
 ﻿const popUpInformation = document.querySelector('.pop-up.information'),
     popUpGallery = document.querySelector('.pop-up.gallery'),
     popUpVideo = document.querySelector('.pop-up.vidoe-player'),
-    popUps = document.querySelectorAll('.pop-up'),
-    popUpPreviewPost = document.querySelector('.pop-up.preview');
+    popUpPreviewPost = document.querySelector('.pop-up.preview'),
+    popUpMail = document.querySelector('.pop-up.chatAndMail'),
+    popUps = document.querySelectorAll('.pop-up');
 
 //Information Person
 $(document).on('click', '#interlocutorAvatarChatHeader, #ownerAvatarChatHeader', function (event) {
     informationPerson(event.target);
 });
-
 
 //Media Gallery
 $(document).on('click', '#attachment', function (event) {
@@ -18,6 +18,11 @@ $(document).on('click', '#attachment', function (event) {
 //Midaia Gallery Post
 $(document).on('click', '#attachmentPost', function (event) {
     showGallery(true);
+});
+
+//Mail
+$(document).on('click', '#createMail', function (event) {
+    showMail();
 });
 
 //Close pop-up

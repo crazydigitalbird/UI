@@ -52,6 +52,8 @@ namespace UI.Models
         public List<Message> Messages { get; set; }
 
         public object Age { get; set; }
+
+        public int Operator { get; set; }
     }
 
     public class Message

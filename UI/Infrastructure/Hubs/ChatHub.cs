@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Core.Models.Sheets;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Repository;
-using System.Diagnostics;
-using UI.Models;
 
 namespace UI.Infrastructure.Hubs
 {
@@ -13,6 +12,8 @@ namespace UI.Infrastructure.Hubs
         private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
         private readonly IOperatorClient _operatorClient;
         private readonly IRazorPartialToStringRenderer _renderer;
+
+        //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
 
         public ChatHub(IDictionaryRepository<SheetDialogKey, NewMessage> dictionary, IOperatorClient operatorClient, IRazorPartialToStringRenderer renderer)
         {
@@ -24,34 +25,51 @@ namespace UI.Infrastructure.Hubs
         public async Task SendInitialAllNewMessagesFromAllMen()
         {
             var sheets = await _operatorClient.GetSheetsAsync();
-            if(sheets == null)
+            if (sheets == null)
             {
                 return;
             }
 
-            var allMessages = _dictionary.Active.Where(kvp => sheets.Any(sheet => sheet.Id == kvp.Key.SheetId)).Select(kvp => {
-                if(kvp.Value.Dialogue.LastMessage.Type == MessageType.System)
-                {
-                    kvp.Value.Dialogue.LastMessage.DateCreated = kvp.Value.Dialogue.DateUpdated;
-                }
-                return kvp.Value;
-            }).OrderByDescending(m => m.Dialogue.LastMessage.DateCreated);
+            var allMessages = _dictionary.Active.Values.Where(v => sheets.Any(sheet => sheet.Id == v.SheetInfo.SheetId))
+                .OrderByDescending(m => m.Dialogue.LastMessage.DateCreated);
 
-            Stopwatch s = new Stopwatch();
-            s.Start();
-            
             var body = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", allMessages);
 
-            s.Stop();
-
-            var time = s.ElapsedMilliseconds;
-
-            await Clients.Caller.SendAsync("ReceiveInitialAllNewMessagesFromAllMen", "Ok");
+            await Clients.Caller.SendAsync("ReceiveInitialAllNewMessagesFromAllMen", body);
         }
+
+        #region LiveChat Add and Remove Group
+
+        public async Task AddToGroup(int sheetId, int idInterlocutor)
+        {
+            string groupName = $"{sheetId}-{idInterlocutor}";
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
+
+        public async Task RemoveFromGroup(int sheetId, int idInterlocutor)
+        {
+            string groupName = $"{sheetId}-{idInterlocutor}";
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        }
+
+        #endregion
 
         public override async Task OnConnectedAsync()
         {
+            var sheets = await _operatorClient.GetSheetsAsync();
+            if (sheets != null)
+            {
+                await AddToGroups(sheets);
+            }
             await base.OnConnectedAsync();
+        }
+
+        private async Task AddToGroups(List<Sheet> sheets)
+        {
+            foreach (var sheet in sheets)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{sheet.Id}");
+            }
         }
     }
 }

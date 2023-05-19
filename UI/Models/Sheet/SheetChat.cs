@@ -10,7 +10,12 @@ namespace UI.Models
         {
             get
             {
-                return sheetInfo ?? JsonConvert.DeserializeObject<SheetInfo>(base.Info);
+                if(sheetInfo == null)
+                {
+                    sheetInfo = JsonConvert.DeserializeObject<SheetInfo>(base.Info);
+                    sheetInfo.SheetId = Id;
+                }
+                return sheetInfo;
             }
         }
     }

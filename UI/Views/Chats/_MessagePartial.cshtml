@@ -1,5 +1,4 @@
-﻿@using Humanizer
-@model Messenger
+﻿@model Messenger
 
 @{
     var chat = Model?.Dialogs?.FirstOrDefault();
@@ -36,9 +35,7 @@
                         </div>
                     </div>
 
-                    <p class="large-block__body-item-small-text @(isOwner? "text-end" : "text-start")">
-                        @m.DateCreated.Humanize()
-                    </p>
+                    <p name="date-created" class="large-block__body-item-small-text @(isOwner? "text-end" : "text-start")" data-date="@m.DateCreated.ToString("O")"></p>
                 </div>
             }
         }
@@ -46,7 +43,7 @@
         {
             <div class="large-block__body-item mt-2 me-2">
                 <div class="large-block__body-item-top d-flex align-items-center justify-content-center">
-                    <div class="large-block__body-item-message d-flex align-items-center p-2 rounded-top rounded-end w-100">
+                    <div name="message" class="large-block__body-item-message d-flex align-items-center p-2 rounded-top rounded-end w-100" data-id-message="0">
                         <p class="text-white large-block__body-item-text w-100">
                             @m.Content.Message
                         </p>
@@ -271,9 +268,7 @@
                         </p>
                     </div>
                 </div>
-                <p class="large-block__body-item-small-text @(isOwner? "text-end" : "text-start")">
-                    @m.DateCreated.Humanize()
-                </p>
+                <p name="date-created" class="large-block__body-item-small-text @(isOwner? "text-end" : "text-start")" data-date="@m.DateCreated.ToString("O")"></p>
             </div>
         }
     }

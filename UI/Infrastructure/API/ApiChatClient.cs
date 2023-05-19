@@ -1,9 +1,16 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using UI.Models;
+using Humanizer;
+using System.Collections.Concurrent;
+using UI.Infrastructure.Repository;
+using System.Text;
+using System.Collections;
 
 namespace UI.Infrastructure.API
 {
@@ -49,7 +56,19 @@ namespace UI.Infrastructure.API
 #if DEBUGOFFLINE || DEBUG
                     s = await response.Content.ReadAsStringAsync();
 #endif
-                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>();
+                    //JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
+                    //jsonSerializerSettings.DateTimeZoneHandling =DateTimeZoneHandling.Utc;
+                    //var m = JsonConvert.DeserializeObject<Messenger>(s, jsonSerializerSettings);
+                    //string dU1 = m?.Dialogs[0]?.DateUpdated.Humanize(true);
+                    //string dU11 = m?.Dialogs[0]?.DateUpdated.Humanize(false);
+                    //string dC1 = m?.Dialogs[0]?.LastMessage.DateCreated.Humanize();
+
+                    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+                    jsonOptions.Converters.Add(new DateTimeConverter());
+                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>(jsonOptions);
+                    //string dU = messenger?.Dialogs[0]?.DateUpdated.Humanize(true);
+                    //string dU2 = messenger?.Dialogs[0]?.DateUpdated.Humanize(false);
+                    //string dC = messenger?.Dialogs[0]?.LastMessage.DateCreated.Humanize();
                     return messenger;
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -99,6 +118,37 @@ namespace UI.Infrastructure.API
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error receiving dialogs is criteria {criteria}.", criteria);
+            }
+            return null;
+        }
+
+        public async Task<List<SheetInfo>> OnlyStatus(List<int> idDialogues)
+        {
+            if (idDialogues?.Count > 0)
+            {
+                HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+                try
+                {
+                    httpClient.DefaultRequestHeaders.Add("id", string.Join(",", idDialogues));
+
+                    var response = await httpClient.PostAsync($"only_status", null);
+                    if (response.IsSuccessStatusCode)
+                    {
+#if DEBUGOFFLINE || DEBUG
+                        var s = await response.Content.ReadAsStringAsync();
+#endif
+                        var sheetInfos = await response.Content.ReadFromJsonAsync<List<SheetInfo>>();
+                        return sheetInfos;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Error getting only status. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error getting only status.");
+                }
             }
             return null;
         }
@@ -252,7 +302,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Messenger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage)
+        public async Task<Messenger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage, int limit = 15)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
@@ -269,7 +319,7 @@ namespace UI.Infrastructure.API
                 httpClient.DefaultRequestHeaders.Add("password", credentials.Password);
                 httpClient.DefaultRequestHeaders.Add("idRegularUser", chatId.ToString());
                 httpClient.DefaultRequestHeaders.Add("idLastMessage", idLastMessage.ToString());
-                httpClient.DefaultRequestHeaders.Add("limit", "15");
+                httpClient.DefaultRequestHeaders.Add("limit", $"{limit}");
 
                 var response = await httpClient.PostAsync("message", null);
                 if (response.IsSuccessStatusCode)
@@ -277,7 +327,9 @@ namespace UI.Infrastructure.API
 #if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
 #endif
-                    var messages = (await response.Content.ReadFromJsonAsync<List<Message>>());
+                    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+                    jsonOptions.Converters.Add(new DateTimeConverter());
+                    var messages = await response.Content.ReadFromJsonAsync<List<Message>>(jsonOptions);
                     if (messages.Count == 0)
                     {
                         var dialog = await FindDialogueById(sheet, chatId);
@@ -928,7 +980,7 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        public async Task<Dictionary<long, MessageTimer>> Timers(IEnumerable<long?> idLastMessages)
+        public async Task<int?> Timer(Sheet sheet, int idInterlocutor, long idLastMessage, MessageType messageType)
         {
 #if DEBUGOFFLINE || DEBUG
             string s;
@@ -936,44 +988,62 @@ namespace UI.Infrastructure.API
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
             {
-                string ids = string.Join(",", idLastMessages);
-                httpClient.DefaultRequestHeaders.Add("id_message", ids);
-                var response = await httpClient.PostAsync("timer", null);
+                var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("operator", GetUserId()),
+                    new KeyValuePair<string, string>("timer_data", $"[{{\\\"id_messages\\\":{idLastMessage}, \\\"idUserFrom\\\":{sheet.Identity}, \\\"idUserTo\\\":{idInterlocutor}]")};
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync("timer_last", content);
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
                     s = await response.Content.ReadAsStringAsync();
 #endif
                     var messagestimers = await response.Content.ReadFromJsonAsync<Dictionary<long, MessageTimer>>();
-                    return messagestimers;
+                    var timer = messagestimers.FirstOrDefault().Value;
+                    if (timer != null)
+                    {
+                        timer.MessageType = messageType;
+                        return timer.TimeLeft();
+                    }
                 }
                 else
                 {
-                    _logger.LogWarning("Error getting timers for lastMessages. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                    _logger.LogWarning("Error getting timer for lastMessages {idLastMessage}. HttpStatusCode: {httpStatusCode}", idLastMessage, response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting timers for lastMessages");
+                _logger.LogError(ex, "Error getting timer for lastMessages {idLastMessage}", idLastMessage);
             }
             return null;
         }
 
-        public async Task<MessageTimer> SystemTimer(int idUserFrom, int idUserTo)
+        public async Task Timers(ConcurrentDictionary<SheetDialogKey, NewMessage> dictionary)
         {
+#if DEBUGOFFLINE || DEBUG
+            string s;
+#endif
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             try
             {
-                httpClient.DefaultRequestHeaders.Add("idUserFrom", idUserFrom.ToString());
-                httpClient.DefaultRequestHeaders.Add("idUserTo", idUserTo.ToString());
-                var response = await httpClient.PostAsync("timer_system", null);
+                StringBuilder sb = new StringBuilder();
+                sb.Append("[");
+                foreach (var v in dictionary.Values)
+                {
+                    sb.Append($"{{\\\"id_messages\\\":{v.Dialogue.LastMessage.Id}, \\\"idUserFrom\\\":{v.Dialogue.IdUser}, \\\"idUserTo\\\":{v.Dialogue.IdInterlocutor},");
+                }
+                sb.Append("]");
+                var contentList = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("timer_data", sb.ToString()) };
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync("timer_last", content);
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
-                    var s = await response.Content.ReadAsStringAsync();
+                    s = await response.Content.ReadAsStringAsync();
 #endif
-                    var timer = await response.Content.ReadFromJsonAsync<MessageTimer>();
-                    return timer;
+                    var messagestimers = await response.Content.ReadFromJsonAsync<Dictionary<long, MessageTimer>>();
                 }
                 else
                 {
@@ -983,6 +1053,41 @@ namespace UI.Infrastructure.API
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting timers for lastMessages");
+            }
+        }
+
+        public async Task<Messenger> GetHistoryAsync(string idUsers, string cursor, int limit)
+        {
+#if DEBUGOFFLINE || DEBUG
+            string s;
+#endif
+            HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+            try
+            {
+                var contentList = new List<KeyValuePair<string, string>> { 
+                    new KeyValuePair<string, string>("idUser", idUsers),
+                    new KeyValuePair<string, string>("cursor", cursor),
+                    new KeyValuePair<string, string>("limit", $"{limit}")
+                };
+                var content = new FormUrlEncodedContent(contentList);
+
+                var response = await httpClient.PostAsync("get_history", content);
+                if (response.IsSuccessStatusCode)
+                {
+#if DEBUGOFFLINE || DEBUG
+                    s = await response.Content.ReadAsStringAsync();
+#endif
+                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>();
+                    return messenger;
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting history. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting history");
             }
             return null;
         }
@@ -1001,13 +1106,15 @@ namespace UI.Infrastructure.API
         Task<Messenger> GetMessangerAsync(Sheet sheet, string criteria = "", string cursor = "", int limit = 10, int operatorId = 0);
         Task<Messenger> GetMessangerPremiumAndTrashAsync(Sheet sheet, string criteria, string cursor = "", int limit = 20);
 
+        Task<List<SheetInfo>> OnlyStatus(List<int> idDialogues);
+
         Task GetManProfiles(Sheet sheet, List<Dialogue> dialogues);
         Task<List<SheetInfo>> GetManProfiles(Sheet sheet, List<int> idDialogues);
 
         Task<SheetInfo> GetManProfile(Sheet sheet, int idUser);
         Task<PhotosPerson> GetManPublicPhoto(Sheet sheet, int idUser);
 
-        Task<Messenger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage);
+        Task<Messenger> GetMessagesChatAsync(Sheet sheet, int chatId, long idLastMessage, int limit = 15);
         Task<MessagesAndMailsLeft> GetManMessagesMails(Sheet sheet, int idRegularUser);
         Task<List<StickerGroup>> GetStickersAsync(Sheet sheet);
 
@@ -1029,7 +1136,8 @@ namespace UI.Infrastructure.API
         Task<bool> ChangePremiumAsync(Sheet sheet, int idInterlocutor, bool addPremium);
         Task<bool> ChangeTrashAsync(Sheet sheet, int idInterlocutor, bool addTrash);
 
-        Task<Dictionary<long, MessageTimer>> Timers(IEnumerable<long?> idLastMessages);
-        Task<MessageTimer> SystemTimer(int idUserFrom, int idUserTo);
+        Task Timers(ConcurrentDictionary<SheetDialogKey, NewMessage> dictionary);
+        Task<int?> Timer(Sheet sheet, int idInterlocutor, long idLastMessage, MessageType messageType);
+        Task<Messenger> GetHistoryAsync(string idUsers, string cursor, int limit);
     }
 }

@@ -57,7 +57,7 @@ namespace UI.Infrastructure.Components
             {
                 await _chatHub.ReplyToNewMessage(sheet.Id, newMessage.IdUserTo, idLastMessage, idNewMessage.Value);
 
-                newMessage.Id = idNewMessage;
+                newMessage.Id = idNewMessage.Value;
 
                 Messenger messenger = new Messenger
                 {

@@ -234,8 +234,8 @@ function goToChat(e) {
 
     var interlocutor = {
         Id: Number($(e).find('[name=interlocutorId]').text()),
-        IsPremium: $(e).data('is-pinned').toLowerCase() === 'true',
-        IsBookmarked: $(e).data('is-bookmarked').toLowerCase() === 'true',
+        //IsPremium: $(e).data('is-pinned').toLowerCase() === 'true',
+        //IsBookmarked: $(e).data('is-bookmarked').toLowerCase() === 'true',
         IsTrash: false,
         Name: $(e).find('[name=interlocutorName]').text(),
         Avatar: $(e).find('[name=interlocutorAvatar]').attr('src')

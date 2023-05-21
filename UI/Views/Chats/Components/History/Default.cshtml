@@ -14,10 +14,18 @@
         if (sheet != null)
         {
             info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
+            info.SheetId = sheet.Id;
         }
         <div class="accordion-item tab-content-item py-1 rounded mb-2">
-            <div class="accordion-item-button bottom-block-body__item d-flex flex-row @*align-items-center*@ text-white row p-1 rounded collapsed ms-0" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-history-{dialog.LastMessage.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-history-{dialog.LastMessage.Id}")" role="button">
-                <div class="other-user-block col-2">
+            <div class="accordion-item-button bottom-blockbody__item d-flex flex-row text-white row p-1 rounded w-100 collapsed ms-0" 
+            data-bs-target="@($"#flush-collapse-history-{dialog.LastMessage.Id}")"
+            aria-expanded="false" 
+            aria-controls="@($"flush-collapse-history-{dialog.LastMessage.Id}")" 
+            role="button"
+            data-sheet-id="@($"{info.SheetId}")"
+            data-owner-id="@($"{info.Id}")"
+            onclick="goToChat(this)">
+                <div class="other-user-block col-2 p-0">
                     <div class="standart-image-block position-relative">
                         <img name="ownerAvatar" src="@info?.Personal.AvatarSmall" alt="avatar" class="standart-image rounded">
                         <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
@@ -32,17 +40,14 @@
                         <p name="date-created" class="user-block-name-text small-text-wrapp" data-date="@dialog.LastMessage.DateCreated.ToString("O")"></p>
                     }
                 </div>
-                <div class="message-block col-6 text-start ps-0 h-100">
+                <div class="message-block col-6 text-start px-1 h-100">
                     <p class="other-name-text">
+                        <span name="ownerName">@info?.Personal.Name</span>
                         @{
                             var appUser = applicationUsers?.FirstOrDefault(u => u.Id == dialog.Operator);
                             if (appUser != null)
                             {
-                                @:@($"{info?.Personal.Name} - {appUser.Login}")
-                            }
-                            else
-                            {
-                                @:@($"{info?.Personal.Name}")
+                                @:@($" - {appUser.Login}")
                             }
                         }
                     </p>
@@ -95,12 +100,12 @@
                         }
                     </p>
                 </div>
-                <div class="user-block d-flex align-items-center col-4 p-2">
-                    <div class="standart-image-block me-3 position-relative">
+                <div class="user-block d-flex align-items-center col-4 px-1">
+                    <p name="interlocutorId" class="d-none">@dialog.IdInterlocutor</p>
+                    <div class="standart-image-block position-relative px-1">
                         <img name="interlocutorAvatar" src="@dialog.Avatar" alt="avatar" class="standart-image rounded">
                     </div>
-
-                    <div class="user-block-info text-center col-6">
+                    <div class="user-block-info text-center d-grid w-100">
                         <p name="interlocutorName" class="user-block-name-text">@dialog.UserName</p>
                         @*<p class="user-block-timer-text timer" data-seconds-left="@(ds.Dialogue.LastMessage.Timer?.TimeLeft() ?? 0)" data-sheetInfo-id="@ds.SheetInfo.Id" data-id-interlocutor="@ds.Dialogue.IdInterlocutor"></p>*@
                     </div>

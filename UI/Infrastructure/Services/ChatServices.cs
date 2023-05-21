@@ -1,21 +1,12 @@
 ﻿using Core.Models.Sheets;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using System;
-using System.Collections;
+using Core.Models.Users;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
 using UI.Infrastructure.API;
-using UI.Infrastructure.Components;
 using UI.Infrastructure.Hubs;
 using UI.Infrastructure.Repository;
 using UI.Models;
-using System.Diagnostics;
-using System.Net.Http;
-using Core.Models.Users;
-using System.Net;
-using Humanizer;
 
 namespace UI.Infrastructure.Services
 {
@@ -149,7 +140,7 @@ namespace UI.Infrastructure.Services
             var removeActiveSheetDialogs = _dictionary.Active
                 //.Where(kvp => kvp.Value.Dialogue.LastMessage.IdUserFrom != kvp.Key.IdInterlocutor)
                 .ExceptBy(activeSheetsDialogsTemp.Keys, kvp => kvp.Key)
-                .ToDictionary(kvp => kvp.Key, kvp=>kvp.Value.Dialogue.LastMessage.Id);
+                .ToDictionary(kvp => kvp.Key, kvp=>kvp.Value.Dialogue.LastMessage.Id.Value);
 
             foreach (var sheetDialog in removeActiveSheetDialogs)
             {
@@ -175,7 +166,7 @@ namespace UI.Infrastructure.Services
 
             //Получаем все ключи общие для обоих коллекций, но имеющие разные Id LastMessage. Данные диалоги необходимо обновить.
             var oldUpdateActiveSheetDialogs = _dictionary.Active
-                .Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id).ToDictionary(kvp => kvp.Key, kvp=> kvp.Value.Dialogue.LastMessage.Id);
+                .Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id).ToDictionary(kvp => kvp.Key, kvp=> kvp.Value.Dialogue.LastMessage.Id.Value);
 
             var newUpdateActiveSheetDialogs = activeSheetsDialogsTemp
                 .Where(kvp => _dictionary.Active.ContainsKey(kvp.Key) && _dictionary.Active[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id);
@@ -195,8 +186,9 @@ namespace UI.Infrastructure.Services
             {
                 _dictionary.Active.AddOrUpdate(sheetDialog.Key, sheetDialog.Value, (key, oldMessage) =>
                 {
-                    oldMessage.Dialogue.DateUpdated = sheetDialog.Value.Dialogue.DateUpdated;
-                    oldMessage.Dialogue.LastMessage = sheetDialog.Value.Dialogue.LastMessage;
+                    //oldMessage.Dialogue.DateUpdated = sheetDialog.Value.Dialogue.DateUpdated;
+                    //oldMessage.Dialogue.LastMessage = sheetDialog.Value.Dialogue.LastMessage;
+                    oldMessage.Dialogue = sheetDialog.Value.Dialogue;
                     return oldMessage;
                 });
             }

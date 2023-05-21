@@ -8,104 +8,93 @@
 
 @foreach (var ds in Model)
 {
+   
     //Проверяем кто написал последнее сообщение в диалоге, владелица анкеты или мужчина. Если условие выполняется, то сообщение написал владелица анкеты
-    if (ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom && ds.Dialogue.LastMessage.Type != MessageType.System)
-    {
-        <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}-{ds.Dialogue.LastMessage.Id}")" class="bottom-block-body__item d-flex flex-row-reverse mb-2 align-items-center text-white row p-2 rounded"
-     data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
-     data-owner-id="@($"{ds.SheetInfo.Id}")"
-     data-is-pinned="@ds.Dialogue.IsPinned"
-     data-is-bookmarked="@ds.Dialogue.IsBookmarked"
-     data-message-type=""
-     data-online="@ds.Dialogue.Status"
-     onclick="goToChat(this)">
+    bool isOwner = ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom && ds.Dialogue.LastMessage.Type != MessageType.System;
 
-            <div class="other-user-block col-2 pe-0">
-                <div class="standart-image-block position-relative">
-                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
-                    @if (ds.Dialogue.Status == Status.Online)
-                    {
-                        <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
-                    }
-                    else
-                    {
-                        <span class="status-circle-red other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
-                    }
-                </div>
-
-                @*<p name="interlocutorName" class="d-none">@ds.Dialogue.UserName</p>*@
-                <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
-
-                <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
-                    @ds.Dialogue.UserName
-                </p>
+    <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}-{ds.Dialogue.LastMessage.Id}")" class="bottom-block-body__item d-flex mb-2 text-white row p-1 rounded @(isOwner ? "flex-row-reverse": "flex-row")"
+         data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
+         data-owner-id="@($"{ds.SheetInfo.Id}")"
+         data-is-pinned="@ds.Dialogue.IsPinned"
+         data-is-bookmarked="@ds.Dialogue.IsBookmarked"
+         data-message-type="@(isOwner ? "" : ds.Dialogue.LastMessage.Type)"
+         data-online="@(isOwner ? ds.Dialogue.Status : "")"
+         onclick="goToChat(this)">
+        <div class="other-user-block col-2 p-0">
+            <div class="standart-image-block position-relative">
+                <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+                @if (ds.Dialogue.Status == Status.Online)
+                {
+                    <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
+                }
+                else
+                {
+                    <span class="status-circle-red other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
+                }
             </div>
-            <div class="message-block col-6 text-start pe-0">
-                <p class="mb-1 other-name-text-mutiline">
-                    @switch (ds.Dialogue.LastMessage.Type)
-                    {
-                        case MessageType.Message:
-                            @ds.Dialogue.LastMessage.Content.Message
-                            break;
 
-                        case MessageType.Sticker:
-                            @:Sticker
-                            break;
+            <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
 
-                        case MessageType.Virtual_Gift:
-                            @:Gift
-                            break;
+            <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
+                @ds.Dialogue.UserName
+            </p>
+        </div>
+        <div class="message-block col-6 text-start px-1-xxl-0 h-100">
+            <p class="other-name-text-mutiline">
+                @switch (ds.Dialogue.LastMessage.Type)
+                {
+                    case MessageType.Message:
+                        @ds.Dialogue.LastMessage.Content.Message
+                        break;
 
-                        case MessageType.Photo:
-                        case MessageType.Photo_batch:
-                            @:Photo
-                            break;
+                    case MessageType.Sticker:
+                        @:Sticker
+                        break;
 
-                        case MessageType.LikePhoto:
-                            @:Like Photo
-                            break;
+                    case MessageType.Virtual_Gift:
+                        @:Gift
+                        break;
 
-                        case MessageType.Video:
-                            @:Video
-                            break;
+                    case MessageType.Photo:
+                    case MessageType.Photo_batch:
+                        @:Photo
+                        break;
 
-                        case MessageType.Post:
-                            @:Post
-                            break;
+                    case MessageType.LikePhoto:
+                        @:Like Photo
+                        break;
 
-                        case MessageType.Like_NewsFeed_Post:
-                            @:Like Post
-                            break;
+                    case MessageType.Video:
+                        @:Video
+                        break;
 
-                        case MessageType.Wink:
-                            @:Winked
-                            break;
+                    case MessageType.Post:
+                        @:Post
+                        break;
 
-@*                        case MessageType.System:
-                            @ds.Dialogue.LastMessage.Content.Message
-                            break;*@
+                    case MessageType.Like_NewsFeed_Post:
+                        @:Like Post
+                        break;
 
-                        default:
-                            break;
-                    }
-                </p>
-                <p name="date-created" class="user-block-name-text small-text-opacity" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
-                    @*@ds.Dialogue.LastMessage.DateCreated.Humanize()*@
-                    @*                    @if (ds.Dialogue.LastMessage.Type == MessageType.System)
-            {
-            @:@ds.Dialogue.DateUpdated.Humanize()
-            }
-            else
-            {
-            @:@ds.Dialogue.LastMessage.DateCreated.Humanize()
-            }*@
-                    @*@ds.Dialogue.LastMessage.DateCreated.Humanize()*@
-                </p>
-            </div>
-            <div class="user-block d-flex align-items-center col-4 p-2">
-                <div class="standart-image-block me-3 position-relative">
-                    <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                    @*                    @if (sd.SheetInfo.IsOnline)
+                    case MessageType.Wink:
+                        @:Winked
+                        break;
+
+                    case MessageType.System:
+                        @ds.Dialogue.LastMessage.Content.Message
+                        break;
+
+                    default:
+                        break;
+                }
+            </p>
+            <p name="date-created" class="user-block-name-text small-text-opacity" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
+            </p>
+        </div>
+        <div class="user-block d-flex align-items-center col-4 px-2">
+            <div class="standart-image-block position-relative px-1">
+                <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+                @*                    @if (sd.SheetInfo.IsOnline)
             {
             <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
             }
@@ -113,142 +102,12 @@
             {
             <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
             }*@
-                </div>
+            </div>
 
-                <div class="user-block-info text-center col-6">
-                    <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
-                </div>
+            <div class="user-block-info text-center d-grid w-100">
+                <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
             </div>
         </div>
-    }
-    else
-    {
-        <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}-{ds.Dialogue.LastMessage.Id}")" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mb-2"
-     data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
-     data-owner-id="@($"{ds.SheetInfo.Id}")"
-     data-is-pinned="@ds.Dialogue.IsPinned"
-     data-is-bookmarked="@ds.Dialogue.IsBookmarked"
-     data-message-type="@ds.Dialogue.LastMessage.Type"
-     data-online=""
-     onclick="goToChat(this)">
+    </div>
 
-            <div class="other-user-block col-2 ps-0">
-                <div class="standart-image-block position-relative">
-                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
-                    @if (ds.Dialogue.Status == Status.Online)
-                    {
-                        <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
-                    }
-                    else
-                    {
-                        <span class="status-circle-red other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
-                    }
-                </div>
-
-                <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
-                    @ds.Dialogue.UserName
-                </p>
-
-            </div>
-            <div class="message-block col-6 text-start ps-0">
-                @*<p name="interlocutorName" class="mb-1 other-name-text">@ds.Dialogue.UserName</p>*@
-                <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
-                <p class="other-name-text-mutiline">
-                    @switch (ds.Dialogue.LastMessage.Type)
-                    {
-                        case MessageType.Message:
-                            @: @ds.Dialogue.LastMessage.Content.Message
-                            break;
-
-                        case MessageType.Sticker:
-                            @:Sticker
-                            break;
-
-                        case MessageType.Virtual_Gift:
-                            @:Gift
-                            break;
-
-                        case MessageType.Photo:
-                        case MessageType.Photo_batch:
-                            @:Photo
-                            break;
-
-                        case MessageType.LikePhoto:
-                            @:Like Photo
-                            break;
-
-                        case MessageType.Video:
-                            @:Video
-                            break;
-
-                        case MessageType.Post:
-                            @:Post
-                            break;
-
-                        case MessageType.Like_NewsFeed_Post:
-                            @:Like Post
-                            break;
-
-                        case MessageType.Wink:
-                            @:Winked
-                            break;
-
-                        case MessageType.System:
-                            @ds.Dialogue.LastMessage.Content.Message
-                            break;
-
-                        default:
-                            break;
-                    }
-                </p>
-                <p name="date-created" class="user-block-name-text small-text-opacity" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
-                    @* @ds.Dialogue.LastMessage.DateCreated.Humanize()*@
-                    @*                    @if (ds.Dialogue.LastMessage.Type == MessageType.System)
-            {
-            @:@ds.Dialogue.DateUpdated.Humanize()
-            }
-            else
-            {
-            @:@ds.Dialogue.LastMessage.DateCreated.Humanize()
-            }*@
-                </p>
-            </div>
-            <div class="user-block d-flex align-items-center col-4 p-2">
-                <div class="standart-image-block me-3 position-relative">
-                    <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                    @*                   @if (sd.SheetInfo.IsOnline)
-            {
-            <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            }
-            else
-            {
-            <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
-            }*@
-                </div>
-
-                <div class="user-block-info text-center col-6">
-                    <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
-                    @if (ds.Dialogue.LastMessage.Timer != null)
-                    {
-                        <p class="user-block-timer-text timer"
-                           data-sheetInfo-id="@ds.SheetInfo.Id"
-                           data-id-interlocutor="@ds.Dialogue.IdInterlocutor"
-                           data-id-lastmessage="@ds.Dialogue.LastMessage.Id"
-                           data-type-lastmessage="@ds.Dialogue.LastMessage.Type"
-                           data-seconds-left="@ds.Dialogue.LastMessage.Timer.TimeLeft()">
-                        </p>
-                    }
-                    else
-                    {
-                        <p class="user-block-timer-text timer"
-                           data-sheetInfo-id="@ds.SheetInfo.Id"
-                           data-id-interlocutor="@ds.Dialogue.IdInterlocutor"
-                           data-id-lastmessage="@ds.Dialogue.LastMessage.Id"
-                           data-type-lastmessage="@ds.Dialogue.LastMessage.Type">
-                        </p>
-                    }
-                </div>
-            </div>
-        </div>
-    }
 }

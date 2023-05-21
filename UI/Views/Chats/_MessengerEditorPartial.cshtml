@@ -1,5 +1,5 @@
-﻿<div class="large-block__body-footer mt-3 d-flex justify-content-around">
-    <div class="textarea-block h-100">
+﻿<div class="large-block__body-footer d-flex">
+    <div class="textarea-block h-100 w-100">
         <div class="form-floating position-relative h-100">
             <textarea id="newMessage" class="large-block__textarea rounded ps-5 pt-3 pb-3 text-white" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter()" onkeypress="sendEnter(event)"></textarea>
             <p class="textarea-counter text-white position-absolute">
@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-    <div class="buttons-block">
+    <div class="buttons-block col ps-3">
         <div class="answer-button-group d-flex flex-column justify-content-between align-items-center" role="group" aria-label="Basic example">
             <div class="first-button-group">
                 <button type="button" class="btn answer-button chat-button rounded text-white" onclick="sendMessage()">

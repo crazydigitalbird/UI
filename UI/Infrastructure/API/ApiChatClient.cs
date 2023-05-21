@@ -1,16 +1,10 @@
 ﻿using Core.Models.Sheets;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using UI.Models;
-using Humanizer;
 using System.Collections.Concurrent;
-using UI.Infrastructure.Repository;
 using System.Text;
-using System.Collections;
+using System.Text.Json;
+using UI.Infrastructure.Repository;
+using UI.Models;
 
 namespace UI.Infrastructure.API
 {
@@ -1077,7 +1071,10 @@ namespace UI.Infrastructure.API
 #if DEBUGOFFLINE || DEBUG
                     s = await response.Content.ReadAsStringAsync();
 #endif
-                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>();
+                    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+                    jsonOptions.Converters.Add(new DateTimeConverter());
+
+                    var messenger = await response.Content.ReadFromJsonAsync<Messenger>(jsonOptions);
                     return messenger;
                 }
                 else

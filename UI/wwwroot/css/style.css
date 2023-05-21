@@ -20,17 +20,6 @@ body {
     background-color: #1E1E42;
 }
 
-/* ползунок скроллбара */
-/*::-webkit-scrollbar-thumb {
-    background-color: #1E1E42;
-    border-radius: 9em;
-    box-shadow: inset 1px 1px 10px #f3faf7;
-}
-
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #253861;
-    }*/
-
 ::-webkit-scrollbar {
     width: 5px;
     background-color: #252548;
@@ -47,18 +36,9 @@ body {
         width: 8px;
     }
 
-section {
-    width: 1920px;
-}
-
-/* section {
-    height: 100%;
-    width: 100%;
-    max-width: calc(16 / 9 * 100vh);
-  } */
-
 .top-block {
-    height: 73px;
+    max-height: 73px;
+    height: 8vh;
     background: #131334;
 }
 
@@ -94,19 +74,15 @@ section {
 }
 
 .bottom-block {
-    height: 844px;
+    height: 92vh;
 }
 
-.first-block__header-text,
+
 .first-block__header-small-text {
     font-style: normal;
     font-weight: 600;
     line-height: 130%;
     color: rgba(255, 255, 255, 0.8);
-}
-
-.first-block__header-text {
-    font-size: 16px;
 }
 
 .first-block__header-small-text {
@@ -130,7 +106,6 @@ section {
 .nav-link.active, .nav-link:hover {
     background-color: #1E1E42;
     color: white;
-    padding: 5px;
 }
 
 .other-user-block-status {
@@ -150,13 +125,12 @@ section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* padding: 8px; */
-    width: 92px;
     height: 37px;
+    width: 100%;
     border-radius: 12px;
     font-style: normal;
     font-weight: 600;
-    font-size: 16px;
+    font-size: calc(13px + (16 - 13) * ((100vw - 1366px) / (1920 - 1366)));
     line-height: 130%;
     text-align: center;
     color: rgba(255, 255, 255, 0.8);
@@ -166,6 +140,7 @@ section {
 
 .block__nav-item {
     display: flex;
+    justify-content: center;
 }
 
 .small-block {
@@ -175,31 +150,13 @@ section {
 
 .large-block {
     width: 820px;
-    /* height: 844px; */
 }
 
 .bottom-block-body__item {
-    /* width: 482px;
-    height: 78px; */
     width: 100%;
     background: #2E2E4F;
     cursor: pointer;
 }
-
-/*    .bottom-block-body__item:hover,
-    .large-block__header_users-block-img:hover,
-    .large-block__header_users-icon-img:hover {
-        filter: brightness(150%);
-    }
-
-.user-block-name-text:hover,
-.accordion-body-text:hover,
-.accordion-body-image-info-block:hover,
-.top-block__container:hover,
-    .accordion-item-button:hover,
-.accordion-body-item:hover{
-    filter: opacity(50%);
-}*/
 
     .bottom-block-body__item:hover,
     .large-block__header_users-block-img:hover,
@@ -268,8 +225,9 @@ section {
     cursor: pointer;
 }
 
-
-
+.bottom-block-header{
+    height: 7%;
+}
 
 .bottom-block-body {
     height: 93%;
@@ -277,7 +235,7 @@ section {
 }
 
 .large-block__body {
-    height: 90%;
+    height: 93%;
 }
 
 .large-block__body-items {
@@ -297,7 +255,7 @@ section {
     font-weight: 400;
     font-size: 12px;
     line-height: 130%;
-    overflow:hidden;
+    overflow: hidden;
     white-space: nowrap;
 }
 
@@ -320,7 +278,7 @@ section {
     white-space: nowrap;
     font-style: normal;
     font-weight: 400;
-    font-size: 16px;
+    font-size: calc(13px + (16 - 13) * ((100vw - 1366px) / (1920 - 1366)));
     line-height: 130%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -329,7 +287,7 @@ section {
 .other-name-text-mutiline {
     font-style: normal;
     font-weight: 400;
-    font-size: 13px;
+    font-size: calc(13px + (16 - 13) * ((100vw - 1366px) / (1920 - 1366)));
     line-height: 130%;
     overflow: hidden;
     -webkit-line-clamp: 2;
@@ -364,9 +322,8 @@ section {
 }
 
 .large-block__header {
+    height: 7%;
     background-color: #131334;
-    width: 796px;
-    height: 62px;
 }
 
 .large-block-header-timer-text {
@@ -388,13 +345,13 @@ section {
 
 .large-block__header_users-block-item {
     width: 183px;
-    height: 46px;
+    height: 85%;
 }
 
 
 .large-block__header_icons-block {
     width: 148px;
-    height: 46px;
+    height: 85%;
 }
 
 .large-block__header_menu {
@@ -424,7 +381,7 @@ section {
 }
 
 .large-block__textarea {
-    width: 610px;
+    width: 100%;
     height: 200px;
     max-height: 200px;
     background: rgba(217, 217, 217, 0.1);
@@ -492,10 +449,16 @@ section {
     color: #7D6AF0;
 }
 
+[name=searchSheetsDialogues] {
+    height: 10%;
+}
+
 .search-block__input, .search-block__input:focus {
     background: #252548;
     border: 1px solid #454563;
     color: #fff;
+    font-size: calc(12px + (14 - 12) * ((100vw - 1366px) / (1920 - 1366)));
+    padding-left: calc(22px + (29 - 22) * ((100vw - 1366px) / (1920 - 1366)));
 }
 
     .search-block__input::placeholder {
@@ -503,22 +466,24 @@ section {
     }
 
 .search-icon {
-    top: 8px;
-    left: 10px;
+    top: 5px;
+    left: calc(2px + (5 - 2) * ((100vw - 1366px) / (1920 - 1366)));
+    width: calc(20px + (24 - 20) * ((100vw - 1366px) / (1920 - 1366)));
+    height: calc(20px + (24 - 20) * ((100vw - 1366px) / (1920 - 1366)));
 }
 
 .search-count {
-    width: 40px;
+    width: calc(25px + (40 - 25) * ((100vw - 1366px) / (1920 - 1366)));
     height: 20px;
     background-color: #454563;
     color: rgba(255, 255, 255, 0.49);
-    top: 23%;
-    right: 5%;
+    top: calc(6px + (7 - 6) * ((100vw - 1366px) / (1920 - 1366)));
+    right: 2%;
+    font-size: calc(12px + (14 - 12) * ((100vw - 1366px) / (1920 - 1366)));
 }
 
 
 .status-block-item {
-    width: 12%;
 }
 
 .tab-content-item {
@@ -533,6 +498,7 @@ section {
     background-color: #454563;
     color: rgba(255, 255, 255, 0.49);
 }
+
     .accordion-count:empty {
         background-color: #2E2E4F;
     }
@@ -546,11 +512,11 @@ section {
   } */
 
 .accordion-info-bigtext {
-    font-size: 16px;
+    font-size: calc(13px + (16 - 13) * ((100vw - 1366px) / (1920 - 1366)));
 }
 
 .accordion-info-smalltext, .accordion-body-text {
-    font-size: 14px;
+    font-size: calc(12px + (14 - 12) * ((100vw - 1366px) / (1920 - 1366)));
 }
 
 .accordion-body-text {
@@ -558,6 +524,15 @@ section {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+    .accordion-body-text input {
+        width: 0px;
+    }
+
+    .accordion-body-text label svg {
+        width: calc(20px + (24 - 20) * ((100vw - 1366px) / (1920 - 1366)));
+        height: calc(20px + (24 - 20) * ((100vw - 1366px) / (1920 - 1366)));
+    }
 
 .accordion-item-button {
     display: grid;
@@ -581,13 +556,13 @@ section {
   } */
 
 .tab-content {
-    height: 95%;
-/*    overflow-y: auto;*/
+    height: 93%;
+    /*    overflow-y: auto;*/
 }
 
 .accordion-items {
     overflow: auto;
-    height: 85%;
+    height: 90%;
     position: relative;
 }
 
@@ -615,6 +590,6 @@ section {
     opacity: 1;
 }
 
-.sticker img{
+.sticker img {
     opacity: 0.8;
 }

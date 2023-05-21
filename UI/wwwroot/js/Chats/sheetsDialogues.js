@@ -70,6 +70,7 @@ function getDialogues(sheetId, currentTab, cursor) {
             }
             $divDialogues.append(data);
             countDialoguesSheet(sheetId, currentTab);
+            updateAllDateHumanize();
         }
         else {
             disableSpinnerInCounter(sheetId, currentTab);

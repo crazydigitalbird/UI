@@ -37,6 +37,10 @@ function getHistory(cursor) {
     }
 }
 
+function showHistoryMessage(e) {
+    $(e).find('.accordion-collapse').collapse('toggle');
+}
+
 function enableSpinnerHistory() {
     var $btnLoadingHistory = $('#btn-loading-history');
     var spinner = $(`<div id="spinnerHistory" class="spinner-grow spinner-grow-sm" role="status"></div>`);

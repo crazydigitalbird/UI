@@ -16,7 +16,7 @@ namespace UI.Infrastructure.Hubs
             _dictionary = dictionary;
         }
 
-        public async Task DeleteDialogs(IEnumerable<KeyValuePair<SheetDialogKey, long?>> sheetsDialogues)
+        public async Task DeleteDialogs(IEnumerable<KeyValuePair<SheetDialogKey, long>> sheetsDialogues)
         {
             foreach (var sheetDialogue in sheetsDialogues)
             {
@@ -30,14 +30,14 @@ namespace UI.Infrastructure.Hubs
             {
                 var element = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", new List<NewMessage> { sheetDialogue.Value });
                 await _hubContext.Clients.Group($"{sheetDialogue.Key.SheetId}").SendAsync("AddDialog", element);
-                                
+
                 await _hubContext.Clients
                     .Group($"{sheetDialogue.Key.SheetId}-{sheetDialogue.Key.IdInterlocutor}")
                     .SendAsync("NewMessage", sheetDialogue.Key.SheetId, sheetDialogue.Key.IdInterlocutor, sheetDialogue.Value.Dialogue.LastMessage.Id);
             }
         }
 
-        public async Task UpdateDialogs(IEnumerable<KeyValuePair<SheetDialogKey, long?>> oldSheetsDialogues, IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> newSheetsDialogues)
+        public async Task UpdateDialogs(IEnumerable<KeyValuePair<SheetDialogKey, long>> oldSheetsDialogues, IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> newSheetsDialogues)
         {
             await DeleteDialogs(oldSheetsDialogues);
             await AddDialogs(newSheetsDialogues);
@@ -46,7 +46,7 @@ namespace UI.Infrastructure.Hubs
         public async Task ReplyToNewMessage(int sheetId, int idInterlocutor, long idLastMessage, long idNewMessage)
         {
             var key = new SheetDialogKey(sheetId, idInterlocutor);
-            if (_dictionary.Active.ContainsKey(key) && _dictionary.Active[key].Dialogue?.LastMessage?.Id == idLastMessage)
+            if (_dictionary.Active.ContainsKey(key) && _dictionary.Active[key].Dialogue?.LastMessage?.Id.Value == idLastMessage)
             {
                 _dictionary.Active.TryRemove(key, out var newMessage);
             }

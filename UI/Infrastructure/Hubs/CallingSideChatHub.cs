@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using UI.Infrastructure.Repository;
 
 namespace UI.Infrastructure.Hubs
@@ -24,9 +26,9 @@ namespace UI.Infrastructure.Hubs
             }
         }
 
-        public async Task AddDialogs(IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> sheetsDialogues)
+        public async Task AddDialogs(ImmutableDictionary<SheetDialogKey, NewMessage> sheetsDialogues)
         {
-            foreach (var sheetDialogue in sheetsDialogues.OrderBy(kvp => kvp.Value.Dialogue.LastMessage.DateCreated))
+            foreach (var sheetDialogue in sheetsDialogues) // Сортировка реализована на клиенте. Здесь будет лишним: .OrderBy(kvp => kvp.Value.Dialogue.LastMessage.DateCreated)
             {
                 var element = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", new List<NewMessage> { sheetDialogue.Value });
                 await _hubContext.Clients.Group($"{sheetDialogue.Key.SheetId}").SendAsync("AddDialog", element);
@@ -37,20 +39,32 @@ namespace UI.Infrastructure.Hubs
             }
         }
 
-        public async Task UpdateDialogs(IEnumerable<KeyValuePair<SheetDialogKey, long>> oldSheetsDialogues, IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> newSheetsDialogues)
+        public async Task UpdateDialogs(IEnumerable<KeyValuePair<SheetDialogKey, long>> oldSheetsDialogues, ImmutableDictionary<SheetDialogKey, NewMessage> newSheetsDialogues)
         {
             await DeleteDialogs(oldSheetsDialogues);
             await AddDialogs(newSheetsDialogues);
         }
 
+        public Task ChangeNumberOfUsersOnline(ConcurrentDictionary<int, int> online)
+        {
+            var tasks = online.Select(kvp => _hubContext.Clients.Group($"{kvp.Key}").SendAsync("ChangeNumberOfUsersOnline", kvp.Key, kvp.Value)).ToArray();
+            return Task.WhenAll(tasks);
+        }
+
         public async Task ReplyToNewMessage(int sheetId, int idInterlocutor, long idLastMessage, long idNewMessage)
         {
             var key = new SheetDialogKey(sheetId, idInterlocutor);
-            if (_dictionary.Active.ContainsKey(key) && _dictionary.Active[key].Dialogue?.LastMessage?.Id.Value == idLastMessage)
+            lock (_dictionary)
             {
-                _dictionary.Active.TryRemove(key, out var newMessage);
+                if (_dictionary.Active.ContainsKey(key) && _dictionary.Active[key].Dialogue?.LastMessage?.Id.Value <= idLastMessage) //????? == and =<
+                {
+                    _dictionary.Active[key].IsDeleted = true;
+                    _dictionary.Active[key].Dialogue.LastMessage.Id = idLastMessage;
+                }
             }
             await _hubContext.Clients.Group($"{sheetId}").SendAsync("DeleteDialog", sheetId, idInterlocutor, idLastMessage);
+
+            await _hubContext.Clients.Group($"{sheetId}").SendAsync("History");
 
             await _hubContext.Clients.Group($"{sheetId}-{idInterlocutor}").SendAsync("NewMessage", sheetId, idInterlocutor, idNewMessage);
         }

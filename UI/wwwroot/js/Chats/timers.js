@@ -1,7 +1,7 @@
 ﻿function runTimers() {
     timers.length = 0;
     $('p.timer').each(function () {
-        runTimer($(this));
+         runTimer($(this));
         //var timer = $(this).startTimer({
         //    elementContainer: 'span',
         //    onComplete: function (element) {
@@ -16,13 +16,13 @@
 
 function runTimer($timerElement) {
     if ($timerElement) {
-        var promise;
         if (!$timerElement.data('seconds-left')) {
             var sheetId = $timerElement.data('sheetinfo-id');
             var idInterlocutor = $timerElement.data('id-interlocutor');
-            var idLastMessage = $timerElement.data('id-lastmessage');
-            var messageType = $timerElement.data('type-lastmessage');
-            promise = $.post('/Chats/Timer', { sheetId, idInterlocutor, idLastMessage, messageType }, function (seconds) {
+            var $newMessage = $timerElement.closest('[name=newMessage]');
+            var idLastMessage = $newMessage.data('message-id');
+            var messageType = $newMessage.data('message-type');
+            $.post('/Chats/Timer', { sheetId, idInterlocutor, idLastMessage, messageType }, function (seconds) {
                 $timerElement.data('seconds-left', seconds);
                 var timer = $timerElement.startTimer({
                     elementContainer: 'span',

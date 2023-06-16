@@ -1,18 +1,18 @@
-﻿@*@using Humanizer*@
-@using UI.Infrastructure.Repository;
+﻿@using UI.Infrastructure.Repository;
 @model IEnumerable<NewMessage>
 
-@{
+@*@{
     var timers = (Dictionary<long, MessageTimer>)ViewData["timers"];
-}
+}*@
 
 @foreach (var ds in Model)
 {
-   
+
     //Проверяем кто написал последнее сообщение в диалоге, владелица анкеты или мужчина. Если условие выполняется, то сообщение написал владелица анкеты
     bool isOwner = ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom && ds.Dialogue.LastMessage.Type != MessageType.System;
 
-    <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}-{ds.Dialogue.LastMessage.Id}")" class="bottom-block-body__item d-flex mb-2 text-white row p-1 rounded @(isOwner ? "flex-row-reverse": "flex-row")"
+    <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}")" class="bottom-block-body__item d-flex mb-2 text-white row p-1 rounded @(isOwner ? "flex-row-reverse": "flex-row")"
+         data-message-id="@ds.Dialogue.LastMessage.Id"
          data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
          data-owner-id="@($"{ds.SheetInfo.Id}")"
          data-is-pinned="@ds.Dialogue.IsPinned"
@@ -21,16 +21,16 @@
          data-online="@(isOwner ? ds.Dialogue.Status : "")"
          onclick="goToChat(this)">
         <div class="other-user-block col-2 p-0">
-            <div class="standart-image-block position-relative">
-                <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
-                @if (ds.Dialogue.Status == Status.Online)
-                {
-                    <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
-                }
-                else
-                {
-                    <span class="status-circle-red other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
-                }
+            <div class="standart-image-block position-relative d-inline-block">
+                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+                    @if (ds.Dialogue.Status == Status.Online)
+                    {
+                        <span class="status-circle-green other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
+                    }
+                    else
+                    {
+                        <span class="status-circle-red other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
+                    }
             </div>
 
             <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
@@ -106,6 +106,18 @@
 
             <div class="user-block-info text-center d-grid w-100">
                 <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
+                @if (!isOwner)
+                {
+                    <p class="user-block-timer-text timer" data-sheetInfo-id="@ds.SheetInfo.SheetId" data-id-interlocutor="@ds.Dialogue.IdInterlocutor"></p>
+                    @*                    if (ds.Dialogue.LastMessage.Id.HasValue && (timers?.TryGetValue(ds.Dialogue.LastMessage.Id.Value, out MessageTimer timer) ?? false))
+            {
+            <p class="user-block-timer-text timer" data-seconds-left="@timer.TimeLeft()" data-sheetInfo-id="@ds.SheetInfo.SheetId" data-id-interlocutor="@ds.Dialogue.IdInterlocutor"></p>
+            }
+            else
+            {
+            <p class="user-block-timer-text timer" data-sheetInfo-id="@ds.SheetInfo.SheetId" data-id-interlocutor="@ds.Dialogue.IdInterlocutor"></p>
+            }*@
+                }
             </div>
         </div>
     </div>

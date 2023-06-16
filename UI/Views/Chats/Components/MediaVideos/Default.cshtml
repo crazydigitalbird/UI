@@ -5,10 +5,10 @@
 {
     @foreach (var video in Model.Videos)
     {
-        <div class="gallery-card video" data-id="@video.IdVideo" data-video-url="@video.Urls.UrlMp4Hd">
+        <div class="gallery-card video" data-id="@video.IdVideo" data-url-original="@video.Urls.UrlMp4Hd">
             <img src="@video.Urls.UrlThumbnail" alt="">
             <div>
-                <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
                     <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
                 </svg>

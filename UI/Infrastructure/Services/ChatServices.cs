@@ -1,6 +1,7 @@
 ﻿using Core.Models.Sheets;
 using Core.Models.Users;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Net;
 using UI.Infrastructure.API;
@@ -135,70 +136,109 @@ namespace UI.Infrastructure.Services
             #endregion
 
             #region Processing active
-            // Получаем все ключи первой последовательности, которых нет во второй последовательности.
-            // Из первой последовательности отбираются только диалоги из категории Онлайн, т.е. отправителем сообщения выступает девушка. 
-            var removeActiveSheetDialogs = _dictionary.Active
-                //.Where(kvp => kvp.Value.Dialogue.LastMessage.IdUserFrom != kvp.Key.IdInterlocutor)
-                .ExceptBy(activeSheetsDialogsTemp.Keys, kvp => kvp.Key)
-                .ToDictionary(kvp => kvp.Key, kvp=>kvp.Value.Dialogue.LastMessage.Id.Value);
 
-            foreach (var sheetDialog in removeActiveSheetDialogs)
+            Dictionary<SheetDialogKey, long> removeActiveSheetDialogs = new Dictionary<SheetDialogKey, long>();
+            Dictionary<SheetDialogKey, NewMessage> newActiveSheetDialogs = new Dictionary<SheetDialogKey, NewMessage>();
+            Dictionary<SheetDialogKey, long> oldUpdateActiveSheetDialogs = new Dictionary<SheetDialogKey, long>();
+            ImmutableDictionary<SheetDialogKey, NewMessage> newUpdateActiveSheetDialogsImmutable = null;
+
+            lock (_dictionary)
             {
-                _dictionary.Active.TryRemove(sheetDialog.Key, out NewMessage message);
-            }
+                // Получаем все ключи первой последовательности, которых нет во второй последовательности.
+                // Из первой последовательности отбираются только диалоги из категории Онлайн, т.е. отправителем сообщения выступает девушка. 
+                removeActiveSheetDialogs = _dictionary.Active
+                    //.Where(kvp => kvp.Value.Dialogue.LastMessage.IdUserFrom != kvp.Key.IdInterlocutor)
+                    .ExceptBy(activeSheetsDialogsTemp.Keys, kvp => kvp.Key)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Dialogue.LastMessage.Id.Value);
 
-            // Получаем все ключи первой последовательности, которых нет во второй последовательности. Эти диалоги необходимо добавить т.к. появились новые действия со стороны мужчины
-            var newActiveSheetDialogs = activeSheetsDialogsTemp.ExceptBy(_dictionary.Active.Keys, kvp => kvp.Key);
-
-            foreach (var sheetDialog in newActiveSheetDialogs)
-            {
-                var sheet = sheets.FirstOrDefault(s => s.Id == sheetDialog.Key.SheetId);
-                if (sheet != null)
+                foreach (var sheetDialog in removeActiveSheetDialogs)
                 {
-                    sheetDialog.Value.SheetInfo = sheet.SheetInfo;
+                    _dictionary.Active.Remove(sheetDialog.Key);
                 }
-            }
-            await FillingInNewDialoguesProfiles(sheets.First(), newActiveSheetDialogs);
-            foreach (var sheetDialog in newActiveSheetDialogs)
-            {
-                _dictionary.Active.TryAdd(sheetDialog.Key, sheetDialog.Value);
-            }
 
-            //Получаем все ключи общие для обоих коллекций, но имеющие разные Id LastMessage. Данные диалоги необходимо обновить.
-            var oldUpdateActiveSheetDialogs = _dictionary.Active
-                .Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id).ToDictionary(kvp => kvp.Key, kvp=> kvp.Value.Dialogue.LastMessage.Id.Value);
+                // Получаем все ключи первой последовательности, которых нет во второй последовательности. Эти диалоги необходимо добавить т.к. появились новые действия со стороны мужчины
+                newActiveSheetDialogs = activeSheetsDialogsTemp.ExceptBy(_dictionary.Active.Keys, kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            var newUpdateActiveSheetDialogs = activeSheetsDialogsTemp
-                .Where(kvp => _dictionary.Active.ContainsKey(kvp.Key) && _dictionary.Active[kvp.Key].Dialogue.LastMessage.Id != kvp.Value.Dialogue.LastMessage.Id);
-
-            foreach (var a in _dictionary.Active)
-            {
-                if (activeSheetsDialogsTemp.ContainsKey(a.Key))
+                foreach (var sheetDialog in newActiveSheetDialogs)
                 {
-                    if (activeSheetsDialogsTemp[a.Key].Dialogue.LastMessage.Id != a.Value.Dialogue.LastMessage.Id)
+                    var sheet = sheets.FirstOrDefault(s => s.Id == sheetDialog.Key.SheetId);
+                    if (sheet != null)
                     {
-
+                        sheetDialog.Value.SheetInfo = sheet.SheetInfo;
                     }
                 }
             }
 
-            foreach (var sheetDialog in newUpdateActiveSheetDialogs)
+            await FillingInNewDialoguesProfiles(sheets.First(), newActiveSheetDialogs);
+
+            ImmutableDictionary<SheetDialogKey, NewMessage> newActiveSheetDialogsImmutable = ImmutableDictionary.CreateRange(newActiveSheetDialogs);
+
+            lock (_dictionary)
             {
-                _dictionary.Active.AddOrUpdate(sheetDialog.Key, sheetDialog.Value, (key, oldMessage) =>
+                foreach (var sheetDialog in newActiveSheetDialogs)
                 {
-                    //oldMessage.Dialogue.DateUpdated = sheetDialog.Value.Dialogue.DateUpdated;
-                    //oldMessage.Dialogue.LastMessage = sheetDialog.Value.Dialogue.LastMessage;
-                    oldMessage.Dialogue = sheetDialog.Value.Dialogue;
-                    return oldMessage;
-                });
+                    _dictionary.Active.TryAdd(sheetDialog.Key, sheetDialog.Value);
+                }
+
+                //Получаем все ключи общие для обоих коллекций, но имеющие разные Id LastMessage. Данные диалоги необходимо обновить.
+                oldUpdateActiveSheetDialogs = _dictionary.Active
+                    .Where(kvp => activeSheetsDialogsTemp.ContainsKey(kvp.Key) && activeSheetsDialogsTemp[kvp.Key].Dialogue.LastMessage.Id > kvp.Value.Dialogue.LastMessage.Id)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Dialogue.LastMessage.Id.Value);
+
+                var newUpdateActiveSheetDialogs = activeSheetsDialogsTemp
+                    .Where(kvp => _dictionary.Active.ContainsKey(kvp.Key) && _dictionary.Active[kvp.Key].Dialogue.LastMessage.Id < kvp.Value.Dialogue.LastMessage.Id)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+                //foreach (var a in _dictionary.Active)
+                //{
+                //    if (activeSheetsDialogsTemp.ContainsKey(a.Key))
+                //    {
+                //        if (activeSheetsDialogsTemp[a.Key].Dialogue.LastMessage.Id != a.Value.Dialogue.LastMessage.Id)
+                //        {
+
+                //        }
+                //    }
+                //}
+
+
+                foreach (var sheetDialog in newUpdateActiveSheetDialogs)
+                {
+                    sheetDialog.Value.SheetInfo = _dictionary.Active[sheetDialog.Key].SheetInfo;
+                    sheetDialog.Value.Dialogue.Avatar = _dictionary.Active[sheetDialog.Key].Dialogue.Avatar;
+                    sheetDialog.Value.Dialogue.Status = _dictionary.Active[sheetDialog.Key].Dialogue.Status;
+                    sheetDialog.Value.Dialogue.UserName = _dictionary.Active[sheetDialog.Key].Dialogue.UserName;
+
+                    _dictionary.Active[sheetDialog.Key].Dialogue.DateUpdated = sheetDialog.Value.Dialogue.DateUpdated;
+                    _dictionary.Active[sheetDialog.Key].Dialogue.LastMessage = sheetDialog.Value.Dialogue.LastMessage;
+                    _dictionary.Active[sheetDialog.Key].IsDeleted = false;
+                }
+
+                var softDeletedActiveSheetDialogs = _dictionary.Active.Where(sd => sd.Value.IsDeleted).ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Dialogue.LastMessage.Id.Value);
+
+                if (softDeletedActiveSheetDialogs.Any())
+                {
+                    foreach (var sheetDialog in softDeletedActiveSheetDialogs)
+                    {
+                        _dictionary.Active.Remove(sheetDialog.Key);
+                        removeActiveSheetDialogs.Add(sheetDialog.Key, sheetDialog.Value);
+                    }
+                }
+
+                newUpdateActiveSheetDialogsImmutable = ImmutableDictionary.CreateRange(newUpdateActiveSheetDialogs);
             }
+
             #endregion
 
             var deleteTask = _chatHub.DeleteDialogs(removeActiveSheetDialogs);
-            var addTask = _chatHub.AddDialogs(newActiveSheetDialogs);
-            var updateTask = _chatHub.UpdateDialogs(oldUpdateActiveSheetDialogs, newUpdateActiveSheetDialogs);
+            var addTask = _chatHub.AddDialogs(newActiveSheetDialogsImmutable);
+            var updateTask = _chatHub.UpdateDialogs(oldUpdateActiveSheetDialogs, newUpdateActiveSheetDialogsImmutable);
+            var changeNumberOfUsersOnlineTask = _chatHub.ChangeNumberOfUsersOnline(_dictionary.Online);
 
-            await Task.WhenAll(deleteTask, addTask, updateTask);
+            await Task.WhenAll(deleteTask, addTask, updateTask, changeNumberOfUsersOnlineTask);
+
+            //Task.Run(() => deleteTask);
+            //Task.Run(() => addTask);
+            //Task.Run(() => updateTask);
 
             stopwatch2.Stop();
             stopwatch1.Stop();
@@ -324,10 +364,15 @@ namespace UI.Infrastructure.Services
                 }
                 dialogues = dialogues.Union(messanger.Dialogs).ToList();
             } while (messanger.Dialogs.Count == limit);
+            int countOnline = dialogues.Count(d => !d.IsBlocked);
+
+            _dictionary.Online.AddOrUpdate(sheet.Id, countOnline, (key, oldValue) => countOnline);
+
             dialogues.ForEach(dialogue =>
             {
                 if (!dialogue.IsBlocked)
                 {
+                    
                     dialogue.Status = Status.Online;
                     CheckAndUpdateDateCreatedSystemLastMessage(dialogue);
                     dictionary.TryAdd(new SheetDialogKey(sheet.Id, dialogue.IdInterlocutor), new NewMessage { Dialogue = dialogue });

@@ -28,7 +28,7 @@ namespace UI.Infrastructure
             _tempDataProvider = tempDataProvider;
             _serviceProvider = serviceProvider;
         }
-        public async Task<string> RenderPartialToStringAsync<TModel>(string partialName, TModel model)
+        public async Task<string> RenderPartialToStringAsync<TModel>(string partialName, TModel model, string viewDataKey = null, object viewDataValue = null)
         {
             var actionContext = GetActionContext();
             var partial = FindView(actionContext, partialName);
@@ -49,6 +49,10 @@ namespace UI.Infrastructure
                     output,
                     new HtmlHelperOptions()
                 );
+                if (!string.IsNullOrWhiteSpace(viewDataKey))
+                {
+                    viewContext.ViewData[viewDataKey] = viewDataValue;
+                }
                 await partial.RenderAsync(viewContext);
                 return output.ToString();
             }

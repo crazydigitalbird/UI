@@ -1,0 +1,45 @@
+﻿@using Core.Models.Agencies.Comments;
+@model IEnumerable<SheetComment>
+
+@if (Model?.Count() > 0)
+{
+    @foreach (var comment in Model.OrderByDescending(c => c.Created))
+    {
+        <div class="accordion-item tab-content-item py-1 rounded mb-2">
+            <div class="accordion-item-button bottom-blockbody__item d-flex text-white p-1 rounded collapsed"
+         data-bs-toggle="collapse"
+         data-bs-target="@($"#flush-collapse-comment-{comment.Id}")"
+         aria-expanded="true"
+         aria-controls="@($"flush-collapse-comment-{comment.Id}")"
+         role="button">
+                <div class="message-block col-8 text-start px-1 h-100">
+                    <p class="other-name-text">
+                        @(comment.Member.User.Login ?? comment.Member.User.Email)
+                    </p>
+                </div>
+                <div class="user-block d-flex align-items-center col-4 px-1 justify-content-center">
+                    <p name="interlocutorName" class="user-block-name-text">
+                        @comment.Created.ToString("HH:mm dd.MM.yyy")
+                    </p>
+                </div>
+            </div>
+            <div id="@($"flush-collapse-comment-{comment.Id}")" class="accordion-collapse collapse show my-1 mx-3 text-white comment-body position-relative">
+                @comment.Content
+                @if (comment.IsNew)
+                {
+                    <svg class="position-absolute bottom-0 end-0" fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="10px"><!--! Font Awesome Free 6.4.0 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+                    <svg class="position-absolute bottom-0" style="right: 4px;" fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="10px"><!--! Font Awesome Free 6.4.0 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+                }
+                else
+                {
+                    <svg class="position-absolute bottom-0 end-0" fill="green" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="10px"><!--! Font Awesome Free 6.4.0 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+                    <svg class="position-absolute bottom-0" style="right: 4px;" fill="green" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="10px"><!--! Font Awesome Free 6.4.0 by @@fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p id="noComments" class="text-center text-white">Нет комментариев</p>
+}

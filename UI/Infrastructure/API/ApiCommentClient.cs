@@ -16,13 +16,13 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<int> GetNewSheetCommentsCountAsync(int sheetId)
+        public async Task<int> GetNewSheetCommentsCountAsync(int sheetId, int idRegularUser)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
             try
             {
-                var response = await httpClient.GetAsync($"Agencies/Comments/GetNewSheetCommentsCount?sheetId={sheetId}&sessionGuid={sessionGuid}");
+                var response = await httpClient.GetAsync($"Agencies/Comments/GetNewSheetCommentsCount?sheetId={sheetId}&chatId={idRegularUser}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
                     var count = await response.Content.ReadFromJsonAsync<int>();
@@ -34,23 +34,23 @@ namespace UI.Infrastructure.API
                 }
                 else
                 {
-                    _logger.LogWarning("Error geting new sheet comments for sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}", sheetId, response.StatusCode);
+                    _logger.LogWarning("Error geting new sheet comments for sheet with id: {sheetId}, chat with id: {chatId}. HttpStatusCode: {httpStatusCode}", sheetId, idRegularUser, response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error geting new sheet comments for sheet with id: {sheetId}.", sheetId);
+                _logger.LogError(ex, "Error geting new sheet comments for sheet with id: {sheetId}, chat with id: {chatId}.", sheetId, idRegularUser);
             }
             return 0;
         }
 
-        public async Task<IEnumerable<SheetComment>> GetCommentsAsync(int sheetId)
+        public async Task<IEnumerable<SheetComment>> GetCommentsAsync(int sheetId, int idRegularUser)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
             try
             {
-                var response = await httpClient.GetAsync($"Agencies/Comments/GetSheetComments?sheetId={sheetId}&sessionGuid={sessionGuid}");
+                var response = await httpClient.GetAsync($"Agencies/Comments/GetSheetComments?sheetId={sheetId}&chatId={idRegularUser}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
                     var comments = await response.Content.ReadFromJsonAsync<IEnumerable<SheetComment>>();
@@ -62,23 +62,23 @@ namespace UI.Infrastructure.API
                 }
                 else
                 {
-                    _logger.LogWarning("Error geting comments for sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}", sheetId, response.StatusCode);
+                    _logger.LogWarning("Error geting comments for sheet with id: {sheetId}, chat with id: {chatId}. HttpStatusCode: {httpStatusCode}", sheetId, idRegularUser, response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error geting comments for sheet with id: {sheetId}.", sheetId);
+                _logger.LogError(ex, "Error geting comments for sheet with id: {sheetId}, chat with id: {chatId}.", sheetId, idRegularUser);
             }
             return null;
         }
 
-        public async Task<SheetComment> AddCommentAsync(int sheetId, string text)
+        public async Task<SheetComment> AddCommentAsync(int sheetId, int idRegularUser, string text)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
             try
             {
-                var response = await httpClient.PutAsync($"Agencies/Comments/AddSheetComment?sheetId={sheetId}&content={text}&sessionGuid={sessionGuid}", null);
+                var response = await httpClient.PutAsync($"Agencies/Comments/AddSheetComment?sheetId={sheetId}&chatId={idRegularUser}&content={text}&sessionGuid={sessionGuid}", null);
                 if (response.IsSuccessStatusCode)
                 {
                     var comment = await response.Content.ReadFromJsonAsync<SheetComment>();
@@ -90,12 +90,12 @@ namespace UI.Infrastructure.API
                 }
                 else
                 {
-                    _logger.LogWarning("Error creating comment for sheet with id: {sheetId}", sheetId);
+                    _logger.LogWarning("Error creating comment for sheet with id: {sheetId}, chat with id: {chatId}", sheetId, idRegularUser);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating comment for sheet with id: {sheetId}", sheetId);
+                _logger.LogError(ex, "Error creating comment for sheet with id: {sheetId}, chat with id: {chatId}", sheetId, idRegularUser);
             }
             return null;
         }
@@ -115,8 +115,8 @@ namespace UI.Infrastructure.API
 
     public interface ICommentClient
     {
-        Task<int> GetNewSheetCommentsCountAsync(int sheetId);
-        Task<IEnumerable<SheetComment>> GetCommentsAsync(int sheetId);
-        Task<SheetComment> AddCommentAsync(int sheetId, string text);
+        Task<int> GetNewSheetCommentsCountAsync(int sheetId, int idRegularUser);
+        Task<IEnumerable<SheetComment>> GetCommentsAsync(int sheetId, int idRegularUser);
+        Task<SheetComment> AddCommentAsync(int sheetId, int idRegularUser, string text);
     }
 }

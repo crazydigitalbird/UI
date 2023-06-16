@@ -1,0 +1,10 @@
+﻿@model List<Ice>
+
+@{
+    ViewData["body"] = "Ices";
+}
+
+@foreach (var ice in Model)
+{
+    <partial name="_IcePartial" model="@ice" />
+}

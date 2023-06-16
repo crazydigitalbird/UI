@@ -6,14 +6,20 @@
 
 connection.onreconnecting(error => {
     console.assert(connection.state === signalR.HubConnectionState.Reconnecting);
-    console.log(`Connection lost due to error "${error}". Reconnecting.`);
+    console.log(`SignalR Reconnecting. Connection lost due to error "${error}". Reconnecting.`);
 });
 
 
 connection.onreconnected(connectionId => {
     console.assert(connection.state === signalR.HubConnectionState.Connected);
-    console.log(`Connection reestablished. Connected with connectionId "${connectionId}"`);
+    console.log(`SignalR Reconnected. Connection reestablished. Connected with connectionId "${connectionId}"`);
     initial();
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    var idInterlocutor = Number($('#interlocutorIdChatHeader').text());
+    if (sheetId && idInterlocutor) {
+        AddToGroup(sheetId, idInterlocutor);
+    }
+    getHistory('');
 });
 
 async function start() {
@@ -32,7 +38,7 @@ async function start() {
 
 connection.onclose(error => {
     console.assert(connection.state === signalR.HubConnectionState.Disconnected);
-    console.log(`Connection closed due to error "${error}". Try refreshing this page ot restart the connection.`);
+    console.log(`SignalR connection closed due to error "${error}". Try refreshing this page ot restart the connection.`);
 });
 
 start();
@@ -70,9 +76,17 @@ connection.on('AddDialog', function (data) {
 });
 
 connection.on('DeleteDialog', function (sheetId, idInterlocutor, idLastMessage) {
-    DeleteDialog(sheetId, idInterlocutor, idLastMessage);
+    DeleteDialog(sheetId, idInterlocutor, idLastMessage);    
 });
 
 connection.on('NewMessage', function (sheetId, idInterlocutor, idNewMessage) {
     LoadNewMessages(sheetId, idInterlocutor, idNewMessage);
+});
+
+connection.on('ChangeNumberOfUsersOnline', function (sheetId, numberOfUsersOnline) {
+    changeNumberOfUsersOnline(sheetId, numberOfUsersOnline);
+});
+
+connection.on('History', function () {
+    LoadNewHistory();
 });

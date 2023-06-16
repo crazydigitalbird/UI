@@ -21,7 +21,7 @@ namespace UI.Infrastructure.API
             var client = _httpClientFactory.CreateClient("api");
             try
             {
-                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength=60", null);
+                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength=720", null);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var userSession = await response.Content.ReadFromJsonAsync<UserSession>();

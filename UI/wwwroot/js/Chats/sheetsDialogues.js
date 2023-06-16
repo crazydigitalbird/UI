@@ -51,6 +51,38 @@ $(function () {
         }
         timerLoadingDialoguesId = setTimeout(loadingDialogues, 30000);
     }, 30000);
+
+    //Запуск немедленного обновления/загрузки диалогов, для всех анкет, при переход на новую вкладку, кроме вкладки "История".
+    //IsOnline должент иметь значение true
+    $('#sheetsDialogues').find('p[data-bs-toggle="tab"]').each(function () {
+        this.addEventListener('shown.bs.tab', (event) => {
+            var currentTab = getCurrentTab();
+            if (currentTab != 'history' && isOnline(currentTab)) {
+                if (currentTab != 'active') {
+                    $('.accordion-collapse').each(function () {
+                        let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+                        var tab = result[1];
+                        //Обновление только на текущей вкладке
+                        if (tab === currentTab) {
+                            var sheetId = result[2];
+                            getDialogues(sheetId, tab, '');
+                        }
+                    });
+                }
+                else {
+                    $('.accordion-collapse.show').each(function () {
+                        let result = this.id.match(/flush-collapse-(.+)-(.+)/);
+                        var tab = result[1];
+                        //Обновление только на текущей вкладке
+                        if (tab === currentTab) {
+                            var sheetId = result[2];
+                            getDialogues(sheetId, tab, '');
+                        }
+                    });
+                }
+            }
+        });
+    });
 });
 
 function getDialogues(sheetId, currentTab, cursor) {
@@ -101,6 +133,22 @@ function enableSpinnerInCounter(sheetId, currentTab) {
 
 function disableSpinnerInCounter(sheetId, currentTab) {
     $(`#count-dialogues-${currentTab}-${sheetId}`).empty();
+}
+
+//Устанавливаем для анкеты кол-во пользователей находящихся в онлайн
+function changeNumberOfUsersOnline(sheetId, numberOfUsersOnline) {
+    //Проверяем, что Online на вкладке "Все" в положении true
+    if (isOnline('active')) {
+        //Получаем элемент, в который будет записываться кол-во пользователей в онлайн
+        var $countDialogues = $(`#count-dialogues-active-${sheetId}`);
+        if ($countDialogues) {
+            //Получаем родительский элемент, что бы проверить, что он не раскрыт. Рвскрытые элементы collapse онбнавляются не SignalR, а каждые 30 секунд со стороны клиента.
+            var $accordioncollapse = $countDialogues.closest('.accordion-collapse');
+            if ($accordioncollapse && !$accordioncollapse.hasClass('show')) {
+                $countDialogues.html(numberOfUsersOnline);
+            }
+        }
+    }
 }
 
 function countDialoguesSheet(sheetId, currentTab) {

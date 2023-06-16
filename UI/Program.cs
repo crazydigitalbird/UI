@@ -43,6 +43,7 @@ builder.Services.AddSingleton<IGroupClient, ApiGroupClient>();
 builder.Services.AddSingleton<IBalanceClient, ApiBalanceClient>();
 builder.Services.AddSingleton<ISheetClient, ApiSheetClient>();
 builder.Services.AddSingleton<IMailClient, ApiMailClient>();
+builder.Services.AddSingleton<IIcebreakersClient, ApiIcebreakersClient>();
 
 builder.Services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
 builder.Services.AddScoped<IChatHub, CallingSideChatHub>();
@@ -113,6 +114,8 @@ app.UseStatusCodePages(async context =>
 });
 
 app.MapHub<ChatHub>("/chatHub");
+
+//app.MapGet("/.well-known/acme-challenge/2DXkfA__W_ZbIjB5fe1v4MwJ0UfVuf3_BweBYlm9aVg", () => "2DXkfA__W_ZbIjB5fe1v4MwJ0UfVuf3_BweBYlm9aVg.yUlg7Rq3NLu8bSYDhPnsGB_VTOkopaT3M-5pmjgEb7o");
 
 app.MapControllerRoute(
     name: "default",

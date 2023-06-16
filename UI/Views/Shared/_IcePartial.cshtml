@@ -1,0 +1,111 @@
+﻿@model Ice
+
+@{
+    var avatarUrl = ViewData["avatarUrl"];
+}
+
+<div name="@Model.Id" class="middle-item d-flex align-items-start justify-content-between" data-type="@Model.Type" data-number-of-sent="@Model.NumberOfSent" data-created="@Model.DateCreated.ToString("O")" data-efficiency="@Model.Efficiency.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("en-US"))">
+    <div class="middle-item-left">
+        <div class="middle-item-title d-flex align-items-center">
+            <div class="avatar">
+                <img src="@ViewData["avatarUrl"]" alt="" class="avatar__img">
+            </div>
+            <button class="middle-item__btn">
+                @if (Model.Type == IceType.Message)
+                {
+                    <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
+                        <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
+                        <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
+                        <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span class="">Send chat message</span>
+                }
+                else
+                {
+                    <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16.85 15H3.15C1.83 15 0.75 13.93 0.75 12.6V3.4C0.75 2.08 1.82 1 3.15 1H16.85C18.17 1 19.25 2.07 19.25 3.4V12.6C19.25 13.93 18.18 15 16.85 15Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M18.22 1.77002L11.35 8.59002C10.58 9.36002 9.41999 9.36002 8.63999 8.59002L1.76999 1.77002" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M12.13 7.91998L18.22 13.83" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M1.78 13.83L7.94 8" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span class="">Send mail</span>
+                }
+            </button>
+        </div>
+        <p class="middle-item-left__text">@Model.Content</p>
+    </div>
+    <div class="middle-item-right d-flex">
+        <div class="d-flex flex-column align-items-center me-3 justify-content-between">
+            <span class="data">@Model.DateCreated.ToString("dd/MM/yyyy")</span>
+            <span class="count">@($"{Model.Conversion}/{Model.NumberOfSent}")</span>
+        </div>
+        <div class="d-flex flex-column">
+            @switch (ViewData["body"])
+            {
+                case "Ices":
+                    <span class="progress-item__close d-flex d-none" onclick="switchOff(@Model.Id)">
+                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </span>
+                    <button class="delate" onclick="deleteIce(@Model.Id)">
+                        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.1699 6.91992V16.1699C15.1699 17.8699 13.7898 19.2499 12.0898 19.2499H5.91985C4.21985 19.2499 2.83984 17.8699 2.83984 16.1699V6.91992" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M0.78125 3.83002H17.2213" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M5.92188 3.83002C5.92188 2.13002 7.30188 0.75 9.00188 0.75C10.7019 0.75 12.0819 2.13002 12.0819 3.83002" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M6.94125 10L11.0612 14.11" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M11.0612 10L6.94125 14.11" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                    <button class="play" onclick="switchOn(@Model.Id)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.14 6.82001L3.08002 1.15C2.20002 0.700001 1.14001 1.33999 1.14001 2.32999V13.67C1.14001 14.66 2.19002 15.31 3.08002 14.85L14.14 9.18C15.1 8.69 15.1 7.31001 14.14 6.82001Z" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                    break;
+
+                case "Progress":
+                    <span class="progress-item__close d-flex" onclick="switchOff(@Model.Id)">
+                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </span>
+                    break;
+
+                case "Trash":
+                    <span class="reply d-flex" onclick="replyIce(@Model.Id)">
+                        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.799988 3.80005L3.69999 6.50005" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M0.799988 3.8L3.69999 1" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M1.79999 3.80005H10.4C13.1 3.80005 15.2 5.90005 15.2 8.40005C15.2 10.9 13 13 10.4 13" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </span>
+                    <span class="progress-item__close d-flex d-none" onclick="switchOff(@Model.Id)">
+                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </span>
+                    <button class="delate d-none" onclick="deleteIce(@Model.Id)">
+                        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.1699 6.91992V16.1699C15.1699 17.8699 13.7898 19.2499 12.0898 19.2499H5.91985C4.21985 19.2499 2.83984 17.8699 2.83984 16.1699V6.91992" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M0.78125 3.83002H17.2213" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M5.92188 3.83002C5.92188 2.13002 7.30188 0.75 9.00188 0.75C10.7019 0.75 12.0819 2.13002 12.0819 3.83002" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M6.94125 10L11.0612 14.11" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M11.0612 10L6.94125 14.11" stroke="#EB5858" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                    <button class="play d-none" onclick="switchOn(@Model.Id)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.14 6.82001L3.08002 1.15C2.20002 0.700001 1.14001 1.33999 1.14001 2.32999V13.67C1.14001 14.66 2.19002 15.31 3.08002 14.85L14.14 9.18C15.1 8.69 15.1 7.31001 14.14 6.82001Z" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                    break;
+            }
+        </div>
+    </div>
+</div>

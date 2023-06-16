@@ -4,7 +4,7 @@ const $post = $('#post'),
     $btnPost = $('#btnPost');
 
 //Сортировка фото и видео путем перетаскивания элементов на новые позиции.
-$('.uploaded-file').sortable({
+$post.find('.uploaded-file').sortable({
     revert: true,
     opacity: 0.5
 });
@@ -111,12 +111,28 @@ previewBtn.addEventListener('click', () => {
 
 //Preview History Post
 function previewHistoryPost(idPost) {
-    var $post = $(`#${idPost}`);
-    var date = $post.data('date');
-    var text = $post.find('.history-item__text').text();
-    var mediaString = decodeURIComponent(escape(atob($post.data('media'))));
-    var media = JSON.parse(mediaString);
-    previewPost(date, text, media);
+    //var $post = $(`#${idPost}`);
+    //var date = $post.data('date');
+    //var text = $post.find('.history-item__text').text();
+    //var mediaString = decodeURIComponent(escape(atob($post.data('media'))));
+    //var media = JSON.parse(mediaString);
+
+    idPost = idPost.replace('post_', '');
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    var idInterlocutor = $('#interlocutorIdChatHeader').text();
+
+    $.post('/Chats/PreviewPost', { sheetId, idInterlocutor, idPost }, function (data) {
+        var media = [];
+        for (var i = 0; i < data.photos.length; i++) {
+            media.push({ Url: data.photos[i].url, IsVideo: false });
+        }
+        for (var i = 0; i < data.videos.length; i++) {
+            media.push({ Url: data.videos[i].url, IsVideo: true });
+        }
+        previewPost(data.dateSent, data.text, media);
+    }).fail(function () {
+
+    });
 }
 
 function previewPost(date, text, media) {
@@ -131,7 +147,8 @@ function previewPost(date, text, media) {
     $(popUpPreviewPost).find('.man__name').text(manName);
 
     //Date sent
-    $(popUpPreviewPost).find('.date').text(date);
+    var stringDate = moment(date).format('HH:mm DD.MM.YYYY');
+    $(popUpPreviewPost).find('.date').text(stringDate);
 
     //Text
     $(popUpPreviewPost).find('.preview__text').text(text);
@@ -238,6 +255,10 @@ function sendPost() {
     });
 
     $.post('/Chats/SendPost', { sheetId, idRegularUser, idLastMessage, text, videos, photos }, function (data) {
+
+        //Timer
+        stopTimer(sheetId, idRegularUser, idLastMessage);
+
         var idRegularUserCurrent = $('#interlocutorIdChatHeader').text();
         var sheetIdCurrent = $('#manMessagesMails').data('sheet-id');
         if (sheetId === sheetIdCurrent && idRegularUser === idRegularUserCurrent) {

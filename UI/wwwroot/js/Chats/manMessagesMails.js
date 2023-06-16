@@ -23,6 +23,8 @@
         AddToGroupAndRemoveFromGroupSignalR(sheetId, idInterlocutor, owner.SheetId, interlocutor.Id);
     }
 
+    checkNewComments(owner.SheetId, interlocutor.Id);
+
     ManMessagesMailsLeft(owner.SheetId, interlocutor.Id);
 
     checkGifts(owner.SheetId, interlocutor.Id);
@@ -47,6 +49,21 @@ function ManMessagesMailsLeft(sheetId, idRegularUser) {
         if (currentSheetId === sheetId && currentIdInterlocutor === idRegularUser) {
             $('#messagesLeft').text(data.messagesLeft || 0);
             $('#mailsLeft').text(data.mailsLeft || 0);
+
+            var messagesLeft = $('#messagesLeft').text();
+            var mailsLeft = $('#mailsLeft').text();
+            if (messagesLeft !== '0') {
+                $('#messagesLeft').removeClass('large-block-header-timer-text-opacity');
+            }
+            else {
+                $('#messagesLeft').addClass('large-block-header-timer-text-opacity');
+            }
+            if (mailsLeft !== '0') {
+                $('#mailsLeft').removeClass('large-block-header-timer-text-opacity');
+            }
+            else {
+                $('#mailsLeft').addClass('large-block-header-timer-text-opacity');
+            }
         }
     });
 }

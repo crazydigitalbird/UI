@@ -7,6 +7,8 @@ let updateDateCreatedLastMessageSeconds = 60 * 1000;
 moment.locale('ru');
 moment.relativeTimeThreshold('m', 60);
 
+var dialogToLastMessageId = {};
+
 $(function () {
 
     countNewMessages();
@@ -46,25 +48,101 @@ function initialAllNewMessagesFromAllMan(content) {
     countNewMessages();
     runTimers();
     updateAllDateHumanize();
+    initialDictionaryDialogToLastMessageId();
+}
+
+function initialDictionaryDialogToLastMessageId() {
+    //dialogToLastMessageId = {};
+    $('[name=newMessage]').each(function () {
+        //Проверяем содержится ли для данного диалога запись в словаре.
+        //Если запись содержится проверяем что Id сообщения меньше значения хронящегося в словаре
+        //Такие сообщения удаялем
+        if (dialogToLastMessageId[this.id] !== undefined && dialogToLastMessageId[this.id] > $(this).data('message-id')) {
+            $(this).remove();
+            return true;
+        }
+        dialogToLastMessageId[this.id] = $(this).data('message-id');
+    });
+}
+
+function updateDialogToLastMessageId(key, idLastMessage) {
+    if (dialogToLastMessageId[key] !== undefined && dialogToLastMessageId[key] >= idLastMessage) {
+        return true;
+    }
+    dialogToLastMessageId[key] = idLastMessage;
+}
+
+function isNewMessage(key, idLastMessage, messageType) {
+    if (messageType) {
+        if (dialogToLastMessageId[key] !== undefined && dialogToLastMessageId[key] >= idLastMessage) {
+            return false;
+        }
+    }
+    else {
+        if (dialogToLastMessageId[key] !== undefined && dialogToLastMessageId[key] > idLastMessage) {
+            return false;
+        }
+    }
+    dialogToLastMessageId[key] = idLastMessage;
+    return true;
 }
 
 function DeleteDialog(sheetId, idInterlocutor, idLastMessage) {
-    var $message = $(`#${sheetId}-${idInterlocutor}-${idLastMessage}`);
-    if ($message.hasClass('d-none')) {
-        $(this).remove();
-        countNewMessages();
+    var $message = $(`#${sheetId}-${idInterlocutor}`); //$(`#${sheetId}-${idInterlocutor}-${idLastMessage}`);
+    if ($message.length > 0) {
+        var currentIdLasMessage = $message.data('message-id');
+        if (idLastMessage >= currentIdLasMessage) {
+            if ($message.hasClass('d-none')) {
+                $message.remove();
+                countNewMessages();
+            }
+            else {
+                //scroll
+                $message.animate({ opacity: 0.25 }, 3000, function () {
+                    $(this).remove();
+                    countNewMessages();
+                });
+            }
+        }
     }
-    else {
-        //scroll
-        $message.animate({ opacity: 0.25 }, 3000, function () {
-            $(this).remove();
-            countNewMessages();
-        });
-    }
+    var key = `${sheetId}-${idInterlocutor}`;
+    updateDialogToLastMessageId(key, idLastMessage);
 }
 
 function addDialog(messageElement) {
     var $newElement = $(messageElement);
+
+    //Получаем id нового элемента
+    var idElement = $newElement.attr('id');
+
+    //Осуществляем поиск существующего элемента с таким же id, как у нового добавляемого элемента
+    var $currentElement = $(`#${idElement}`);
+
+    //Проверяем существует ли элемент с данным id на старнице.
+    //Если да то организуем дополнительную проверку.
+    //Если элемента не существует, то добавляем новый элемент.
+    if ($currentElement.length > 0) {
+
+        //Получаем Id сообщения для существующего элемента
+        var currentIdLasMessage = $currentElement.data('message-id');
+
+        //Получаем Id сообщения для нового элемента
+        var newIdLasMessage = $newElement.data('message-id');
+
+        //Если Id сообщения нового элемента, меньше или равно Id сообщения существующего элемента, вставку нового элемента не осуществляем и завершаем метод.
+        //Если Id сообщения нового элемента, больше Id сообщения существующего элемента, то удаляем существующий элемент и продолжаем выполнение метода для вставки нового элемента.
+        if (newIdLasMessage <= currentIdLasMessage) {
+            return;
+        }
+        else {
+            $currentElement.remove();
+        }
+    }
+
+    if (!isNewMessage(idElement, $newElement.data('message-id'), $newElement.data('data-message-type'))) {
+        return;
+    }
+
     if (isFilteringNewMessage($newElement)) {
         insertElementIntoPosition($newElement);
     }

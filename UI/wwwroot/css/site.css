@@ -260,6 +260,12 @@ em-emoji-picker {
     /*--rgb-color: #131334;*/
     background-color: #131334;
     --rgb-background: #131334;
+    --font-size: calc(10px + (16 - 10) * ((100vw - 1366px) / (1920 - 1366)));
+}
+
+#emojis {
+    bottom: 50px;
+    left: -8px;
 }
 
 .history {
@@ -273,7 +279,7 @@ em-emoji-picker {
 
 .history-item {
     max-height: 310px;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
     padding: 12px;
     padding-right: 8px;
     background: #15143E;
@@ -305,6 +311,11 @@ em-emoji-picker {
             object-position: center 35%;
             -webkit-border-radius: 8px;
             border-radius: 8px;
+        }
+
+        .history-item .history-head .upload_count {
+            background-color: black;
+            opacity: 0.5;
         }
 
     .history-item .history-main-sup,
@@ -341,7 +352,7 @@ em-emoji-picker {
         }
 
 .history-item__text {
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 22px;
     margin: 8px 0 12px;
     overflow-wrap: break-word;
@@ -383,4 +394,8 @@ em-emoji-picker {
     top: 0;
     justify-content: center;
     align-items: center;
+}
+
+.large-block__body-item-top .post{
+    cursor:pointer;
 }

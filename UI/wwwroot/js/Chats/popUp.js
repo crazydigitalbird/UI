@@ -10,8 +10,19 @@ $(document).on('click', '#interlocutorAvatarChatHeader, #ownerAvatarChatHeader',
     informationPerson(event.target);
 });
 
+//Comment
+$(document).on('click', '#commentBtn', function (event) {
+    showComments();
+});
+
+
 //Media Gallery
 $(document).on('click', '#attachment', function (event) {
+    showGallery(false);
+});
+
+//Media Gallery Mail
+$(document).on('click', '#attachmentMail', function (event) {
     showGallery(false);
 });
 
@@ -43,6 +54,7 @@ $(document).on('click', '.pop-up__close', function (event) {
 //        popUpVideo.classList.add('d-none')
 //    }
 //})
+
 window.addEventListener('click', (e) => {
     popUps.forEach(popUp => {
         if (e.target == popUp) {
@@ -59,9 +71,7 @@ function closePopup(e) {
 //Pop-up video player pause
 function popUpVideoPause(popUp) {
     if ($(popUp).closest('.pop-up').is(popUpVideo)) {
-        console.log($(popUpVideo).find('video')[0].paused);
         $(popUpVideo).find('video')[0].pause();
-        console.log($(popUpVideo).find('video')[0].paused);
     }
 }
 

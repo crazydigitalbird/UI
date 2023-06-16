@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Filters;
 using UI.Models;
@@ -14,14 +15,21 @@ namespace UI.Controllers
         private readonly IMailClient _mailClient;
         private readonly IOperatorClient _operatorClient;
         private readonly ISheetClient _sheetClient;
-        private readonly ILogger<ChatController> _logger;
+        private readonly ICommentClient _commentClient;
+        private readonly ILogger<ChatsController> _logger;
 
-        public ChatsController(IChatClient chatClient, IMailClient mailClient, IOperatorClient operatorClient, ISheetClient sheetClient, ILogger<ChatController> logger)
+        public ChatsController(IChatClient chatClient,
+            IMailClient mailClient,
+            IOperatorClient operatorClient,
+            ISheetClient sheetClient,
+            ICommentClient commentClient,
+        ILogger<ChatsController> logger)
         {
             _chatClient = chatClient;
             _mailClient = mailClient;
             _operatorClient = operatorClient;
             _sheetClient = sheetClient;
+            _commentClient = commentClient;
             _logger = logger;
         }
 
@@ -162,7 +170,7 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                return ViewComponent("Messages", new { sheet, idInterlocutor, idLastMessage, isNew});
+                return ViewComponent("Messages", new { sheet, idInterlocutor, idLastMessage, isNew });
             }
             return BadRequest();
         }
@@ -216,6 +224,21 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> PreviewPost(int sheetId, int idInterlocutor, long idPost)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                var post = await _chatClient.PreviewPostAsync(sheet, idInterlocutor, idPost);
+                if (post != null)
+                {
+                    return Ok(post);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Posts(int sheetId, int idInterlocutor, long idLastMessage)
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
@@ -237,12 +260,12 @@ namespace UI.Controllers
                     Message newMessage = new()
                     {
                         DateCreated = DateTime.Now,
-                        IdUserFrom = sheet.User.Id,
+                        IdUserFrom = int.Parse(sheet.Identity),
                         IdUserTo = idRegularUser,
                         Type = MessageType.Post,
                         Content = new Content
                         {
-                            TextPreview = text,
+                            Text = text,
                             Photos = photos,
                             Videos = videos
                         }
@@ -313,7 +336,7 @@ namespace UI.Controllers
                 Message newMessage = new()
                 {
                     DateCreated = DateTime.Now,
-                    IdUserFrom = sheet.User.Id,
+                    IdUserFrom = int.Parse(sheet.Identity),
                     IdUserTo = idRegularUser,
                     Type = messageType
                 };
@@ -336,6 +359,11 @@ namespace UI.Controllers
                     case MessageType.Photo:
                         var photoOptions = message.Split(';');
                         newMessage.Content = new Content { IdPhoto = int.Parse(photoOptions[0]), Url = photoOptions[1] };
+                        break;
+
+                    case MessageType.Photo_batch:
+                        var photos = JsonConvert.DeserializeObject<List<PhotoVideo>>(message);
+                        newMessage.Content = new Content { Photos = photos };
                         break;
 
                     case MessageType.Video:
@@ -365,14 +393,80 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> History(string cursor)
+        public async Task<IActionResult> History(string cursor, bool isNew = false, long idLastMessage = 0)
         {
             var sheets = await _operatorClient.GetSheetsAsync();
             if (sheets != null)
             {
-                return ViewComponent("History", new {sheets, cursor});
+                return ViewComponent("History", new { sheets, cursor, isNew,  idLastMessage});
             }
             return BadRequest();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SendMail(int sheetId, int idRegularUser, long idLastMessage, string text, List<PhotoVideo> videos, List<PhotoVideo> photos)
+        {
+            if (text?.Length >= 200 && text?.Length <= 3500)
+            {
+                var sheet = await _sheetClient.GetSheetAsync(sheetId);
+                if (sheet != null)
+                {
+                    Message newMessage = new()
+                    {
+                        DateCreated = DateTime.Now,
+                        IdUserFrom = int.Parse(sheet.Identity),
+                        IdUserTo = idRegularUser,
+                        Type = MessageType.Mail,
+                        Content = new Content
+                        {
+                            Message = text,
+                            Photos = photos,
+                            Videos = videos
+                        }
+                    };
+                    return ViewComponent("Message", new { sheet, newMessage });
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HistoryMail(int sheetId, int idRegularUser, long idCorrespondence = 0, int page = 1, int limit = 40)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                return ViewComponent("HistoryMail", new { sheet, idRegularUser, idCorrespondence, page, limit });
+            }
+            return BadRequest();
+        }
+
+        #region Comments
+
+        [HttpPost]
+        public async Task<int> GetNewDialogueCommentsCount(int sheetId, int idRegularUser)
+        {
+            var newCommentsCount = await _commentClient.GetNewSheetCommentsCountAsync(sheetId, idRegularUser);
+            return newCommentsCount;
+        }
+
+        [HttpPost]
+        public IActionResult Comments(int sheetId, int idRegularUser)
+        {
+            return ViewComponent("Comments", new { sheetId, idRegularUser });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment(int sheetId, int idRegularUser, string text)
+        {
+            var comment = await _commentClient.AddCommentAsync(sheetId, idRegularUser, text);
+            if (comment != null)
+            {
+                return Ok(comment);
+            }
+            return StatusCode(500, $"Error creating comment for sheet with id: {sheetId}");
+        }
+
+        #endregion
     }
 }

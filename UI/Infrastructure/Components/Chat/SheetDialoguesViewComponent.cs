@@ -75,6 +75,10 @@ namespace UI.Infrastructure.Components
                     criteria = $"{criteria},online";
                 }
                 messenger = await _chatClient.GetMessangerAsync(sheet, criteria, cursor, limit) ?? new Messenger();
+                if(messenger?.Dialogs?.Count < limit)
+                {
+                    messenger.Cursor = "";
+                }
                 //if(filter == "premium")
                 //{
                 //    ViewData["criteria"] = filter;
@@ -86,6 +90,10 @@ namespace UI.Infrastructure.Components
             else
             {
                 messenger = await _chatClient.GetMessangerPremiumAndTrashAsync(sheet, criteria, cursor, limit) ?? new Messenger();
+                if (messenger?.Dialogs?.Count < limit)
+                {
+                    messenger.Cursor = "";
+                }
                 messenger.Dialogs = messenger.Dialogs?.Where(d => !d.IsBlocked).ToList();
                 await _chatClient.GetManProfiles(sheet, messenger.Dialogs);
                 if(online)

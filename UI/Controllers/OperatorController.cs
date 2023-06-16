@@ -13,14 +13,12 @@ namespace UI.Controllers
         private readonly IOperatorClient _operatorClient;
         private readonly ISheetClient _sheetClient;
         private readonly IBalanceClient _balanceClient;
-        private readonly ICommentClient _commentClient;
 
-        public OperatorController(IOperatorClient operatorClient, ISheetClient sheetClient, IBalanceClient balanceClient, ICommentClient commentClient)
+        public OperatorController(IOperatorClient operatorClient, ISheetClient sheetClient, IBalanceClient balanceClient)
         {
             _operatorClient = operatorClient;
             _sheetClient = sheetClient;
             _balanceClient = balanceClient;
-            _commentClient = commentClient;
         }
 
         public async Task<IActionResult> Index()
@@ -42,17 +40,6 @@ namespace UI.Controllers
                 sheet.Balance = balances.Where(b => b.Sheet.Id == sheet.Id).Sum(ob => ob.Cash);
             }
 
-            //var sheetsIsNewComments = new List<int>();
-            //foreach (var sheet in sheets)
-            //{
-            //    var newCommentsCount = await _commentClient.GetNewSheetCommentsCountAsync(sheet.Id);
-            //    if(newCommentsCount > 0)
-            //    {
-            //        sheetsIsNewComments.Add(sheet.Id);
-            //    }
-            //}
-            //ViewData["sheetsIsNewComments"] = sheetsIsNewComments;
-
             return View(sheets);
         }
 
@@ -64,22 +51,6 @@ namespace UI.Controllers
             //    return Ok(balance);
             //}
             return StatusCode(500, $"Error getting a balance for a {interval}");
-        }
-
-        public IActionResult Comments(int sheetId)
-        {
-            return ViewComponent("Comments", sheetId);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddComment(int sheetId, string text)
-        {
-            var comment = await _commentClient.AddCommentAsync(sheetId, text);
-            if (comment != null)
-            {
-                return Ok(comment);
-            }
-            return StatusCode(500, $"Error creating comment for sheet with id: {sheetId}");
         }
     }
 }

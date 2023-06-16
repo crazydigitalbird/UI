@@ -22,7 +22,9 @@ namespace UI.Infrastructure.Components
             {
                 ViewData["newSendMessage"] = true;
                 var messanger = await _chatClient.GetMessagesChatAsync(sheet, idInterlocutor, 0, 10);
+#if !DEBUGOFFLINE
                 messanger.Dialogs.FirstOrDefault().Messages = messanger.Dialogs.FirstOrDefault().Messages?.Where(m => m.Id > idLastMessage).ToList();
+#endif
                 return View(messanger);
             }
             else

@@ -1,6 +1,5 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using UI.Infrastructure.API;
 using UI.Models;
 
@@ -19,15 +18,23 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(List<Sheet> sheets, string cursor = "", int limit = 40)
+        public async Task<IViewComponentResult> InvokeAsync(List<Sheet> sheets, string cursor = "", bool isNew = false, long idLastMessage = 0, int limit = 40)
         {
             ViewData["sheets"] = sheets;
+            ViewData["isNew"] = isNew;
+
             var idUsers = string.Join(",", sheets.Select(s => s.Identity));
             Messenger messenger = await _chatClient.GetHistoryAsync(idUsers, cursor, limit);
             if(messenger == null)
             {
                 return null;
             }
+
+            if (isNew)
+            {
+                messenger.Dialogs = messenger.Dialogs.TakeWhile(d => d.LastMessage.Id != idLastMessage).ToList();
+            }
+
             var idDialogues = messenger.Dialogs.Select(d => d.IdInterlocutor).Distinct().ToList();
             var sheetsInfo = await _chatClient.GetManProfiles(sheets.FirstOrDefault(), idDialogues);
 

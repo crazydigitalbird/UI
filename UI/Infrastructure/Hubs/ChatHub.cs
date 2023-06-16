@@ -1,6 +1,8 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Immutable;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Repository;
 
@@ -11,14 +13,16 @@ namespace UI.Infrastructure.Hubs
     {
         private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
         private readonly IOperatorClient _operatorClient;
+        private readonly IChatClient _chatClient;
         private readonly IRazorPartialToStringRenderer _renderer;
 
         //private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
 
-        public ChatHub(IDictionaryRepository<SheetDialogKey, NewMessage> dictionary, IOperatorClient operatorClient, IRazorPartialToStringRenderer renderer)
+        public ChatHub(IDictionaryRepository<SheetDialogKey, NewMessage> dictionary, IOperatorClient operatorClient, IChatClient chatClient, IRazorPartialToStringRenderer renderer)
         {
             _dictionary = dictionary;
             _operatorClient = operatorClient;
+            _chatClient = chatClient;
             _renderer = renderer;
         }
 
@@ -30,12 +34,24 @@ namespace UI.Infrastructure.Hubs
                 return;
             }
 
-            var allMessages = _dictionary.Active.Values.Where(v => sheets.Any(sheet => sheet.Id == v.SheetInfo.SheetId))
-                .OrderByDescending(m => m.Dialogue.LastMessage.DateCreated);
+            ImmutableArray<NewMessage> allMessagesImmutable = new ImmutableArray<NewMessage>();
+            Task[] changeNumberOfUsersOnlineTasks;
 
-            var body = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", allMessages);
+            lock (_dictionary)
+            {
+                var allMessages = _dictionary.Active.Values.Where(v => sheets.Any(sheet => sheet.Id == v.SheetInfo.SheetId) && !v.IsDeleted)
+                    .OrderByDescending(m => m.Dialogue.LastMessage.DateCreated);
+                allMessagesImmutable = ImmutableArray.CreateRange(allMessages);
+                changeNumberOfUsersOnlineTasks = _dictionary.Online.Select(kvp => Clients.Group($"{kvp.Key}").SendAsync("ChangeNumberOfUsersOnline", kvp.Key, kvp.Value)).ToArray();
+            }
+
+            //var timers = await _chatClient.Timers(allMessagesImmutable);
+
+            var body = await _renderer.RenderPartialToStringAsync("_AllNewMessagesFromAllMen", allMessagesImmutable); //, "timers", timers
 
             await Clients.Caller.SendAsync("ReceiveInitialAllNewMessagesFromAllMen", body);
+
+            await Task.WhenAll(changeNumberOfUsersOnlineTasks);
         }
 
         #region LiveChat Add and Remove Group

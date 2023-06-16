@@ -43,12 +43,13 @@
 <partial name="_InformationPersonPopupPartial" />
 <partial name="_CreateEcxlusivePostPopupPartial" />
 <partial name="_PreviewEcxlusivePostPopupPartial" />
+<partial name="_MailPartial" />
 <partial name="_MediaGalleryPopupPartial" />
 <partial name="_VideoPopupPartial" />
-<partial name="_MailPartial" />
+<partial name="_GiftPopupPartial" />
+<partial name="_CommentPopupPartial" />
 
 @section Scripts{
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js" asp-fallback-src="/lib/emoji-mart/dist/browser.js" asp-fallback-test="window.EmojiMart" asp-append-version="true"></script>
 
     @*<--- JQuery UI Sortabel Drag & Drop --->*@
@@ -82,6 +83,11 @@
     @*<--- PopUpPartials --->*@
     <script src="/js/Chats/popUp.js" asp-append-version="true"></script>
     <script src="/js/Chats/mediaGallery.js" asp-append-version="true"></script>
+    <script src="/js/Chats/emojiMail.js" asp-append-version="true"></script>
+    <script src="/js/Chats/mediaShow.js" asp-append-version="true"></script>
+
+    @*<--- CommentPopUpPartials --->*@
+    <script src="/js/Chats/comment.js" asp-append-version="true"></script>
 
     @*<--- ChatHub --->*@
     <script src="/lib/SignalR/signalr.min.js" asp-append-version="true"></script>

@@ -5,12 +5,19 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-COPY aspnetapp.pfx aspnetapp.pfx
+#EXPOSE 80
+#EXPOSE 443
+#RUN mkdir -p /etc/letsencrypt/live/dreamchat.io
 ENV ASPNETCORE_URLS=https://+:7000
+COPY aspnetapp.pfx aspnetapp.pfx
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="$aD15~123!@#"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
+
+#ENV ASPNETCORE_URLS=http://+:80;https://+:443
+#ENV ASPNETCORE_HTTPS_PORT=443
+#ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/etc/letsencrypt/live/dreamchat.io/fullchain.pem
+#ENV ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/etc/letsencrypt/live/dreamchat.io/privkey.pem
+
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src

@@ -5,17 +5,68 @@ $('#toSendMedia').on('click', function () {
     var isPost = $(popUpGallery).data('is-post');
     if (isPost) {
         $('.gallery-card.checkedCard').each(function () {
-            sendToPopUpPost(this);
+            sendToPopUp(this, true);
         });
         popUpGallery.classList.add('d-none');
         checkSendPost();
     }
     else {
-        var count = getCheckedCard();
-        if (allowedSendMessages(count)) {
+        //Проверяем окно галереи открыто из модального окна Mail или с основной стриницы чатов
+        if (!$(popUpMail).hasClass('d-none')) {
             $('.gallery-card.checkedCard').each(function () {
-                sendMedia(this);
+                sendToPopUp(this, false);
             });
+            popUpGallery.classList.add('d-none');
+        }
+        else {
+
+            if ($('.gallery-card.checkedCard').length === 1) {
+                if (allowedSendMessages(1)) {
+                    sendMedia($('.gallery-card.checkedCard')[0]);
+                }
+            }
+            else {
+                if (allowedSendMessages(1)) {
+                    sendPhotoBatch();
+                }
+                $('.gallery-card.checkedCard.video').each(function () {
+                    if (allowedSendMessages(1)) {
+                        sendMedia(this);
+                    }
+                });
+            }
+
+            /*var currentTabGallery = getCurrentTabGallery();*/
+            //if ($(`#${currentTabGallery}`).find('.gallery-card.checkedCard').length === 1) {
+            //    if (allowedSendMessages(1)) {
+            //        sendMedia($(`#${currentTabGallery}`).find('.gallery-card.checkedCard')[0]);
+            //    }
+            //}
+            //else if (currentTabGallery === 'videos') {
+            //    $('#videos').find('.gallery-card.checkedCard').each(function () {
+            //        if (allowedSendMessages(1)) {
+            //            sendMedia(this);
+            //        }
+            //    });
+            //}
+            //else if (currentTabGallery === 'photos') {
+            //    if (allowedSendMessages(1)) {
+            //        sendPhotoBatch($('#photos'));
+            //    }
+            //}
+            //else if (currentTabGallery === 'audio') {
+
+            //}
+            //else if (currentTabGallery === 'sentMedia') {
+            //    if (allowedSendMessages(1)) {
+            //        sendPhotoBatch($('#sentMedia'));
+            //    }
+            //    $('#sentMedia').find('.gallery-card.checkedCard.video').each(function () {
+            //        if (allowedSendMessages(1)) {
+            //            sendMedia(this);
+            //        }
+            //    });
+            //}
             popUpGallery.classList.add('d-none');
         }
     }
@@ -40,7 +91,37 @@ function sendMedia(galleryCard) {
     send(messageType, message);
 }
 
-function sendToPopUpPost(galleryCard) {
+function sendPhotoBatch() {
+    var photos = [];
+
+    $('.gallery-card.checkedCard.photo').each(function () {
+        var url = $(this).find('img')[0].src;
+        var id = $(this).data('id');
+        photos.push({ Id: id, Url: url });
+    });
+
+    if (photos.length > 0) {
+        var message = JSON.stringify(photos);
+        send('Photo_batch', message);
+    }
+}
+
+//function sendPhotoBatch($tab) {
+//    var photos = [];
+
+//    $tab.find('.gallery-card.checkedCard.photo').each(function () {
+//        var url = $(this).find('img')[0].src;
+//        var id = $(this).data('id');
+//        photos.push({ Id: id, Url: url });
+//    });
+
+//    if (photos.length > 0) {
+//        var message = JSON.stringify(photos);
+//        send('Photo_batch', message);
+//    }
+//}
+
+function sendToPopUp(galleryCard, isPost) {
     var url = $(galleryCard).find('img')[0].src;
     var isVideo = $(galleryCard).is('.video');
     var mediaId = $(galleryCard).data('id');
@@ -63,7 +144,12 @@ function sendToPopUpPost(galleryCard) {
                     <span class="remove-file" onclick="removeMediaFile(this)">&#x2715</span>
                   </div>`);
     }
-    $(post).find('.uploaded-file').append(file);
+    if (isPost) {
+        $post.find('.uploaded-file').append(file);
+    }
+    else {
+        $('#mailUploadedFile').append(file);
+    }
 }
 
 //Отправка выделенных медиа файлов на вкладку отправленные.
@@ -201,11 +287,7 @@ function addEventListenerToCard() {
         $(card).unbind('click');
         $(card).click(function (event) {
             if ($(event.target).parent().is('svg') || $(event.target).is('svg')) {
-                var videoUrl = $(event.target).closest('.video').data('video-url');
-                $videoPlayer = $('#videoPlayer');
-                $videoPlayer.find('source').attr('src', videoUrl);
-                $videoPlayer.find('video')[0].load();
-                $videoPlayer.removeClass('d-none');
+                showMediaInGallery(event.target);
             }
             else {
                 $(this).toggleClass('checkedCard');

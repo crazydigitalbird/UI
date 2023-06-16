@@ -1,0 +1,10 @@
+﻿@model List<IceProcess>
+
+@{
+    ViewData["body"] = "Trash";
+}
+
+@foreach (var ice in Model)
+{
+    <partial name="_IcePartial" model="@(Ice)ice" />
+}

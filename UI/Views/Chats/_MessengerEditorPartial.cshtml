@@ -1,18 +1,17 @@
 ﻿<div class="large-block__body-footer d-flex">
     <div class="textarea-block h-100 w-100">
         <div class="form-floating position-relative h-100">
-            <textarea id="newMessage" class="large-block__textarea rounded ps-5 pt-3 pb-3 text-white" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter()" onkeypress="sendEnter(event)"></textarea>
+            <textarea id="newMessage" class="large-block__textarea rounded h-100 ps-5 pt-3 pb-3 text-white" value="" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter()" onkeypress="sendEnter(event)"></textarea>
             <p class="textarea-counter text-white position-absolute">
                 <span id="messageLength">0</span>/300
             </p>
-
             <div class="textarea-icons-block d-flex flex-column position-absolute top-0 start-0 justify-content-between mt-3 ms-2">
                 
                 <!-- Emojis -->
                 <div>
                     <img id="btnEmojis" src="~/image/layout/Smile.svg" alt="Smile" class="textarea-icon rounded-circle" onclick="showHidenEmojis()">
                     <div class="position-relative">
-                        <div id="emojis" class="position-absolute bottom-100 start-100 ms-1 d-none">
+                        <div id="emojis" class="position-absolute d-none">
                         </div>
                     </div>
                 </div>
@@ -55,7 +54,7 @@
                 </button>
             </div>
 
-            <button id="createMail" type="button" class="btn answer-button attach-button rounded text-white">
+            <button id="createMail" type="button" class="btn answer-button attach-button rounded text-white ">
                 <img src="~/image/layout/Envelope Closed.svg" alt="">
                 <span class="answer-button__text answer-mail-text">Создать письмо</span>
             </button>

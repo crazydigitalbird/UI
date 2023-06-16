@@ -26,10 +26,28 @@ $(document).on('click', function (e) {
     }
 })
 
-function sendGift(e, giftId, giftName) {
+function createGift(e, giftId, giftName) {
     var giftUrl = $(e).find('img')[0].src;
-    var message = `${giftId};${giftUrl};${giftName}`
+
+    var $createGift = $('#createGift');
+    $createGift.data('gift-id', giftId);
+    $createGift.find('.giftUrl').attr('src', giftUrl);
+    $createGift.find('.giftName').text(giftName);
+    $createGift.find('textarea').val('');
+
+    $createGift.removeClass('d-none');
+}
+
+function sendGift() {
+    var $createGift = $('#createGift');
+    var giftId = $createGift.data('gift-id');
+    var giftUrl = $createGift.find('.giftUrl').attr('src');
+    var giftText = $createGift.find('textarea').val();
+
+    var message = `${giftId};${giftUrl};${giftText}`;
     send('Virtual_Gift', message);
+
+    $createGift.addClass('d-none');
 }
 
 function checkGifts(sheetId, idInterlocutor) {

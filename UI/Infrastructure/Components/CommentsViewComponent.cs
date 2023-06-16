@@ -15,10 +15,9 @@ namespace UI.Infrastructure.Components
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int sheetId)
+        public async Task<IViewComponentResult> InvokeAsync(int sheetId, int idRegularUser)
         {
-            var comments = await _commentClient.GetCommentsAsync( sheetId);
-            ViewData["sheetId"] = sheetId;
+            var comments = await _commentClient.GetCommentsAsync(sheetId, idRegularUser);
             return View(comments);
         }
     }

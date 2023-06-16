@@ -6,19 +6,19 @@
 
 <div class="information-man text-start">
     <div class="d-flex justify-content-between align-items-start">
-        <div class="d-flex">
+        <div class="d-flex w-100">
             <div class="avatar">
                 <img src="@Model.Personal.AvatarSmall" alt="" class="avatar__img">
             </div>
-            <div class="d-flex flex-column justify-content-between">
-                <div class="">
+            <div class="d-flex flex-column justify-content-between col-7">
+                <div class="col-8">
                     <p class="user__name">@($"{Model.Personal.Name}, {Model.Personal.Age}")</p>
                     <p class="data__year">@Model.Personal.DateBirth</p>
                 </div>
+                <div class="information__id">ID: <span>@Model.Id</span></div>
                 <p class="address">@Model.Personal.Country <span class="city">@Model.Personal.City</span></p>
             </div>
         </div>
-        <div class="information__id">ID: <span>@Model.Id</span></div>
     </div>
     <div class="information-man-box">
         <ul class="information-item">
@@ -144,9 +144,9 @@
         <div class="information-photos-box d-flex justify-content-start flex-wrap">
             @foreach (var photo in photos.Public)
             {
-            <div class="photo-man">
-                <img src="@photo.UrlStandart" alt="">
-            </div>
+                <div class="photo-man" data-url-original="@photo.urlOriginal" onclick="showProfilePhoto(this)">
+                    <img src="@photo.UrlXL" alt="">
+                </div>
             }
         </div>
     }

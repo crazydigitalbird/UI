@@ -4,7 +4,9 @@
 {
     foreach (var dialog in Model.Dialogs)
     {
-        <div name="dialogue" onclick="goToChatFromSheetDialogues(event)" class="accordion-body-item rounded w-100 py-2 row"
+        ViewData["sheetId"] = Model.SheetId;
+        <partial name="_SheetDialoguePartial" model="@dialog" />
+        @*<div name="dialogue" onclick="goToChatFromSheetDialogues(event)" class="accordion-body-item rounded w-100 py-2 row"
              data-id-interlocutor="@dialog.IdInterlocutor">
             <div class="accordion-body-image-info-block col-4 d-flex justify-content-start align-items-center ps-2 pe-0">
                 <img name="interlocutorAvatar" src="@dialog.Avatar" alt="No person" class="accordion-body-image rounded me-2">
@@ -49,7 +51,7 @@
             <div class="accordion-body-time-block col-3 d-flex align-items-center">
                 <p name="date-created" class="large-block__body-item-small-text" data-date="@dialog.DateUpdated.ToString("O")"></p>
             </div>
-        </div>
+        </div>*@
     }
 }
 else

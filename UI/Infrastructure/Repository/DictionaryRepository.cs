@@ -1,17 +1,15 @@
-﻿using Core.Models.Sheets;
+﻿using UI.Models;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using UI.Models;
 
 namespace UI.Infrastructure.Repository
 {
     public class DictionaryChatRepository : IDictionaryRepository<SheetDialogKey, NewMessage>
     {
-        private ConcurrentDictionary<SheetDialogKey, NewMessage> _dictionaryActive = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
+        private Dictionary<SheetDialogKey, NewMessage> _dictionaryActive = new Dictionary<SheetDialogKey, NewMessage>();
 
-        private ConcurrentDictionary<SheetDialogKey, NewMessage> _dictionaryOnline = new ConcurrentDictionary<SheetDialogKey, NewMessage>();
+        private ConcurrentDictionary<int, int> _dictionaryOnline = new ConcurrentDictionary<int, int>();
 
-        public ConcurrentDictionary<SheetDialogKey, NewMessage> Active
+        public Dictionary<SheetDialogKey, NewMessage> Active
         {
             get => _dictionaryActive;
             set
@@ -20,7 +18,7 @@ namespace UI.Infrastructure.Repository
             }
         }
 
-        public ConcurrentDictionary<SheetDialogKey, NewMessage> Online
+        public ConcurrentDictionary<int, int> Online
         {
             get => _dictionaryOnline;
             set
@@ -48,7 +46,7 @@ namespace UI.Infrastructure.Repository
 
         public int GetHashCode(SheetDialogKey key)
         {
-           return HashCode.Combine(key.SheetId, key.IdInterlocutor);
+            return HashCode.Combine(key.SheetId, key.IdInterlocutor);
         }
     }
 
@@ -56,6 +54,7 @@ namespace UI.Infrastructure.Repository
     {
         public SheetInfo SheetInfo { get; set; }
         public Dialogue Dialogue { get; set; }
+        public bool IsDeleted { get; set; }
 
         public bool Equals(NewMessage x, NewMessage y)
         {
@@ -64,7 +63,7 @@ namespace UI.Infrastructure.Repository
 
         public int GetHashCode(NewMessage message)
         {
-            if(message == null)
+            if (message == null)
             {
                 throw new ArgumentNullException(nameof(NewMessage));
             }

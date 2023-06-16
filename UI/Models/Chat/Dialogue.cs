@@ -147,7 +147,8 @@ namespace UI.Models
         Photo,
         Video,
         Post,
-        Virtual_Gift
+        Virtual_Gift,
+        Mail
     }
 
     public class MessagesAndMailsLeft

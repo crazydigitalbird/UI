@@ -1,6 +1,6 @@
 ﻿$(function () {
     const pickerOptions = {
-        onClickOutside: (event) => clickOutsideEmojis(event),
+        /*onClickOutside: (event) => clickOutsideEmojis(event),*/
         onEmojiSelect: (emoji) => pasteEmoji(emoji),
         dynamicWidth: false,
         theme: 'dark',
@@ -18,26 +18,30 @@
     $('#emojis').append(picker);
 });
 
-function clickOutsideEmojis(e) {
-    var $emojis = $("#emojis");
-    var $btnEmojis = $('#btnEmojis');
-    if (!$btnEmojis.is(e.target) && !$emojis.hasClass('d-none')) {
-        hidenEmojis();
-    }
-}
+//function clickOutsideEmojis(e) {
+//    var $emojis = $("#emojis");
+//    var $btnEmojis = $('#btnEmojis');
+//    if (!$btnEmojis.is(e.target) && !$emojis.hasClass('d-none')) {
+//        hidenEmojis();
+//    }
+//}
 
-function hidenEmojis() {
-    if (!$('#emojis').hasClass('d-none')) {
-        $('#emojis').addClass("d-none");
-    }
-}
+//function hidenEmojis() {
+//    if (!$('#emojis').hasClass('d-none')) {
+//        $('#emojis').addClass("d-none");
+//    }
+//}
+
+//function showHidenEmojis() {
+//    if ($('#emojis').hasClass('d-none')) {
+//        $('#emojis').removeClass("d-none");
+//    } else {
+//        hidenEmojis();
+//    }
+//}
 
 function showHidenEmojis() {
-    if ($('#emojis').hasClass('d-none')) {
-        $('#emojis').removeClass("d-none");
-    } else {
-        hidenEmojis();
-    }
+    $('#emojis').toggleClass("d-none");
 }
 
 function pasteEmoji(emoji) {
@@ -47,6 +51,9 @@ function pasteEmoji(emoji) {
     var textAfter = v.substring(cursorPos, v.length);
 
     $('#newMessage').val(textBefore + emoji.native + textAfter);
+    $('#newMessage').prop('selectionEnd', cursorPos + 2);
+    $('#newMessage').focus();
 
-    hidenEmojis();
+    changeCounter();
+    //hidenEmojis();
 }

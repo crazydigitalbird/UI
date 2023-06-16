@@ -47,11 +47,13 @@ namespace UI.Controllers
 
             if (sheets != null)
             {
+                var endDateTime = DateTime.Now;
+                var beginDatetime = endDateTime - TimeSpan.FromDays(30);
                 foreach (var sheet in sheets)
                 {
-                    var endDateTime = DateTime.Now;
-                    var beginDatetime = endDateTime - TimeSpan.FromDays(30);
+#if !DEBUGOFFLINE
                     sheet.Balance = (await _balanceClient.GetSheetBalance(sheet.Id, beginDatetime, endDateTime)).Sum(sb => sb.Cash);
+#endif
 
                     if (cabinets?.Any(c => c.Sheets?.Any(acs => acs.Sheet.Id == sheet.Id) ?? false) ?? false)
                     {

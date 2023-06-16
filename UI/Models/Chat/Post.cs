@@ -16,6 +16,8 @@
 
         public int PriceWithDiscount { get; set; }
 
+        public string Text { get; set; }
+
         public string TextPreview { get; set; }
 
         public List<PostMedia> Photos { get; set; } = new List<PostMedia>();

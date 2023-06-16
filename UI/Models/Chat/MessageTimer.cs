@@ -4,13 +4,13 @@
     {
         public DateTime DateViewed { get; set; }
 
-        //public DateTime DateUTC { get; set; }
+        public DateTime DateUTC { get; set; }
 
         public MessageType MessageType { get; set; }
 
         public int TimeLeft()
         {
-            var timeLeftSeconds = (DateTime.UtcNow - DateViewed).TotalSeconds;
+            var timeLeftSeconds = (DateUTC - DateViewed).TotalSeconds;
             switch (MessageType)
             {
                 case MessageType.System:
@@ -18,16 +18,15 @@
                     {
                         return 0;
                     }
-                    break;
+                    return (int)(TimeSpan.FromMinutes(5).TotalSeconds - timeLeftSeconds);
 
                 default:
                     if (timeLeftSeconds > TimeSpan.FromMinutes(2).TotalSeconds)
                     {
                         return 0;
                     }
-                    break;
+                    return (int)(TimeSpan.FromMinutes(2).TotalSeconds - timeLeftSeconds);
             }
-            return (int)timeLeftSeconds;
         }        
     }
 }

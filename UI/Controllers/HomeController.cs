@@ -30,7 +30,7 @@ namespace UI.Controllers
             if (User.IsInRole(Role.Operator.ToString()))
             {
 #if DEBUGOFFLINE
-                return RedirectToAction("Index", "Chats");
+                return RedirectToAction("Index", "Ice");
 #else
                 return RedirectToAction("Index", "Operator");
 #endif

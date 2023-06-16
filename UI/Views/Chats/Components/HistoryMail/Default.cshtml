@@ -1,0 +1,77 @@
+﻿@using Newtonsoft.Json;
+@model MailHistoryData
+
+@{
+    var ownerInfo = (SheetInfo)ViewData["ownerInfo"];
+    var regularInfo = (SheetInfo)ViewData["regularInfo"];
+}
+
+@if (Model?.Data?.History?.Count > 0)
+{
+    foreach (var mailMessage in Model.Data.History)
+    {
+        bool isOwner = mailMessage.IdUserFrom == ownerInfo.Id;
+        <div class="accordion-item tab-content-item py-1 rounded mb-2">
+            <div class="accordion-item-button bottom-blockbody__item d-flex flex-row text-white row p-1 rounded w-100 collapsed ms-0"
+         data-bs-toggle="collapse"
+         data-bs-target="@($"#flush-collapse-mail-{mailMessage.Id}")"
+         aria-expanded="true"
+         aria-controls="@($"flush-collapse-mail-{mailMessage.Id}")"
+         role="button">
+                <div class="other-user-block col-2 p-0">
+                    <div class="standart-image-block position-relative d-inline-block">
+                        <img name="ownerAvatar" src="@(isOwner ? ownerInfo?.Personal.AvatarSmall : regularInfo.Personal.AvatarSmall)" alt="avatar" class="standart-image rounded">
+                    </div>
+                    <p name="date-created" class="user-block-name-text small-text-wrapp" data-date="@mailMessage.DateCreated.ToString("O")"></p>
+                </div>
+                <div class="message-block col-6 text-start px-1 h-100">
+                    <p class="other-name-text">
+                        @(isOwner ? ownerInfo.Personal.Name : regularInfo.Personal.Name)
+                    </p>
+                    <p class="other-name-text-mutiline small-text-opacity">
+                        @mailMessage.Title
+                    </p>
+                </div>
+                <div class="user-block d-flex align-items-center col-4 px-1">
+                    <div class="standart-image-block position-relative px-1">
+                        <img name="interlocutorAvatar" src="@(isOwner ?  regularInfo.Personal.AvatarSmall : ownerInfo?.Personal.AvatarSmall)" alt="avatar" class="standart-image rounded">
+                    </div>
+                    <div class="user-block-info text-center d-grid w-100">
+                        <p name="interlocutorName" class="user-block-name-text">
+                            @(isOwner ? regularInfo.Personal.Name : ownerInfo.Personal.Name)
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="@($"flush-collapse-mail-{mailMessage.Id}")" class="accordion-collapse collapse show my-1 mx-3 text-white large-block__body-item-text">
+                @Html.Raw(mailMessage.Content)
+                <div id="mailFile" class="uploaded-file d-flex overflow-x-auto overflow-y-hidden">
+                    @if (mailMessage.Attachments?.Images?.Count > 0)
+                    {
+                        foreach (var image in mailMessage.Attachments.Images)
+                        {
+                            <div class="file" data-is-video="false" data-id="@image.Id" data-url-original="@image.UrlOriginal" onclick="showMediaInMail(this)">
+                                <img src="@image.UrlThumbnail" alt="">
+                            </div>
+                        }
+                    }
+                    @if (mailMessage.Attachments?.Videos?.Count > 0)
+                    {
+                        foreach (var video in mailMessage.Attachments.Videos)
+                        {
+                            <div class="file" data-is-video="true" data-id="@video.Id" onclick="showMediaInMail(this)">
+                                <img src="@video.UrlThumbnail"  alt="">
+                                <div class="video-post">
+                                    <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">
+                                        <path d="M17.5 35C7.83243 35 0 27.1676 0 17.5C0 7.83243 7.83243 0 17.5 0C27.1676 0 35 7.83243 35 17.5C35 27.1676 27.1676 35 17.5 35Z" fill="#7D6AF0"></path>
+                                        <path d="M24.5819 14.5531L16.1951 10.3141C14.0007 9.21723 11.3855 10.7884 11.3855 13.2192V21.6973C11.3855 24.1281 14.0007 25.6993 16.1951 24.6024L24.5819 20.3634C26.9867 19.148 26.9867 15.7685 24.5819 14.5531Z" fill="white"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}

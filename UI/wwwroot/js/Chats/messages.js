@@ -111,10 +111,16 @@ function scroll(oldHeight) {
 }
 
 function scrollToEndMessages() {
-    $messagesDiv.animate({ scrollTop: $messagesDiv.outerHeight(true) + 1000 }, 0);
+    $messagesDiv.animate({ scrollTop: $messagesDiv[0].scrollHeight }, 0);
     setTimeout(function () {
-        $messagesDiv.animate({ scrollTop: $messagesDiv.outerHeight(true) + 1000 }, 0);
+        $messagesDiv.animate({ scrollTop: $messagesDiv[0].scrollHeight }, 0);
     }, 1000);
+
+    //$messagesDiv.animate({ scrollTop: $messagesDiv.outerHeight(true) + 1000 }, 0);
+    //setTimeout(function () {
+    //    $messagesDiv.animate({ scrollTop: $messagesDiv.outerHeight(true) + 1000 }, 0);
+    //}, 1000);
+
     //$messagesDiv.scrollTop = $messagesDiv[].scrollHeight;
     //setTimeout(function () {
     //    $messagesDiv.scrollTop = $messagesDiv.scrollHeight;

@@ -26,7 +26,7 @@ namespace UI.Infrastructure.API
             try
             {
                 var sessionGuid = GetSessionGuid();
-                var response = await httpClient.GetAsync($"Agencies/Operators/StartSession?sessionGuid={sessionGuid}");
+                var response = await httpClient.PostAsync($"Agencies/Operators/StartSession?sessionGuid={sessionGuid}", null);
                 if (response.IsSuccessStatusCode)
                 {
                     return true;
@@ -53,7 +53,7 @@ namespace UI.Infrastructure.API
             try
             {
                 var sessionGuid = GetSessionGuid();
-                var response = await httpClient.GetAsync($"Agencies/Operators/StopSession?sessionGuid={sessionGuid}");
+                var response = await httpClient.PostAsync($"Agencies/Operators/StopSession?sessionGuid={sessionGuid}", null);
                 if (response.IsSuccessStatusCode)
                 {
                     return true;

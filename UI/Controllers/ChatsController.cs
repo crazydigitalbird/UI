@@ -12,21 +12,21 @@ namespace UI.Controllers
     public class ChatsController : Controller
     {
         private readonly IChatClient _chatClient;
-        private readonly IMailClient _mailClient;
+        private readonly IMediaClient _mediaClient;
         private readonly IOperatorClient _operatorClient;
         private readonly ISheetClient _sheetClient;
         private readonly ICommentClient _commentClient;
         private readonly ILogger<ChatsController> _logger;
 
         public ChatsController(IChatClient chatClient,
-            IMailClient mailClient,
+            IMediaClient mediaClient,
             IOperatorClient operatorClient,
             ISheetClient sheetClient,
             ICommentClient commentClient,
         ILogger<ChatsController> logger)
         {
             _chatClient = chatClient;
-            _mailClient = mailClient;
+            _mediaClient = mediaClient;
             _operatorClient = operatorClient;
             _sheetClient = sheetClient;
             _commentClient = commentClient;
@@ -398,7 +398,7 @@ namespace UI.Controllers
             var sheets = await _operatorClient.GetSheetsAsync();
             if (sheets != null)
             {
-                return ViewComponent("History", new { sheets, cursor, isNew,  idLastMessage});
+                return ViewComponent("History", new { sheets, cursor, isNew, idLastMessage });
             }
             return BadRequest();
         }
@@ -437,6 +437,36 @@ namespace UI.Controllers
             if (sheet != null)
             {
                 return ViewComponent("HistoryMail", new { sheet, idRegularUser, idCorrespondence, page, limit });
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OriginalUrlMedia(int sheetId, string urlPreview)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                string originalUrl = await _mediaClient.GetOriginalUrlPhoto(sheet, urlPreview);
+                if (!string.IsNullOrWhiteSpace(originalUrl))
+                {
+                    return Ok(originalUrl);
+                }
+            }
+            return BadRequest();            
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OriginalUrlVideo(int sheetId, string idVideo)
+        {
+            var sheet = await _sheetClient.GetSheetAsync(sheetId);
+            if (sheet != null)
+            {
+                string originalUrl = await _mediaClient.GetOriginalUrlVideo(sheet, idVideo);
+                if (!string.IsNullOrWhiteSpace(originalUrl))
+                {
+                    return Ok(originalUrl);
+                }
             }
             return BadRequest();
         }

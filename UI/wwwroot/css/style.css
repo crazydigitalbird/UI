@@ -10,7 +10,7 @@
 body {
     font-family: 'Inter', sans-serif;
     /* background: #454563; */
-    background: #252548;
+    background: #1E1E42;
     font-size: calc(10px + (16 - 10) * ((100vw - 1366px) / (1920 - 1366)));
 }
 
@@ -244,8 +244,6 @@ body {
 }
 
 .user-block {
-    /* width: 144px;
-    height: 63.24px; */
     background: #252548;
     border-radius: 8px;
 }
@@ -454,11 +452,7 @@ body {
     color: #7D6AF0;
 }
 
-[name=searchSheetsDialogues] {
-    height: 10%;
-}
-
-.search-block__input, .search-block__input:focus {
+/*.search-block__input, .search-block__input:focus {
     background: #252548;
     border: 1px solid #454563;
     color: #fff;
@@ -485,9 +479,7 @@ body {
     top: calc(6px + (7 - 6) * ((100vw - 1366px) / (1920 - 1366)));
     right: 2%;
     font-size: calc(12px + (14 - 12) * ((100vw - 1366px) / (1920 - 1366)));
-}
-
-
+}*/
 .status-block-item {
 }
 

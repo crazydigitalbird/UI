@@ -6,6 +6,8 @@ namespace UI.Infrastructure.Repository
     {
         Dictionary<K, T> Active { get; set; }
 
-        ConcurrentDictionary<int, int> Online { get; set; }
+        ConcurrentDictionary<int, int> CounterManOnline { get; set; }
+
+        ConcurrentDictionary<int, bool> SheetsIsOnline { get; set; }
     }
 }

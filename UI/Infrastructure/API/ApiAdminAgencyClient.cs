@@ -31,13 +31,21 @@ namespace UI.Infrastructure.API
             {
                 var response = await httpClient.GetAsync($"Agencies/GetAgencySheets?agencyId={agencyId}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
-                {                    
+                {
+                    string s = await response.Content.ReadAsStringAsync();
                     var sheets = (await response.Content.ReadFromJsonAsync<IEnumerable<Sheet>>()).Where(s => s.IsActive);
                     var sheetsView = sheets.Select(s => (SheetView)s).ToList();
-                    foreach (var sheetView in sheetsView)
-                    {
-                        sheetView.Operators = (await GetSheetAgencyOperators(sheetView.Id)).Count();
-                    }
+
+                    //Dictionary<int, Task<IEnumerable<AgencyOperatorSession>>> tasks = new Dictionary<int, Task<IEnumerable<AgencyOperatorSession>>>();
+                    //foreach (var sheetView in sheetsView)
+                    //{
+                    //    tasks.Add(sheetView.Id, GetSheetAgencyOperators(sheetView.Id));
+                    //}
+
+                    //await Task.WhenAll(tasks.Values);
+
+                    //sheetsView.ForEach(s => s.Operators = tasks[s.Id].Result?.Count() ?? 0);
+
                     return sheetsView;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -86,6 +94,33 @@ namespace UI.Infrastructure.API
             return 0;
         }
 
+        public async Task<bool> DeleteSheet(int sheetId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            try
+            {
+                var response = await httpClient.DeleteAsync($"Sheets/DeleteSheet?sheedId={sheetId}&sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error deleting sheet whith id {sheetId}.HttpStatusCode: {httpStatusCode}", sheetId, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting sheet whith id {sheetId}.", sheetId);
+            }
+            return false;
+        }
+
         public async Task<IEnumerable<string>> GetShifts()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -112,33 +147,6 @@ namespace UI.Infrastructure.API
                 _logger.LogError(ex, "Error getting all the shifts.");
             }
             return null;
-        }
-
-        public async Task<bool> DeleteSheet(int sheetId)
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
-            try
-            {
-                var response = await httpClient.DeleteAsync($"Sheets/DeleteSheet?sheedId={sheetId}&sessionGuid={sessionGuid}");
-                if (response.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    SignOut();
-                }
-                else
-                {
-                    _logger.LogWarning("Error deleting sheet whith id {sheetId}.HttpStatusCode: {httpStatusCode}", sheetId, response.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting sheet whith id {sheetId}.", sheetId);
-            }
-            return false;
         }
 
         public async Task<bool> ChangeShift(int sheetId, int shiftId)
@@ -644,6 +652,37 @@ namespace UI.Infrastructure.API
             return false;
         }
 
+        public async Task<List<ApplicationUser>> GetAgencyUsers(int agencyId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var sessionGuid = GetSessionGuid();
+
+                var response = await httpClient.GetAsync($"Agencies/GetAgencyMembers?agencyId={agencyId}&sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var agencyMembers = await response.Content.ReadFromJsonAsync<List<AgencyMember>>();
+                    var users = agencyMembers.Select(am => (ApplicationUser)am).ToList();
+
+                    return users;
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting users agency with Id: {agencyId}. HttpStatsCode: {httpStatusCode}", agencyId, response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting users agency with Id: {agencyId}.", agencyId);
+            }
+            return null;
+        }
+
         public async Task<List<ApplicationUser>> GetNonAgencyUsers()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -699,6 +738,42 @@ namespace UI.Infrastructure.API
             {
                 _logger.LogWarning("Error adding user {email} in agency with Id: {agencyId}. HttpStatsCode: {httpStatusCode}", user.Email, agencyId, responseMember.StatusCode);
             }
+        }
+
+        public async Task<bool> AddUserAgency(int agencyId, ApplicationUser user)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var sessionGuid = GetSessionGuid();
+                var responseMember = await httpClient.PostAsync($"Agencies/AddAgencyMember?agencyId={agencyId}&userId={user.Id}&sessionGuid={sessionGuid}", null);
+                if (responseMember.IsSuccessStatusCode)
+                {
+                    var newMember = await responseMember.Content.ReadFromJsonAsync<AgencyMember>();
+
+                    if (user.Role == Role.AdminAgency)
+                    {
+                        await SetAdminAgency(httpClient, sessionGuid, agencyId, newMember.Id);
+                    }
+                    else if (user.Role == Role.Operator)
+                    {
+                        await SetOperatorAgency(httpClient, sessionGuid, agencyId, newMember.Id);
+                    }
+                }
+                else if (responseMember.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error adding user {email} in agency with Id: {agencyId}. HttpStatsCode: {httpStatusCode}", user.Email, agencyId, responseMember.StatusCode);
+                }
+            }
+            catch
+            {
+
+            }
+            return false;
         }
 
         private async Task SetAdminAgency(HttpClient httpClient, string sessionGuid, int agencyId, int memberId)
@@ -811,5 +886,6 @@ namespace UI.Infrastructure.API
         Task<bool> UpdateAgency(AgencyView agency, List<ApplicationUser> originalUsers);
         Task<List<ApplicationUser>> GetNonAgencyUsers();
         Task AddUserAgency(HttpClient httpClient, string sessionGuid, int agencyId, ApplicationUser user);
+        Task<bool> AddUserAgency(int agencyId, ApplicationUser user);
     }
 }

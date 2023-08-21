@@ -1,6 +1,6 @@
 ﻿$(function () {
     const pickerOptions = {
-        /*onClickOutside: (event) => clickOutsideEmojis(event),*/
+        onClickOutside: (event) => clickOutsideEmojis(event),
         onEmojiSelect: (emoji) => pasteEmoji(emoji),
         dynamicWidth: false,
         theme: 'dark',
@@ -18,19 +18,19 @@
     $('#emojis').append(picker);
 });
 
-//function clickOutsideEmojis(e) {
-//    var $emojis = $("#emojis");
-//    var $btnEmojis = $('#btnEmojis');
-//    if (!$btnEmojis.is(e.target) && !$emojis.hasClass('d-none')) {
-//        hidenEmojis();
-//    }
-//}
+function clickOutsideEmojis(e) {
+    var $btnEmojis = $('#btnEmojis');
+    var $newMessage = $('#newMessage');
+    if (!$btnEmojis.is(e.target) && !$newMessage.is(e.target)) {
+        hidenEmojis();
+    }
+}
 
-//function hidenEmojis() {
-//    if (!$('#emojis').hasClass('d-none')) {
-//        $('#emojis').addClass("d-none");
-//    }
-//}
+function hidenEmojis() {
+    if (!$('#emojis').hasClass('d-none')) {
+        $('#emojis').addClass("d-none");
+    }
+}
 
 //function showHidenEmojis() {
 //    if ($('#emojis').hasClass('d-none')) {

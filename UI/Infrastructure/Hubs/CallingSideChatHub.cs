@@ -68,5 +68,11 @@ namespace UI.Infrastructure.Hubs
 
             await _hubContext.Clients.Group($"{sheetId}-{idInterlocutor}").SendAsync("NewMessage", sheetId, idInterlocutor, idNewMessage);
         }
+
+        public Task ChangeSheetsStatusOnline(ConcurrentDictionary<int, bool> sheetsIsOnline)
+        {
+            var tasks = sheetsIsOnline.Select(kvp => _hubContext.Clients.Group($"{kvp.Key}").SendAsync("ChangeSheetIsOnline", kvp.Key, kvp.Value)).ToArray();
+            return Task.WhenAll(tasks);
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace UI.Models
 
         public string LastName { get; set; }
 
+        public string Avatar { get; set; }
+
         public decimal Balance { get; set; }
 
         public int Photo { get; set; }
@@ -34,6 +36,8 @@ namespace UI.Models
 
         public Cabinet Cabinet { get; set; }
 
+        public DateTime Created { get; set; }
+
         public static explicit operator SheetView(Sheet sheet)
         {
             var sheetView = new SheetView();
@@ -42,6 +46,8 @@ namespace UI.Models
             sheetView.SheetId = SheetInfo.Id;
             sheetView.FirstName = SheetInfo.Personal.Name;
             sheetView.LastName = SheetInfo.Personal.LastName;
+            sheetView.Avatar = SheetInfo.Personal.AvatarSmall;
+            sheetView.Created = sheet.Created;
             return sheetView;
         }
     }

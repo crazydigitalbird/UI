@@ -132,6 +132,25 @@ namespace UI.Infrastructure.API
             return false;
         }
 
+        public async Task<User> AddUserAsync(string login, string email, string password)
+        {
+            var client = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var response = await client.PutAsync($"Users/AddUser?userLogin={login}&userEmail={email}&userPassword={password}", null);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+
+                    return await response.Content.ReadFromJsonAsync<User>();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "An error occured during registration: {ErrorMessage}. Login: {login}. Email: {email}.", ex.Message, login, email);
+            }
+            return null;
+        }
+
         public async Task<HttpResponseMessage> ChangePassowrdAsync(string password, string newPassword)
         {
             var client = _httpClientFactory.CreateClient("api");
@@ -167,6 +186,7 @@ namespace UI.Infrastructure.API
     {
         Task<ApplicationUser> LogInAsync(string login, string password);
         Task<bool> RegisterAsync(string login, string email, string password);
+        Task<User> AddUserAsync(string login, string email, string password);
         Task<HttpResponseMessage> ChangePassowrdAsync(string password, string newPassword);
         Task<HttpResponseMessage> PasswordRecoveryAsync(string email);
         Task SetRoleAsync(ApplicationUser user);

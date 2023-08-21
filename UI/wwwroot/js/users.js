@@ -1,4 +1,36 @@
-﻿function deleteUser(e, userId) {
+﻿//document.getElementById('pwd').onfocus = function () {
+//    document.getElementById('pwd').removeAttribute('readonly');
+//}
+
+const popUpAddUser = document.querySelector('.pop-up.addUser');
+
+//Show pop-up addUser
+$(document).on('click', '#btnAddUser', function (event) {
+    popUpAddUser.classList.remove('d-none');
+});
+
+//Close pop-up addUser
+$(document).on('click', '.pop-up__close', function (event) {
+    closePopUpAddUser()
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target == popUpAddUser) {
+        closePopUpAddUser()
+    }
+});
+
+function closePopUpAddUser() {
+    popUpAddUser.classList.add('d-none');
+    clearFromAddUser();
+}
+
+function clearFromAddUser() {
+    document.getElementById('formAddUser').reset();
+    document.getElementById('formAddUser').classList.remove('was-validated');
+}
+
+function deleteUser(e, userId) {
     var tr = e.target.closest('tr');
 
     var option = document.createElement('option');
@@ -38,6 +70,68 @@ function addUser(e) {
         $optionDatalist.remove();
         updateCounterUsers();
     }
+}
+
+function successAddUser(user) {
+    clearFromAddUser();
+
+    var index = $('tbody > tr:not(.tr-placeholder)').length;
+
+    var originalUser = `<input type="hidden" name="originalUsers[${index}].Id" value="${user.id}" />
+                        <input type="hidden" name="originalUsers[${index}].Role" value="${user.role}" />`;            
+
+    $('#originalUsersDiv').append(originalUser);
+
+    let selectedAdminAgency = user.role === 'AdminAgency' ? 'selected' : '';
+    let selectedOperator = user.role === 'Operator' ? 'selected' : '';
+
+    var $row = $(`<tr>
+                    <input type="hidden" name="Users[${index}].Id" value="${user.id}">
+                            <td name="email">${user.email}</td>
+                            <td class="w-25">
+                                <select class="form-select form-select-sm" name="Users[${index}].Role">
+                                    <option ${selectedAdminAgency} value="1">AdminAgency</option>
+                                    <option ${selectedOperator} value="2">Operator</option>
+                                </select>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(event, ${user.id})">Delete</button>
+                            </td>
+                        </tr>`);
+    $('table').append($row);
+    updateCounterUsers();
+
+    closePopUpAddUser();
+
+    $('#toastBody').html(`The ${user.email} has been added successfully`)
+
+    var toast = $('#toast');
+
+    if (toast.hasClass('bg-danger')) {
+        toast.removeClass('bg-danger');
+    }
+
+    if (!toast.hasClass('bg-success')) {
+        toast.addClass('bg-success');
+    }
+
+    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+}
+
+function failureAddUser(error) {
+    $('#toastBody').html(error.responseText)
+
+    var toast = $('#toast');
+
+    if (toast.hasClass('bg-success')) {
+        toast.removeClass('bg-success');
+    }
+
+    if (!toast.hasClass('bg-danger')) {
+        toast.addClass('bg-danger');
+    }
+
+    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
 }
 
 function updateCounterUsers() {

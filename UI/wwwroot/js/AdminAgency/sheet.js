@@ -73,3 +73,102 @@ function deleteSheets() {
     })
     $("#modalDeleteSheets").modal('hide');
 }
+
+$("#addSheet").click(function () {
+    document.getElementById('formAddSheet').reset();
+    hidenAlert();
+    $("#modalAddSheet").modal('show');
+});
+
+function successAddSheet(sheet) {
+    hidenAlert();
+
+    var userInfo = JSON.parse(sheet.info);
+
+    var fullName = '';
+    if (userInfo.Personal.Name) {
+        fullName = userInfo.Personal.Name;
+    }
+    if (userInfo.Personal.LastName) {
+        fullName = `${fullName} ${userInfo.Personal.LastName}`;
+    }
+
+    //let $newRow = { id: 1, name: '123' };
+    //$('#adminAgencyTable').bootstrapTable('append', $newRrow);
+
+    var totalRows = $('#adminAgencyTable').bootstrapTable('getOptions').totalRows;
+
+    $('#adminAgencyTable').bootstrapTable('insertRow', {
+        index: totalRows,
+        row: {
+            number: totalRows + 1,
+            status: '<i class="fa-solid fa-circle text-success"></i>',
+            name: userInfo.Personal.Name,
+            lastName: userInfo.Personal.LastName,
+            sheetId: userInfo.Id,
+            id: sheet.id,
+            balance: `<div class="row justify-content-center">
+                        <div class="col-6 text-end">
+                            0$
+                        </div>
+                        <div class="col-auto ps-0">
+                            <i class="fa-solid fa-signal fa-signal-gradient"></i>
+                        </div>
+                      </div>`,
+            media: 'media',
+            operators: 0,
+            group: '',
+            shift: '',
+            cabinet: ''
+        }
+    });
+
+    $("#modalAddSheet").modal('hide');
+
+    $('#adminAgencyTable').bootstrapTable('scrollTo', 'bottom');
+
+    showToast('bg-success', 'bg-danger', `The  ${fullName} sheet has been added successfully`);
+}
+
+function failureAddSheet(error) {
+    showAlert('bg-danger', 'bg-success', error.responseText);
+}
+
+function showAlert(addClass, removeClass, text) {
+    var $alert = $('#alertAddSheet');
+    if (!$alert.hasClass(addClass)) {
+        $alert.addClass(addClass);
+    }
+    if ($alert.hasClass(removeClass)) {
+        $alert.removeClass(removeClass);
+    }
+    if ($alert.hasClass('d-none')) {
+        $alert.removeClass('d-none');
+    }
+    $alert.text(text);
+}
+
+function hidenAlert() {
+    var $alert = $('#alertAddSheet');
+    $alert.text('');
+
+    if (!$alert.hasClass('d-none')) {
+        $alert.addClass('d-none');
+    }
+}
+
+function showToast(addClass, removeClass, text) {
+    $('#toastBody').html(text)
+
+    var toast = $('#toast');
+
+    if (toast.hasClass(removeClass)) {
+        toast.removeClass(removeClass);
+    }
+
+    if (!toast.hasClass(addClass)) {
+        toast.addClass(addClass);
+    }
+
+    mdb.Toast.getInstance(toast).show();
+}

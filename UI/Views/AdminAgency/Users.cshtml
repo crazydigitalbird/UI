@@ -8,7 +8,9 @@
 
     <partial name="_AlertsPartial" />
 
-    <form method="post" asp-controller="AdminAgency" asp-action="Users">
+    <partial name="_AddUserPartial" />
+
+    <form id="formAgency" method="post" asp-controller="AdminAgency" asp-action="Users">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="Name" />
         <input type="hidden" name=returnUrl value="@ViewData["returnUrl"]" />
@@ -21,7 +23,10 @@
     </form>
 </div>
 
+<partial name="_Toast" />
+
 @section Scripts{
     <partial name="_validationScriptsPartial" />
-    <script src="~/js/users.js"></script>
+    <script src="~/js/users.js" asp-append-version="true"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 }

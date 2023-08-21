@@ -1,0 +1,64 @@
+﻿<div class="text-end mb-3">
+    <button id="btnAddUser" type="button" class="btn btn-outline-success">
+        <i class="fa-plus fa-xl pe-1"></i>
+        Add user
+    </button>
+</div>
+
+<div class="pop-up addUser d-none">
+    <div class="pop-up-content d-flex bd-highlight flex-column w-25">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="pop-up__close">
+            <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+
+        <p class="text-center mb-3">Добавить пользователя</p>
+
+        <input id="password" type="password" class="d-none" name="fakepassword" />
+
+        <form id="formAddUser" class="needs-validation" asp-action="AddUser" asp-controller="AdminAgency" method="post" data-ajax="true" data-ajax-success="successAddUser" data-ajax-failure="failureAddUser" data-ajax-loading="" novalidate="novalidate">
+
+            <input type="hidden" name="agencyId" value="@(ViewData["agencyId"] ?? 0)" />
+
+            <div class="mb-3 pb-1">
+                <div class="form-outline">
+                    <input type="text" class="form-control no-validate" id="userName" name="userName" autocomplete="off" />
+                    <label class="form-label" for="userName">Name</label>
+                </div>
+            </div>
+
+            <div class="mb-3 pb-1">
+                <div class="form-outline">
+                    <input type="email" class="form-control" id="email" name="email" autocomplete="off" required />
+                    <label class="form-label" for="email">Email</label>
+                    <div class="invalid-feedback">Please choose a email</div>
+                </div>
+            </div>
+
+            <div class="mb-3 pb-1">
+                <div class="form-outline">
+                    <input type="text" class="form-control" id="pwd" name="pwd" autocomplete="new-password" required />
+                    <label class="form-label" for="pwd">Password</label>
+                    <div class="invalid-feedback">Please choose a password</div>
+                </div>
+            </div>
+
+            <div class="mb-3 pb-1">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="role" id="roleOperator" value="Operator" checked />
+                    <label class=form-check-label for="roleOperator">Оператор</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="role" id="roleAdminAgency" value="AdminAgency" />
+                    <label class=form-check-label for="roleAdminAgency">Администратор агенства</label>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-outline-success" name="submitAddUser">Добавить</button>
+            </div>
+
+        </form>
+    </div>
+</div>

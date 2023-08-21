@@ -8,7 +8,9 @@
 
     <partial name="_AlertsPartial" />
 
-    <form id="form" method="Post" asp-controller="Admin" asp-action="@(Model?.Id > 0 ? "EditAgency" : "AddAgency")">
+    <partial name="_AddUserPartial" />
+
+    <form id="formAgency" method="Post" asp-controller="Admin" asp-action="@(Model?.Id > 0 ? "EditAgency" : "AddAgency")">
 
         @if (TempData["Error"] != null)
         {
@@ -67,7 +69,10 @@
 
 </div>
 
+<partial name="_Toast" />
+
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/users.js"></script>
+    <script src="~/js/users.js" asp-append-version="true"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 }

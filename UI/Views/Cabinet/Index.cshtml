@@ -10,9 +10,9 @@
 
     <div class="col-md-12 col-lg-4 mb-3">
 
-        <div id="toolbarTableCabinets" class="row mb-3">
+        <div id="toolbarTableCabinets" class="row mb-3 pt-3">
             <div class="col pe-0">
-                <div class="input-group">
+                <div class="input-group rounded">
                     <span class="input-group-text border-0" id="search-addon-cabinets">
                         <i class="fa-solid fa-search"></i>
                     </span>
@@ -30,12 +30,15 @@
         <div class="row">
             <div class="col-12 tableFixedHead">
                 <table id="tableCabinets" class="table table-sm table-bordered table-hover text-center">
-                    <thead class="table-secondary">
+                    <thead>
                         <tr>
                             <th style="width: 0px;">Id</th>
                             <th class="w-100">Cabinet</th>
                             <th class="text-truncate">Total Sheets</th>
                             <th class="text-truncate">Total Users</th>
+                        </tr>
+                        <tr>
+                            <th class="p-0" colspan="4"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,9 +72,9 @@
     </div>
 
     <div class="col-md-12 col-lg-8">
-        <div class="row mb-3">
+        <div class="row mb-3 pt-3">
             <div class="col pe-0">
-                <div class="input-group">
+                <div class="input-group rounded">
                     <span class="input-group-text border-0" id="search-addon-users">
                         <i class="fa-solid fa-search"></i>
                     </span>
@@ -86,10 +89,10 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row h-100">
             <div class="col-12 tableFixedHead">
                 <table id="tableUsers" class="table table-sm table-bordered table-hover text-center">
-                    <thead class="table-secondary">
+                    <thead>
                         <tr>
                             <th>№</th>
                             <th>Role</th>
@@ -97,6 +100,9 @@
                             <th>Mail</th>
                             <th>Cabinets</th>
                             <th>Rights</th>
+                        </tr>
+                        <tr>
+                            <th class="p-0" colspan="6"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,14 +117,14 @@
                                     <td>operator</td>
                                     <td>@osv.Operator.Member.User.Login</td>
                                     <td>@osv.Operator.Member.User.Email</td>
-                                    <td name="cabinets" class="text-start">
+                                    <td name="cabinets" class="text-start py-1">
                                         @if (userCabinets.Count() < 5)
                                         {
                                             <div class="d-grid d-md-block gap-1">
                                                 @foreach (var cabinet in userCabinets)
                                                 {
                                                     <div id="@($"container_{osv.Operator.Id}_{cabinet.Id}")" class="btn-group" style="display: contents;">
-                                                        <button id="@($"{osv.Operator.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 dropdown-toggle btn-size-fixed" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">@($"C{cabinet.Id}")</button>
+                                                        <button id="@($"{osv.Operator.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded dropdown-toggle btn-size-fixed py-1" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">@($"C{cabinet.Id}")</button>
                                                         <ul class="dropdown-menu dropdown-menu-width" aria-labelledby="@($"{osv.Operator.Id}_{cabinet.Id}")">
                                                             <li class="btn-size-fixed bg-danger">
                                                                 <button class="dropdown-item btn bg-danger text-center" onclick="unbindCabinetToUser(@cabinet.Id, @osv.Operator.Id)">
@@ -128,7 +134,7 @@
                                                         </ul>
                                                     </div>
                                                 }
-                                                <button type="button" class="btn btn-sm btn-success btn-rounded my-md-1 btn-size-fixed" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
+                                                <button type="button" class="btn btn-sm btn-success btn-rounded btn-size-fixed p-1" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </button>
                                             </div>
@@ -136,8 +142,8 @@
                                         else
                                         {
                                             <div class="row">
-                                                <div class="dropdown" style="max-width: 455px;">
-                                                    <a role="button" href="#" id="@($"button_dropdown_{osv.Operator.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 btn-block dropdown-toggle" data-mdb-toggle="dropdown" aria-expanded="false">@($"Total Cabinets {userCabinets.Count()}")</a>
+                                                <div class="dropdown" style="width: 200px;">
+                                                    <a role="button" href="#" id="@($"button_dropdown_{osv.Operator.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded btn-block dropdown-toggle py-1" data-mdb-toggle="dropdown" aria-expanded="false">@($"Total Cabinets {userCabinets.Count()}")</a>
                                                     <ul class="dropdown-menu w-100" aria-labelledby="@osv.Operator.Id">
                                                         @foreach (var cabinet in userCabinets)
                                                         {
@@ -205,15 +211,15 @@
                     <input type="hidden" id="userName" name="userName" />
                     @foreach (var c in Model)
                     {
-                        <div class="form-check">
+                        <div class="form-check d-flex align-items-center">
                             <input class="form-check-input" type="checkbox" id="@c.Id" name="cabinets" value="@c.Id" />
                             <label class="form-check-label" for="@c.Id">@c.Name</label>
                         </div>
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
-                    <button id="btnBindCabinets" type="submit" class="btn btn-success">
+                    <button type="button" class="btn btn-sm btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button id="btnBindCabinets" type="submit" class="btn btn-sm btn-success">
                         <i class="fa-solid fa-save"></i>
                         Save
                         <span id="spinnerBindCabinets" class="spinner-border spinner-border-sm" style="display: none;"></span>

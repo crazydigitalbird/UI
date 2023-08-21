@@ -25,9 +25,11 @@ namespace UI.Infrastructure.Services
         private readonly IAdminClient _adminClient;
         private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
 
+#if DEBUG
         Stopwatch stopwatch1 = new Stopwatch();
         Stopwatch stopwatch2 = new Stopwatch();
         int count = 0;
+#endif
 
         public ChatServices(IServiceProvider serviceProvider,
             IHttpClientFactory httpClientFactory,
@@ -88,7 +90,13 @@ namespace UI.Infrastructure.Services
 
         public async Task GetNewMessage()
         {
+#if DEBUG
             stopwatch1.Start();
+#endif
+
+#if DEBUGOFFLINE
+            return;
+#endif
             using var scope = _serviceProvider.CreateScope();
             var _chatHub = scope.ServiceProvider.GetRequiredService<IChatHub>();
 
@@ -114,9 +122,9 @@ namespace UI.Infrastructure.Services
             var sheetIdDialogsActiveTasks = sheetIdDialogsActiveTasksIEnumerable.ToArray();
 
             await Task.WhenAll(sheetIdDialogsOnlineTasks.Concat(sheetIdDialogsActiveTasks));
-
+#if DEBUG
             stopwatch2.Start();
-
+#endif
             #region Processing online
             ////Исключаем
             //onlineSheetsDialogsTemp = new ConcurrentDictionary<SheetDialogKey, NewMessage>(onlineSheetsDialogsTemp.Except(activeSheetsDialogsTemp));
@@ -232,19 +240,22 @@ namespace UI.Infrastructure.Services
             var deleteTask = _chatHub.DeleteDialogs(removeActiveSheetDialogs);
             var addTask = _chatHub.AddDialogs(newActiveSheetDialogsImmutable);
             var updateTask = _chatHub.UpdateDialogs(oldUpdateActiveSheetDialogs, newUpdateActiveSheetDialogsImmutable);
-            var changeNumberOfUsersOnlineTask = _chatHub.ChangeNumberOfUsersOnline(_dictionary.Online);
+            var changeNumberOfUsersOnlineTask = _chatHub.ChangeNumberOfUsersOnline(_dictionary.CounterManOnline);
+            var changeSheetsStatusOnlineTask = _chatHub.ChangeSheetsStatusOnline(_dictionary.SheetsIsOnline);
 
-            await Task.WhenAll(deleteTask, addTask, updateTask, changeNumberOfUsersOnlineTask);
+            await Task.WhenAll(deleteTask, addTask, updateTask, changeNumberOfUsersOnlineTask, changeSheetsStatusOnlineTask);
 
             //Task.Run(() => deleteTask);
             //Task.Run(() => addTask);
             //Task.Run(() => updateTask);
 
+#if DEBUG
             stopwatch2.Stop();
             stopwatch1.Stop();
             count++;
             var rez = TimeSpan.FromMilliseconds(stopwatch1.ElapsedMilliseconds).TotalSeconds / count;
             var rezCollection = TimeSpan.FromMilliseconds(stopwatch2.ElapsedMilliseconds).TotalSeconds / count;
+#endif
         }
 
         private async Task FillingInNewDialoguesProfiles(Sheet sheet, IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> dictionary)
@@ -337,7 +348,7 @@ namespace UI.Infrastructure.Services
                 messanger = await _chatClient.GetMessangerAsync(sheet, "active", messanger?.Cursor, limit);
                 if (messanger == null || messanger.Dialogs == null || messanger.Dialogs.Count == 0)
                 {
-                    break;
+                    return;
                 }
                 dialogues = dialogues.Union(messanger.Dialogs).ToList();
             } while (messanger.Dialogs.Count == limit && IsLoadDialogues(messanger, dateThreshold));
@@ -358,7 +369,12 @@ namespace UI.Infrastructure.Services
             do
             {
                 messanger = await _chatClient.GetMessangerAsync(sheet, "active,online", messanger?.Cursor, limit);
-                if (messanger == null || messanger.Dialogs == null || messanger.Dialogs.Count == 0)
+                if (messanger == null)
+                {
+                    _dictionary.SheetsIsOnline.AddOrUpdate(sheet.Id, false, (key, oldValue) => false);
+                    return;
+                }
+                if (messanger.Dialogs == null || messanger.Dialogs.Count == 0)
                 {
                     break;
                 }
@@ -366,13 +382,13 @@ namespace UI.Infrastructure.Services
             } while (messanger.Dialogs.Count == limit);
             int countOnline = dialogues.Count(d => !d.IsBlocked);
 
-            _dictionary.Online.AddOrUpdate(sheet.Id, countOnline, (key, oldValue) => countOnline);
+            _dictionary.SheetsIsOnline.AddOrUpdate(sheet.Id, true, (key, oldValue) => true);
+            _dictionary.CounterManOnline.AddOrUpdate(sheet.Id, countOnline, (key, oldValue) => countOnline);
 
             dialogues.ForEach(dialogue =>
             {
                 if (!dialogue.IsBlocked)
                 {
-                    
                     dialogue.Status = Status.Online;
                     CheckAndUpdateDateCreatedSystemLastMessage(dialogue);
                     dictionary.TryAdd(new SheetDialogKey(sheet.Id, dialogue.IdInterlocutor), new NewMessage { Dialogue = dialogue });

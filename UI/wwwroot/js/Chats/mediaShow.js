@@ -49,31 +49,129 @@ function showProfilePhoto(e) {
     $mediaShowPopUp.removeClass('d-none');
 }
 
+function showOneMedia(e, mediaType) {
+    clearMediaShow();
+
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+
+    if (mediaType === 'photo') {
+        var urlPreview = $(e).attr('src');
+
+        $.get('/Chats/OriginalUrlMedia', { sheetId, urlPreview }, function (urlOriginal) {
+            setMediaToPopUp(urlOriginal, mediaType);
+            $mediaShowPopUp.removeClass('d-none');
+        });
+    }
+    else if (mediaType === 'video') {
+        var idVideo = $(e).data('id-video');
+
+        $.get('/Chats/OriginalUrlVideo', { sheetId, idVideo }, function (urlOriginal) {
+            setMediaToPopUp(urlOriginal, mediaType);
+            $mediaShowPopUp.removeClass('d-none');
+        });
+    }
+}
+
+function showPhotoBatch(e) {
+    clearMediaShow();
+
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    var mediaType = 'photo';
+    var promises = [];
+
+    $(e).find('[name="photo_batch"]').each(function (index) {
+        var urlPreview = $(this).attr('src');
+
+        promises.push($.get('/Chats/OriginalUrlMedia', { sheetId, urlPreview }, function (urlOriginal) {
+            mediaDictionary[index + 1] = { mediaType, urlOriginal };
+            if (index === 0) {
+                setMediaToPopUp(urlOriginal, mediaType);
+                currentKey = index + 1;
+            }
+        }));
+    });
+
+    $.when.apply(undefined, promises).done(function () {
+        $mediaShowPopUp.removeClass('d-none');
+    }).fail(function () {
+    });
+}
+
+function showMediaInPost(event) {
+    clearMediaShow();
+
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    var $currentMedia = $(event.currentTarget);
+    var $currentPost = $currentMedia.closest('.preview-body');
+    var promises = [];
+
+    $currentPost.find('img').each(function (index) {
+        var $media = $(this);
+        var urlPreview = $media.attr('src');
+        var mediaType = 'photo';
+        if ($media.hasClass('video')) {
+            mediaType = 'video';
+            var idVideo = $media.data('id-video');
+            promises.push($.get('/Chats/OriginalUrlVideo', { sheetId, idVideo }, function (urlOriginal) {
+                mediaDictionary[index + 1] = { mediaType, urlOriginal };
+                if ($media.is($currentMedia)) {
+                    setMediaToPopUp(urlOriginal, mediaType);
+                    currentKey = index + 1;
+                }
+            }));
+        }
+        else {
+            promises.push($.get('/Chats/OriginalUrlMedia', { sheetId, urlPreview }, function (urlOriginal) {
+                mediaDictionary[index + 1] = { mediaType, urlOriginal };
+                if ($media.is($currentMedia)) {
+                    setMediaToPopUp(urlOriginal, mediaType);
+                    currentKey = index + 1;
+                }
+            }));
+        }
+    });
+
+    $.when.apply(undefined, promises).done(function () {
+        $mediaShowPopUp.removeClass('d-none');
+    }).fail(function () {
+    });
+}
+
 function showMediaInMail(e) {
     clearMediaShow();
     var $currentMailFile = $(e);
+    var $divMailFiles = $currentMailFile.closest('[name="mailFile"]')
     var mediaType = '';
     var urlOriginal = '';
+    var promises = [];
 
-    $('#mailFile').find('.file').each(function (index) {
+    $divMailFiles.find('.file').each(function (index) {
         var $mailFile = $(this);
         if ($mailFile.data('is-video') === true) {
-            var id = $mailFile.data('id');
-            //send Post
             mediaType = 'video';
+            var sheetId = $('#manMessagesMails').data('sheet-id');
+            var idVideo = $mailFile.data('id-video');
+
+            promises.push($.get('/Chats/OriginalUrlVideo', { sheetId, idVideo }, function (urlOriginal) {
+                mediaDictionary[index + 1] = { mediaType, urlOriginal };
+            }));
         }
         else {
-            urlOriginal = $mailFile.data('url-original');
             mediaType = 'photo';
+            urlOriginal = $mailFile.data('url-original');
+            mediaDictionary[index + 1] = { mediaType, urlOriginal };
         }
-        mediaDictionary[index + 1] = { mediaType, urlOriginal };
         if ($mailFile.is($currentMailFile)) {
-            setMediaToPopUp(urlOriginal, mediaType);
             currentKey = index + 1;
         }
     });
 
-    $mediaShowPopUp.removeClass('d-none');
+    $.when.apply(undefined, promises).done(function () {
+        var currentMediaOriginal = mediaDictionary[currentKey];
+        setMediaToPopUp(currentMediaOriginal.urlOriginal, currentMediaOriginal.mediaType);
+        $mediaShowPopUp.removeClass('d-none');
+    }).fail(function () {
+    });
 }
 
 function setMediaToPopUp(urlOriginal, mediaType) {

@@ -165,14 +165,16 @@ function changeMailIceCounter() {
 }
 
 function switchOff(iceId) {
+    var $iceProgress = $('.progress-box').find(`[name=${iceId}]`);
+    $iceProgress.addClass('d-none');
+
     $.post("/Ice/Switch", { sheetId: currentSheetId, iceId, status: "off" }, function () {
-        var iceProgress = $('.progress-box').find(`[name=${iceId}]`);
-        if (iceProgress.length > 0) {
-            var typeIceProgress = iceProgress.data('type');
-            iceProgress.remove();
-            $sheet.find(`[name="${typeIceProgress}"]`).addClass('opacity-50');
-        }
-    })
+        var typeIceProgress = $iceProgress.data('type');
+        $iceProgress.remove();
+        $sheet.find(`[name="${typeIceProgress}"]`).addClass('opacity-50');
+    }).fail(function () {
+        $iceProgress.removeClass('d-none');
+    });
 }
 
 function switchOn(iceId) {
@@ -186,17 +188,25 @@ function switchOn(iceId) {
     $newIceProcess.find('.play').addClass('d-none');
 
     var typeNewIceProgress = $newIceProcess.data('type');
+    var $oldIceProcess = $('.progress-box').find(`[data-type="${typeNewIceProgress}"]`);
+    if ($oldIceProcess.length > 0) {
+        $oldIceProcess.addClass('d-none');
+    }
+    $('.progress-box').append($newIceProcess);
 
     $.post("/Ice/Switch", { sheetId: currentSheetId, iceId, status: "on" }, function () {
-        var oldIceProcess = $('.progress-box').find(`[data-type="${typeNewIceProgress}"]`);
-        if (oldIceProcess.length > 0) {
-            oldIceProcess.remove();
-        }
-        else {
+        if ($oldIceProcess.length === 0) {
             $sheet.find(`[name="${typeNewIceProgress}"]`).removeClass('opacity-50');
         }
-        $('.progress-box').append($newIceProcess);
-    })
+        else {
+            $oldIceProcess.remove();
+        }
+    }).fail(function () {
+        if ($oldIceProcess.length > 0) {
+            $oldIceProcess.removeClass('d-none');
+        }
+        $newIceProcess.remove();
+    });
 }
 
 function replyIce(iceId) {
@@ -206,12 +216,13 @@ function replyIce(iceId) {
     $newIceProcess.find('.play').removeClass('d-none');
     $newIceProcess.find('.reply').addClass('d-none');
     $trashIce.addClass('d-none');
+    $('.middle-box').prepend($newIceProcess);
 
     $.post('/Ice/Reply', { sheetId: currentSheetId, iceId }, function () {
         $trashIce.remove();
-        $('.middle-box').prepend($newIceProcess);
     }).fail(function () {
-
+        $trashIce.removeClass('d-none');
+        $newIceProcess.remove();
     });
 }
 
@@ -284,10 +295,14 @@ function searchOperator(e) {
 }
 
 function deleteIce(iceId) {
+    var $ice = $(`.middle-box [name="${iceId}"]`);
+    $ice.addClass('d-none');
     $.post('/Ice/Delete', { sheetId: currentSheetId, iceId }, function () {
         $(`.middle-box [name="${iceId}"]`).remove();
         if ($(`.progress-box [name="${iceId}"]`).length > 0) {
             switchOff(iceId);
         }
+    }).fail(function () {
+        $ice.removeClass('d-none');
     });
 }

@@ -15,5 +15,7 @@ namespace UI.Infrastructure.Hubs
         Task ReplyToNewMessage(int sheetId, int idInterlocutor, long idLastMessage, long idNewMessage);
 
         Task ChangeNumberOfUsersOnline(ConcurrentDictionary<int, int> online);
+
+        Task ChangeSheetsStatusOnline(ConcurrentDictionary<int, bool> sheetsIsOnline);
     }
 }

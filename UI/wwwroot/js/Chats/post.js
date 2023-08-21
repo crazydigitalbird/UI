@@ -127,7 +127,7 @@ function previewHistoryPost(idPost) {
             media.push({ Url: data.photos[i].url, IsVideo: false });
         }
         for (var i = 0; i < data.videos.length; i++) {
-            media.push({ Url: data.videos[i].url, IsVideo: true });
+            media.push({ Url: data.videos[i].url, IsVideo: true , id: data.videos[i].id});
         }
         previewPost(data.dateSent, data.text, media);
     }).fail(function () {
@@ -158,11 +158,14 @@ function previewPost(date, text, media) {
         for (var i = 0; i < media.length; i++) {
             var img = document.createElement('img');
             img.src = media[i].Url;
+            img.addEventListener('click', showMediaInPost);
+
 
             var previewCard = document.createElement('div');
             previewCard.classList.add('preview-card');
             if (media[i].IsVideo) {
                 previewCard.classList.add('video');
+                previewCard.setAttribute("data-id-video", media[i].id);
             }
 
             previewCard.appendChild(img);

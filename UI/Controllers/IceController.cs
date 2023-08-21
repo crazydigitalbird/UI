@@ -25,6 +25,7 @@ namespace UI.Controllers
         public async Task<IActionResult> Index()
         {
             var sheets = await _operatorClient.GetSheetsAsync();
+            ViewData["icesInfo"] = await _icebreakersClient.IcesInfo(sheets) ?? new List<IceInfo>();
             return View(sheets);
         }
 
@@ -97,7 +98,7 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                if (await _icebreakersClient.Delete(sheet, iceId))
+                if (await _icebreakersClient.Delete(iceId))
                 {
                     return Ok();
                 }
@@ -111,7 +112,7 @@ namespace UI.Controllers
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
             if (sheet != null)
             {
-                if (await _icebreakersClient.Reply(sheet, iceId))
+                if (await _icebreakersClient.Reply(iceId))
                 {
                     return Ok();
                 }

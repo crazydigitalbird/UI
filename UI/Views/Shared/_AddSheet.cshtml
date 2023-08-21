@@ -1,1 +1,46 @@
-﻿
+﻿@model List<SheetSite>
+
+<div class="modal fade" id="modalAddSheet" tabindex="-1" role="dialog" data-mdb-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a new sheet</h5>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formAddSheet" asp-action="AddSheet" method="post" data-ajax="true" data-ajax-success="successAddSheet" data-ajax-failure="failureAddSheet" data-ajax-loading="#spinnerAddSheet">
+                <div class="modal-body">
+
+                    <div id="alertAddSheet" class="alert mb-3 d-none"></div>
+
+                    <div class="mb-3">
+                        <select id="siteId" name="siteId" class="form-control" required style="background-color: #1E1E42">
+                            @foreach (SheetSite s in Model)
+                            {
+                                <option value="@s.Id">@s.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-outline mb-3">
+                        <input type="text" id="login" name="login" class="form-control" autocomplete="off" required />
+                        <label class="form-label" for="login">Login</label>
+                    </div>
+
+                    <div class="form-outline">
+                        <input type="password" id="password" name="password" class="form-control" autocomplete="new-password" required />
+                        <label class="form-label" for="password">Passowrd</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-danger" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm btn-success">
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        Add Sheet
+                        <span id="spinnerAddSheet" class="spinner-border spinner-border-sm" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

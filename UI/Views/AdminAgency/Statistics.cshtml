@@ -1,0 +1,231 @@
+﻿@model AdminAgencyStatistics
+
+@{
+    ViewData["Title"] = "Statistics";
+    Layout = "_LayoutNew";
+}
+
+<div class="h-100 px-5 text-white text-start grid-admin-agency">
+    <div class="container-fluid first-container p-0">
+
+        <div class="row statNots gx-3 fw-bold pt-2 pb-3">
+
+            <div class="col-3">
+                <div class="statSheets d-flex align-items-center rounded-4 h-100 p-2">
+                    <div class="w-100">
+                        <div class="mb-2">
+                            <div class="">@($"Всего Анкет: {Model?.SheetsCount}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.SheetsIncrement}%")</div>
+                        </div>
+                        <div class="">
+                            <div class="">@($"Работает Анкет: {Model?.SheetsCountInWork}")</div>
+                        </div>
+                    </div>
+                    <div class="statImg">
+                        <img src="~/image/adminAgency/statSheets.png" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="statSend d-flex align-items-center rounded-4 h-100 p-2">
+                    <div class="w-100">
+                        <div class="mb-2">
+                            <div class="">@($"Отправлено сообщений: {Model?.NumberMessagesSent}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.NumberMessagesSentIncrement}%")</div>
+                        </div>
+                        <div class="">
+                            <div class="">@($"Отправлено писем: {Model?.NumberMailsSent}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.NumberMailsSentIncrement}%")</div>
+                        </div>
+                    </div>
+                    <div class="statImg">
+                        <img src="~/image/adminAgency/statSend.png" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="statBalance d-flex align-items-center rounded-4 h-100 p-2">
+                    <div class="w-100">
+                        <div class="mb-2">
+                            <div class="">@($"Баланс Анкет: ${Model?.Balance}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.BalanceIncrement}%")</div>
+                        </div>
+                        <div class="">
+                            <div class="">@($"Баланс сегодня: ${Model?.BalanceToday}")</div>
+                            <div class="text-small">@($"Разница от прошлого дня {Model?.BalanceTodayIncrement}%")</div>
+                        </div>
+                    </div>
+                    <div class="statImg">
+                        <img src="~/image/adminAgency/statBalance.png" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="statTime d-flex align-items-center rounded-4 h-100 p-2">
+                    <div class="w-100">
+                        <div class="mb-2">
+                            <div class="">@($"Среднее время ответа: {Model?.ResponseTime}")</div>
+                            <div class="text-small">@($"Разница от прошлого мес. {Model?.ResponseTimeIncrement}%")</div>
+                        </div>
+                        <div class="">
+                            <div class="">@($"Среднее время простоя: {Model?.Downtime}")</div>
+                            <div class="text-small">@($"Разница от прошлого мес. {Model?.DowntimeIncrement}%")</div>
+                        </div>
+                    </div>
+                    <div class="statImg">
+                        <img src="~/image/adminAgency/statTime.png" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row gx-3">
+
+            <div class="col-6">
+                <div class="area-top rounded-4">
+                    <p class="fw-bold p-3">Топ: Операторов этого месяца</p>
+                    <div class="px-3 pb-2 overflow-y-auto">
+                        <table class="table table-sm table-dark table-bordered table-hover text-center m-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Оператор</th>
+                                    <th>ID</th>
+@*                                    <th>Команда</th>
+                                    <th>Админ</th>*@
+                                    <th>Анкет</th>
+                                    <th>Баланс</th>
+                                </tr>
+                                <tr>
+                                    <th class="p-0" colspan="7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int counter = 0;
+                                    if (Model?.OperatorAgencyBalanceStatistics != null)
+                                    {
+                                        foreach (var op in Model.OperatorAgencyBalanceStatistics)
+                                        {
+                                            counter++;
+                                            <tr>
+                                                <td class="text-white-50">@counter</td>
+                                                <td class="text-start">@op.Operator.Member.User.Login</td>
+                                                <td>@op.Operator.Id</td>
+                                                <td>@op.SheetCount</td>
+                                                <td>$@op.Cash</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="area-top rounded-4">
+                    <p class="fw-bold p-3">Топ: Админов этого месяца</p>
+                    <div class="px-3 pb-2 overflow-y-auto">
+                        <table class="table table-sm table-dark table-bordered table-hover text-center m-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Админ</th>
+                                    <th>ID</th>
+@*                                    <th>Команда</th>
+                                    <th>Анкет</th>*@
+                                    <th>Операторов</th>
+                                    <th>Баланс</th>
+                                </tr>
+                                <tr>
+                                    <th class="p-0" colspan="7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-white-50">1</td>
+                                    <td class="text-start">Петя</td>
+                                    <td>123123123</td>
+                                    <td>10</td>
+                                    <td>$256</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white-50">2</td>
+                                    <td class="text-start">Петя</td>
+                                    <td>123123123</td>
+                                    <td>10</td>
+                                    <td>$256</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white-50">3</td>
+                                    <td class="text-start">Петя</td>
+                                    <td>123123123</td>
+                                    <td>10</td>
+                                    <td>$256</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white-50">4</td>
+                                    <td class="text-start">Петя</td>
+                                    <td>123123123</td>
+                                    <td>10</td>
+                                    <td>$256</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white-50">5</td>
+                                    <td class="text-start">Петя</td>
+                                    <td>123123123</td>
+                                    <td>10</td>
+                                    <td>$256</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-fluid last-container p-0 py-3 h-100">
+        <div class="row gx-3 h-100">
+            <div class="col-8 h-100">
+                <div class="area-top rounded-4 h-100 px-3">
+                    <input id="initialBalancesLastMonth" type="hidden" value="@string.Join(";", Model?.BalancesLastMonth ?? new decimal[0]).Replace(",", ".")" />
+                    <input id="initialBalancesCurrentMonth" type="hidden" value="@string.Join(";", Model?.BalancesCurrentMonth ?? new decimal[0]).Replace(",", ".")" />
+                    <canvas id="balanceMonthsChart"></canvas>
+                </div>
+            </div>
+            <div class="col-4 h-100">
+                <div class="area-top rounded-4 h-100 d-grid overflow-auto">
+                    <p class="px-3 pt-3 pb-2 fw-bold">Распределение заработка относительно прошлого месяца</p>
+
+                    @if (Model != null)
+                    {
+                        foreach (var bt in Model.BalancesType)
+                        {
+                            <div class="grid-income px-3 pb-2">
+                                <div class="incomeType text-small">@bt.Value.Text</div>
+                                <div class="incomePercent text-small">@($"{bt.Value.ChangePercent}%")</div>
+                                <div class="progress incomeProgress @(bt.Value.ChangePercent < 0 ? "justify-content-end" : "")">
+                                    <div class="progress-bar rounded @bt.Value.CSSClass" role="progressbar" style="width: @Math.Abs(bt.Value.ChangePercent)%;" aria-voluenow="@Math.Abs(bt.Value.ChangePercent)" aria-voluemin="0" aria-voluemax="100"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script asp-src-include="/js/chart.min.js"></script>
+    <script asp-src-include="/js/moment-with-locales.min.js"></script>
+    <script src="~/js/AdminAgency/statistics.js" asp-append-version="true"></script>
+}

@@ -9,6 +9,8 @@ namespace UI.Infrastructure.Repository
 
         private ConcurrentDictionary<int, int> _dictionaryOnline = new ConcurrentDictionary<int, int>();
 
+        private ConcurrentDictionary<int, bool> _sheetsIsOnline = new ConcurrentDictionary<int, bool>();
+
         public Dictionary<SheetDialogKey, NewMessage> Active
         {
             get => _dictionaryActive;
@@ -18,13 +20,22 @@ namespace UI.Infrastructure.Repository
             }
         }
 
-        public ConcurrentDictionary<int, int> Online
+        public ConcurrentDictionary<int, int> CounterManOnline
         {
             get => _dictionaryOnline;
             set
             {
                 _dictionaryOnline = value;
             }
+        }
+
+        public ConcurrentDictionary<int, bool> SheetsIsOnline
+        { 
+            get => _sheetsIsOnline; 
+            set
+            {
+                _sheetsIsOnline = value;
+            } 
         }
     }
 

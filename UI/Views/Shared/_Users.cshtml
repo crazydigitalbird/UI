@@ -5,7 +5,7 @@
     var freeUsers = (List<ApplicationUser>)ViewData["FreeUsers"];
 }
 
-<div class="input-group mb-3">
+@*<div class="input-group mb-3">
     <input type="email" class="form-control" id="newUser" placeholder="Add user" list="users" autocomplete="off" />
     <datalist id="users">
         @if (freeUsers != null)
@@ -17,18 +17,20 @@
         }
     </datalist>
     <button type="button" class="btn btn-sm btn-success" onclick="addUser(event)">Add user</button>
-</div>
+</div>*@
 
-@if (Model != null)
-{
-    int counter = 0;
-    foreach (var user in Model)
+<div id="originalUsersDiv">
+    @if (Model != null)
     {
-        <input type="hidden" name="originalUsers[@counter].Id" value="@user.Id" />
-        <input type="hidden" name="originalUsers[@counter].Role" value="@user.Role" />
-        counter++;
+        int counter = 0;
+        foreach (var user in Model)
+        {
+            <input type="hidden" name="originalUsers[@counter].Id" value="@user.Id" />
+            <input type="hidden" name="originalUsers[@counter].Role" value="@user.Role" />
+            counter++;
+        }
     }
-}
+</div>
 
 <table class="table table-sm table-hover">
     <thead>

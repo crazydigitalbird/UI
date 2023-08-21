@@ -79,6 +79,36 @@ namespace UI.Infrastructure.API
             }
         }
 
+        public async Task GetSheetAgencyOperatorSessionsCount(List<SheetView> sheetsView)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            try
+            {
+                Dictionary<int, int> taskIdToSheetId = new Dictionary<int, int>();
+                var tasks = sheetsView.Select(s =>
+                {
+                    var task = httpClient.GetAsync($"Agencies/Operators/GetSheetAgencyOperatorSessionsCount?sheetId={s.Id}&sessionGuid={sessionGuid}");
+                    taskIdToSheetId.Add(task.Id, s.Id);
+                    return task;
+                });
+                await Task.WhenAll(tasks);
+                foreach (var task in tasks)
+                {
+                    if (task.Result?.IsSuccessStatusCode ?? false)
+                    {
+                        var response = task.Result;
+                        var sheetId = taskIdToSheetId[task.Id];
+                        sheetsView.FirstOrDefault(s => s.Id == sheetId).Operators = await response.Content.ReadFromJsonAsync<int>();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting sheets with id: {sheetId}.", string.Join(';', sheetsView));
+            }
+        }
+
         private string GetSessionGuid()
         {
             var user = _httpContextAccessor.HttpContext.User;
@@ -95,6 +125,9 @@ namespace UI.Infrastructure.API
     public interface ISheetClient
     {
         Task<Sheet> GetSheetAsync(int sheetId);
+
         Task GettingStatusAndMedia(List<SheetView> sheetsView);
+
+        Task GetSheetAgencyOperatorSessionsCount(List<SheetView> sheetsView);
     }
 }

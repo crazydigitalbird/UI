@@ -25,15 +25,15 @@ namespace UI.Controllers
             }
             if (User.IsInRole(Role.AdminAgency.ToString()))
             {
+#if DEBUGOFFLINE
+                return RedirectToAction("Statistics", "AdminAgency");
+#else
                 return RedirectToAction("Index", "AdminAgency");
+#endif
             }
             if (User.IsInRole(Role.Operator.ToString()))
             {
-#if DEBUGOFFLINE
-                return RedirectToAction("Index", "Ice");
-#else
                 return RedirectToAction("Index", "Operator");
-#endif
             }
             if (User.IsInRole(Role.User.ToString()))
             {

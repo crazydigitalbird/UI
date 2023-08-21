@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@*<button class="btn btn-sm btn-secondary">30:00</button>
+<button class="btn btn-sm btn-break">Перерыв</button>*@
+@{
+    int? onShift = Context.Session.GetInt32("OnShift");
+}
+@if (onShift.HasValue && onShift.Value == 1)
+{
+    <button id="btnWorkingShift" class="btn btn-sm btn-danger" style="width: 150px;">Закончить смену</button>
+}
+else
+{
+    <button id="btnWorkingShift" class="btn btn-sm btn-success" style="width: 150px;">Начать смену</button>
+}

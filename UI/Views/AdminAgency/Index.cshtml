@@ -18,23 +18,31 @@
 
 <div id="tableDiv" class="d-none">
 
-    <div id="toolbar" class="ms-2">
-        <button id="deleteBtn" class="btn btn-danger">
-            <i class="fa-solid fa-trash fa-xl"></i>
-        </button>
-        <button id="addGroup" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i>
-            Add Group
-        </button>
-        <button id="addworkSchedule" class="btn btn-primary">
+
+    <div id="toolbar" class="d-flex">
+        <div>
+            <input type="text" id="customSearch" class="form-control form-control-sm h-100" placeholder="Search" />
+        </div>
+        <div class="ms-2">
+            <button id="deleteBtn" class="btn btn-sm btn-danger">
+                <i class="fa-solid fa-trash fa-xl"></i>
+            </button>
+            <button id="addGroup" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-plus"></i>
+                Add Group
+            </button>
+            @*        <button id="addworkSchedule" class="btn btn-primary">
             <i class="fa-solid fa-plus"></i>
             Add Work Schedule
-        </button>
-        <button id="addSheets" class="btn btn-success">
-            <i class="fa-solid fa-plus"></i>
-            Add Sheets
-        </button>
+            </button>*@
+            <button id="addSheet" class="btn btn-sm btn-success">
+                <i class="fa-solid fa-plus"></i>
+                Add Sheets
+            </button>
+
+        </div>
     </div>
+
 
     <table id="adminAgencyTable" class="table table-sm table-hover table-bordered"
            data-toggle="true"
@@ -43,14 +51,15 @@
            data-id-field="state"
            data-unique-id="id"
            data-search="true"
+           data-search-selector="#customSearch"
            data-toolbar="#toolbar"
            data-toolbar-align="right"
-           style="min-width: 1535px;">
+           @*style="min-width: 1535px;"*@>
         <thead>
             <tr>
                 <th data-field="state" data-checkbox="true"></th>
-                <th data-field="number" data-sortable="true" data-align="center">№</th>
-                <th data-field="status"></th>
+                <th data-field="number" data-sortable="true" data-align="center" data-width="40">№</th>
+                <th data-field="status" data-align="center" data-width="40"></th>
                 <th data-field="name" data-sortable="true">Name</th>
                 <th data-field="lastName" data-sortable="true">Last name</th>
                 <th data-field="sheetId" data-sortable="true" data-align="center">Sheet ID</th>
@@ -63,7 +72,7 @@
                         <option value="0">All Groups</option>
                     </select>
                 </th>
-                <th data-field="shift" data-formatter="shiftFormatter" data-width="200">
+                <th data-field="shift" data-formatter="shiftFormatter" data-width="200" data-visible="false">
                     <select id="shiftsSelect" name="shiftHeader" class="form-select form-select-sm" asp-items="@shifts" onchange="filterShift(event)">
                         <option selected value="0">All Work Shifts</option>
                     </select>
@@ -85,15 +94,28 @@
 
                         <td>@counter</td>
 
-                        <td class="text-center">
-                            @if (sheet.Status == Status.Online)
+                        <td class="p-1">
+                            <div class="d-flex justify-content-center">
+                                <div class="position-relative d-inline-flex">
+                                    <img src="@sheet.Avatar" alt="avatar" class="rounded" style="width:38px;">
+                                    @if (sheet.Status == Status.Online)
+                                    {
+                                        <span class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-circle-red rounded-circle position-absolute bottom-0 end-0"></span>
+                                    }
+                                </div>
+                            </div>
+@*                            @if (sheet.Status == Status.Online)
                             {
                                 <i class="fa-solid fa-circle text-success"></i>
                             }
                             else
                             {
                                 <i class="fa-solid fa-circle text-danger"></i>
-                            }
+                            }*@
                         </td>
 
                         <td>@sheet.FirstName</td>
@@ -164,7 +186,7 @@
 <partial name="_DeleteSheets" />
 <partial name="_AddGroup" model="@ViewData["agencyId"]" />
 <partial name="_AddWorkSchedule" />
-<partial name="_AddSheet" />
+<partial name="_AddSheet" model="@ViewData["Sites"]" />
 <partial name="_Popover" />
 <partial name="_Toast" />
 

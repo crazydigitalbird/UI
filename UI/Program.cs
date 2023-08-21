@@ -44,6 +44,9 @@ builder.Services.AddSingleton<IBalanceClient, ApiBalanceClient>();
 builder.Services.AddSingleton<ISheetClient, ApiSheetClient>();
 builder.Services.AddSingleton<IMailClient, ApiMailClient>();
 builder.Services.AddSingleton<IIcebreakersClient, ApiIcebreakersClient>();
+builder.Services.AddSingleton<IMediaClient, ApiMediaClient>();
+builder.Services.AddSingleton<IAutorespondersClient, ApiAutorespondersClient>();
+builder.Services.AddSingleton<IWorkingShiftClient, ApiWorkingShiftClient>();
 
 builder.Services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
 builder.Services.AddScoped<IChatHub, CallingSideChatHub>();
@@ -59,7 +62,7 @@ builder.Services.AddHttpClient("api", client =>
     {
     }
     return handler;
-}).AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)));
+})/*.AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 1)))*/;
 
 builder.Services.AddHttpClient("apiBot", client =>
 {
@@ -79,6 +82,9 @@ builder.Services.AddSignalR(conf =>
     conf.MaximumReceiveMessageSize = null;
     conf.EnableDetailedErrors = true;
 });
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 
 static bool ValidateServerCetification(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)
 {
@@ -121,5 +127,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseSession();
 
 app.Run();

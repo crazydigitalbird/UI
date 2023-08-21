@@ -7,7 +7,7 @@
 
 <div>
     <input name="popoverProfileId" type="hidden" value="@ViewData["sheetId"]" />
-    <table name="operators" class="table table-secondary table-sm table-hover text-black">
+    <table name="operators" class="table table-sm table-hover">
         <thead>
             <tr>
                 <th class="text-bold">№</th>
@@ -82,9 +82,9 @@
             Add Operator
         </button>
         <div class="dropdown-menu dropdown-menu-gray w-100 border border-success p-1" aria-labelledby="dropdownMenuAddOperator">
-            <input class="form-control text-black" placeholder="Search" onkeyup="searchOperator(event)" />
+            <input class="form-control" placeholder="Search" onkeyup="searchOperator(event)" />
             <div class="overflow-auto dropdown-table-max-height">
-                <table name="freeOperators" class="table table-sm table-secondary table-hover mb-0 text-black">
+                <table name="freeOperators" class="table table-sm table-hover mb-0">
                     <tbody>
                         <tr class="tr-placeholder text-center">
                             <td colspan="4">Not free operators</td>

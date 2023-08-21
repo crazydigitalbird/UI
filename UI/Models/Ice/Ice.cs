@@ -10,15 +10,15 @@ namespace UI.Models
 
     public class DataIce
     {
+        public string Cursor { get; set; }
+
         [JsonPropertyName("items")]
         public List<Ice> Ices { get; set; }
     }
 
     public class Ice
     {
-        private static Random rnd = new Random();
-
-        public string Content{get; set; }
+        public string Content { get; set; }
 
         public DateTime DateCreated { get; set; }
 
@@ -28,15 +28,17 @@ namespace UI.Models
 
         public IceType Type { get; set; }
 
-        public int NumberOfSent { get; set; } = rnd.Next(30, 50);
+        [JsonPropertyName("count_sent")]
+        public int NumberOfSent { get; set; }
 
-        public int Conversion { get; set; } = rnd.Next(0, 30);
+        [JsonPropertyName("count_answered")]
+        public int Conversion { get; set; }
 
         public decimal Efficiency
         {
             get
             {
-                if(Conversion == 0)
+                if (Conversion == 0)
                 {
                     return 0;
                 }
@@ -58,7 +60,6 @@ namespace UI.Models
 
     public class IceProcess
     {
-        private static Random rnd = new Random();
 
         public IceContent Content { get; set; }
 
@@ -70,9 +71,11 @@ namespace UI.Models
 
         public IceType Type { get; set; }
 
-        public int NumberOfSent { get; set; } = rnd.Next(30, 50);
+        [JsonPropertyName("count_sent")]
+        public int NumberOfSent { get; set; }
 
-        public int Conversion { get; set; } = rnd.Next(0, 30);
+        [JsonPropertyName("count_answered")]
+        public int Conversion { get; set; }
 
         public decimal Efficiency
         {
@@ -117,5 +120,38 @@ namespace UI.Models
     public class SendIce
     {
         public long Id { get; set; }
+    }
+
+    public class MakeIceTrash
+    {
+        public bool Response { get; set; }
+    }
+
+    public class IceInfoBody
+    {
+        public IceInfoData Data { get; set; }
+    }
+
+    public class IceInfoData
+    {
+        [JsonPropertyName("items")]
+        public List<IceInfo> IcesInfo { get; set; }
+    }
+
+    public class IceInfo
+    {
+        public int IdTrustedUser { get; set; }
+
+        [JsonPropertyName("mail")]
+        public int NumberOfMails { get; set; }
+
+        [JsonPropertyName("mail_progress")]
+        public int MailInPprogress { get; set; }
+
+        [JsonPropertyName("message")]
+        public int NumberOfMessages { get; set; }
+
+        [JsonPropertyName("message_progress")]
+        public int MessageInProgress { get; set; }
     }
 }

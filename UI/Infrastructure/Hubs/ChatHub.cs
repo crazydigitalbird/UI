@@ -1,6 +1,5 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Immutable;
 using UI.Infrastructure.API;
@@ -42,7 +41,7 @@ namespace UI.Infrastructure.Hubs
                 var allMessages = _dictionary.Active.Values.Where(v => sheets.Any(sheet => sheet.Id == v.SheetInfo.SheetId) && !v.IsDeleted)
                     .OrderByDescending(m => m.Dialogue.LastMessage.DateCreated);
                 allMessagesImmutable = ImmutableArray.CreateRange(allMessages);
-                changeNumberOfUsersOnlineTasks = _dictionary.Online.Select(kvp => Clients.Group($"{kvp.Key}").SendAsync("ChangeNumberOfUsersOnline", kvp.Key, kvp.Value)).ToArray();
+                changeNumberOfUsersOnlineTasks = _dictionary.CounterManOnline.Select(kvp => Clients.Group($"{kvp.Key}").SendAsync("ChangeNumberOfUsersOnline", kvp.Key, kvp.Value)).ToArray();
             }
 
             //var timers = await _chatClient.Timers(allMessagesImmutable);

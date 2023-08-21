@@ -151,6 +151,19 @@ function changeNumberOfUsersOnline(sheetId, numberOfUsersOnline) {
     }
 }
 
+function onlineStatusSheet(sheetId, isOnline) {
+    $(`[name="online-status-${sheetId}"]`).each(function () {
+        if (isOnline && $(this).hasClass('status-circle-red')) {
+            $(this).removeClass('status-circle-red');
+            $(this).addClass('status-circle-green');
+        }
+        else if (!isOnline && $(this).hasClass('status-circle-green')) {
+            $(this).removeClass('status-circle-green');
+            $(this).addClass('status-circle-red');
+        }
+    });
+}
+
 function countDialoguesSheet(sheetId, currentTab) {
     var count = $(`#dialogues-${currentTab}-${sheetId}`).find('[name=dialogue]').length;
     $(`#count-dialogues-${currentTab}-${sheetId}`).html(count);

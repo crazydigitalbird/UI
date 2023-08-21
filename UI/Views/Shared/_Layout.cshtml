@@ -1,27 +1,29 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
-    @if (string.IsNullOrEmpty(Context.Request.Cookies["dark"]))
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/main.css" asp-append-version="true" />
+    @if (User.IsInRole(Role.Operator.ToString()))
     {
-        <link rel="stylesheet" href="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/css/mdb.min.css" />
+        <link rel="stylesheet" href="/css/bootstrap.css" asp-append-version="true" />
     }
     else
     {
+        @*<link rel="stylesheet" href="/css/bootstrap.css" asp-append-version="true" />*@
         <link rel="stylesheet" href="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/css/mdb.dark.min.css" />
+        @*<link rel="stylesheet" href="~/css/custom.mdb.dark.css" />*@
     }
-    <link rel="stylesheet" href="~/UI.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <title>@ViewData["Title"]</title>
 </head>
 <body>
     <header class="sticky-top">
-        <nav id="navMenu" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3 @(string.IsNullOrEmpty(Context.Request.Cookies["dark"]) ? "bg-light" : "bg-dark")">
+        <nav id="navMenu" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">UI</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DC</a>
                 <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa-solid fa-bars text-secondary"></i>
@@ -31,31 +33,43 @@
                         @if (User.IsInRole(Role.Admin.ToString()))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="Admin" asp-action="Index">Home</a>
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Admin" asp-action="Index">Home</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="Admin" asp-action="Admins">Admins</a>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Admin" asp-action="Admins">Admins</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="Site" asp-action="Index">Sites</a>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Site" asp-action="Index">Sites</a>
                             </li>
                         }
                         else if (User.IsInRole(Role.AdminAgency.ToString()))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="AdminAgency" asp-action="Index">Home</a>
+                                <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Index">Home</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="AdminAgency" asp-action="Users">Users</a>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Users">Users</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="Cabinet" asp-action="Index">Cabinets</a>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Cabinet" asp-action="Index">Cabinets</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Statistics">Statistics</a>
                             </li>
                         }
                         else if (User.IsInRole(Role.Operator.ToString()))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" is-active-route asp-controller="Chats" asp-action="Index">Chats</a>
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Operator" asp-action="Index">Анкеты</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
                             </li>
                         }
                     </ul>
@@ -64,16 +78,23 @@
             </div>
         </nav>
     </header>
-    <main role="main">
-        <div class="container-fluid">
-            @RenderBody()
-        </div>
-    </main>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js"></script>
-    @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
+    @if (User.IsInRole(Role.Operator.ToString()))
+    {
+        <script src="/js/bootstrap.bundle.js" asp-append-version="true"></script>
+    }
+    else
+    {
+        @*<script src="/js/bootstrap.bundle.js" asp-append-version="true"></script>*@
+        <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js"></script>
+    }
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

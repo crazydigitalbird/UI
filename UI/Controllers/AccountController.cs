@@ -33,6 +33,7 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn(LoginModel loginModel)
         {
+            HttpContext.Session.Clear();
             if (!ModelState.IsValid)
             {
                 return View(loginModel);
@@ -121,6 +122,7 @@ namespace UI.Controllers
 
         public async Task<IActionResult> LogOut()
         {
+            HttpContext.Session.Clear();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction(nameof(LogIn));
         }

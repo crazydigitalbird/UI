@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Core.Models.Agencies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -75,6 +76,7 @@ namespace UI.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewData["agencyId"] = agencyId;
             ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
 
@@ -94,6 +96,7 @@ namespace UI.Controllers
                 }
                 TempData["Error"] = $"'{agency.Name}' agency update error";
             }
+            ViewData["agencyId"] = agency.Id;
             ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
             return View("Edit", await _adminAgencyClient.GetAgencyById(agency.Id));

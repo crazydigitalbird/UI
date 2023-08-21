@@ -45,7 +45,7 @@
             </div>
             <div id="@($"flush-collapse-mail-{mailMessage.Id}")" class="accordion-collapse collapse show my-1 mx-3 text-white large-block__body-item-text">
                 @Html.Raw(mailMessage.Content)
-                <div id="mailFile" class="uploaded-file d-flex overflow-x-auto overflow-y-hidden">
+                <div name="mailFile" class="uploaded-file d-flex overflow-x-auto overflow-y-hidden">
                     @if (mailMessage.Attachments?.Images?.Count > 0)
                     {
                         foreach (var image in mailMessage.Attachments.Images)
@@ -59,7 +59,7 @@
                     {
                         foreach (var video in mailMessage.Attachments.Videos)
                         {
-                            <div class="file" data-is-video="true" data-id="@video.Id" onclick="showMediaInMail(this)">
+                            <div class="file" data-is-video="true" data-id-video="@video.Id" onclick="showMediaInMail(this)">
                                 <img src="@video.UrlThumbnail"  alt="">
                                 <div class="video-post">
                                     <svg name="play-svg" class="" width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" style="top: auto;">

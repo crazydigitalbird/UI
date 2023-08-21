@@ -3,64 +3,83 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link rel="stylesheet" href="/css/bootstrap.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/main.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
     <title>@ViewData["Title"]</title>
 </head>
 <body>
-    <div class="top-block w-100 text-white d-flex justify-content-end align-items-center">
-        <div class="top-block__container px-3 d-flex justify-content-end align-items-center">
-            <div class="top-block__items d-flex justify-content-between align-items-center me-5">
-                <div class="bell-block position-relative">
-                    <img src="~/image/layout/Alarm Bell.svg" alt="Bell">
-                    <span class="bell-status d-inline-block rounded-circle position-absolute"></span>
+    <header class="sticky-top">
+        <nav id="navMenu" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DC</a>
+                <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa-solid fa-bars text-secondary"></i>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (User.IsInRole(Role.Admin.ToString()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Admin" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Admin" asp-action="Admins">Admins</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Site" asp-action="Index">Sites</a>
+                            </li>
+                        }
+                        else if (User.IsInRole(Role.AdminAgency.ToString()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Users">Users</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Cabinet" asp-action="Index">Cabinets</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Statistics">Statistics</a>
+                            </li>
+                        }
+                        else if (User.IsInRole(Role.Operator.ToString()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Operator" asp-action="Index">Анкеты</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
+                            </li>
+                        }
+                    </ul>
+                    <partial name="_LoginPartial" />
                 </div>
-                <img src="/image/layout/Layout Grid.svg" alt="Grid">
-                <img src="/image/layout/Rectangle 5.png" alt="Person image" class="standart-image rounded-circle">
             </div>
-        </div>
-    </div>
-
-    @*    <div class="header">
-    <div class="container">
-    <div class="row">
-    <div class="col-12 d-flex justify-content-end">
-    <div class="d-flex align-items-center">
-    <div class="notification">
-    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20.22 17.12C20.22 17.97 19.53 18.66 18.68 18.66H5.32004C4.47004 18.66 3.78003 17.97 3.78003 17.12C3.78003 16.27 4.47004 15.58 5.32004 15.58H5.83002V10.44C5.83002 7.04002 8.59003 4.27002 12 4.27002C13.7 4.27002 15.24 4.96002 16.36 6.08002C17.48 7.19002 18.17 8.73002 18.17 10.44V15.58H18.68C19.53 15.58 20.22 16.27 20.22 17.12Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M12 4.28V3.25" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M15.08 18.67C15.08 20.38 13.7 21.75 12 21.75C10.3 21.75 8.92004 20.37 8.92004 18.67H15.08Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
-    <div class="notification-new"></div>
-    </div>
-    <div class="grid">
-    <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6.68001 7.85999H3.32002C2.39002 7.85999 1.64001 7.10999 1.64001 6.17999V2.82001C1.64001 1.89001 2.39002 1.14001 3.32002 1.14001H6.68001C7.61001 1.14001 8.36002 1.89001 8.36002 2.82001V6.17999C8.36002 7.10999 7.61001 7.85999 6.68001 7.85999Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M16.68 7.85999H13.32C12.39 7.85999 11.64 7.10999 11.64 6.17999V2.82001C11.64 1.89001 12.39 1.14001 13.32 1.14001H16.68C17.61 1.14001 18.36 1.89001 18.36 2.82001V6.17999C18.36 7.10999 17.61 7.85999 16.68 7.85999Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M6.68001 17.86H3.32002C2.39002 17.86 1.64001 17.11 1.64001 16.18V12.82C1.64001 11.89 2.39002 11.14 3.32002 11.14H6.68001C7.61001 11.14 8.36002 11.89 8.36002 12.82V16.18C8.36002 17.11 7.61001 17.86 6.68001 17.86Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M16.68 17.86H13.32C12.39 17.86 11.64 17.11 11.64 16.18V12.82C11.64 11.89 12.39 11.14 13.32 11.14H16.68C17.61 11.14 18.36 11.89 18.36 12.82V16.18C18.36 17.11 17.61 17.86 16.68 17.86Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
-    </div>
-    <div class="user-avatar">
-    <img src="/image/layout/Rectangle 5.png" alt="" class="user-avatar__img">
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>*@
+        </nav>
+    </header>
 
     <div class="bottom-block overflow-hidden text-center p-2">
-        <div class="row bottom-block__items h-100 d-flex justify-content-between">
-            @RenderBody()
-        </div>
+        @RenderBody()
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
+
     <script src="/js/bootstrap.bundle.js" asp-append-version="true"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -1,6 +1,7 @@
 ﻿using Core.Models.Sheets;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.AccessControl;
 using System.Text.Json;
 using UI.Models;
@@ -28,17 +29,25 @@ namespace UI.Infrastructure.API
             {
                 var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
 
+                //var contentList = new List<KeyValuePair<string, string>> {
+                //    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
+                //    new KeyValuePair<string, string>("email", credentials.Login),
+                //    new KeyValuePair<string, string>("password", credentials.Password),
+                //    new KeyValuePair<string, string>("types", "message,mail"),
+                //    new KeyValuePair<string, string>("limit", "100"),
+                //    new KeyValuePair<string, string>("idLast", $"{idLast}")
+                //};
+
                 var contentList = new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
-                    new KeyValuePair<string, string>("email", credentials.Login),
-                    new KeyValuePair<string, string>("password", credentials.Password),
-                    new KeyValuePair<string, string>("types", "message,mail"),
-                    new KeyValuePair<string, string>("limit", "100"),
-                    new KeyValuePair<string, string>("idLast", $"{idLast}")
+                    new KeyValuePair<string, string>("cursor", ""),
+                    new KeyValuePair<string, string>("limit", "200"),
+                    new KeyValuePair<string, string>("type", "message,mail"),
+                    new KeyValuePair<string, string>("idUser", sheet.Identity)
                 };
+
                 var contents = new FormUrlEncodedContent(contentList);
 
-                var response = await httpClient.PostAsync("icebreakers_approved", contents);
+                var response = await httpClient.PostAsync("get_ice", contents); //icebreakers_approved
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
@@ -104,7 +113,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<AprovIceProgress> Trash(Sheet sheet)
+        public async Task<AprovIce> Trash(Sheet sheet)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             string s = "";
@@ -113,16 +122,15 @@ namespace UI.Infrastructure.API
                 var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
 
                 var contentList = new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
-                    new KeyValuePair<string, string>("email", credentials.Login),
-                    new KeyValuePair<string, string>("password", credentials.Password),
-                    new KeyValuePair<string, string>("types", "message,mail"),
-                    new KeyValuePair<string, string>("limit", "40"),
-                    new KeyValuePair<string, string>("idLast", $"{0}")
+                    new KeyValuePair<string, string>("cursor", ""),
+                    new KeyValuePair<string, string>("limit", "200"),
+                    new KeyValuePair<string, string>("type", "trash"),
+                    new KeyValuePair<string, string>("idUser", sheet.Identity)
                 };
+
                 var contents = new FormUrlEncodedContent(contentList);
 
-                var response = await httpClient.PostAsync("icebreakers_progress", contents);
+                var response = await httpClient.PostAsync("get_icetrash", contents);
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
@@ -131,7 +139,7 @@ namespace UI.Infrastructure.API
 
                     var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
                     jsonOptions.Converters.Add(new DateTimeConverter());
-                    var aprovIce = await response.Content.ReadFromJsonAsync<AprovIceProgress>(jsonOptions);
+                    var aprovIce = await response.Content.ReadFromJsonAsync<AprovIce>(jsonOptions);
                     return aprovIce;
                 }
                 else
@@ -222,76 +230,107 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        public async Task<bool> Delete(Sheet sheet, long iceId)
+        public async Task<bool> Delete(long iceId)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             string s = "";
             try
             {
-                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
-
                 var contentList = new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
-                    new KeyValuePair<string, string>("email", credentials.Login),
-                    new KeyValuePair<string, string>("password", credentials.Password),
-                    new KeyValuePair<string, string>("id", $"{iceId}")
+                    new KeyValuePair<string, string>("type", "trash"),
+                    new KeyValuePair<string, string>("idIcebreakers", $"{iceId}")
                 };
                 var contents = new FormUrlEncodedContent(contentList);
 
-                var response = await httpClient.PostAsync("", contents);
+                var response = await httpClient.PostAsync("make_icetrash", contents);
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
                     s = await response.Content.ReadAsStringAsync();
 #endif
-                    return true;
+                    var makeIceTrash = await response.Content.ReadFromJsonAsync<MakeIceTrash>();
+
+                    return makeIceTrash.Response;
                 }
                 else
                 {
-                    _logger.LogWarning("Error delete ice with id: {iceId}. Sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}", iceId, sheet.Id, response.StatusCode);
+                    _logger.LogWarning("Error delete ice with id: {iceId}. HttpStatusCode: {httpStatusCode}", iceId, response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error delete ice with id: {iceId}. Sheet with id: {sheetId}.", iceId, sheet.Id);
+                _logger.LogError(ex, "Error delete ice with id: {iceId}.", iceId);
             }
             return false;
         }
 
-        public async Task<bool> Reply(Sheet sheet, long iceId)
+        public async Task<bool> Reply(long iceId)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
             string s = "";
             try
             {
-                var credentials = JsonConvert.DeserializeObject<Credentials>(sheet.Credentials);
-
                 var contentList = new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("site", sheet.Site.Configuration),
-                    new KeyValuePair<string, string>("email", credentials.Login),
-                    new KeyValuePair<string, string>("password", credentials.Password),
-                    new KeyValuePair<string, string>("id", $"{iceId}")
+                    new KeyValuePair<string, string>("type", "untrash"),
+                    new KeyValuePair<string, string>("idIcebreakers", $"{iceId}")
                 };
                 var contents = new FormUrlEncodedContent(contentList);
 
-                var response = await httpClient.PostAsync("", contents);
+                var response = await httpClient.PostAsync("make_icetrash", contents);
                 if (response.IsSuccessStatusCode)
                 {
 #if DEBUGOFFLINE || DEBUG
                     s = await response.Content.ReadAsStringAsync();
 #endif
-                    return true;
+                    var makeIceTrash = await response.Content.ReadFromJsonAsync<MakeIceTrash>();
+
+                    return makeIceTrash.Response;
                 }
                 else
                 {
-                    _logger.LogWarning("Error reply ice with id: {iceId}. Sheet with id: {sheetId}. HttpStatusCode: {httpStatusCode}", iceId, sheet.Id, response.StatusCode);
+                    _logger.LogWarning("Error reply ice with id: {iceId}. HttpStatusCode: {httpStatusCode}", iceId, response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error reply ice with id: {iceId}. Sheet with id: {sheetId}.", iceId, sheet.Id);
+                _logger.LogError(ex, "Error reply ice with id: {iceId}.", iceId);
             }
             return false;
+        }
+
+        public async Task<List<IceInfo>> IcesInfo(List<Sheet> sheets)
+        {
+            if (sheets?.Count > 0)
+            {
+                HttpClient httpClient = _httpClientFactory.CreateClient("apiBot");
+                string s = "";
+                try
+                {
+                    var contentList = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("idUser", string.Join(",", sheets.Select(s => s.Identity)))
+                };
+                    var contents = new FormUrlEncodedContent(contentList);
+
+                    var response = await httpClient.PostAsync("get_icecount", contents);
+                    if (response.IsSuccessStatusCode)
+                    {
+#if DEBUGOFFLINE || DEBUG
+                        s = await response.Content.ReadAsStringAsync();
+#endif
+                        var icesInfoData = await response.Content.ReadFromJsonAsync<IceInfoBody>();
+                        return icesInfoData?.Data?.IcesInfo;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Error get ices info with ids: {iceIds}. HttpStatusCode: {httpStatusCode}", string.Join(",", sheets.Select(s => s.Identity)), response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error reply ice with ids: {iceIds}.", string.Join(",", sheets.Select(s => s.Identity)));
+                }
+            }
+            return null;
         }
     }
 
@@ -301,14 +340,16 @@ namespace UI.Infrastructure.API
 
         Task<AprovIceProgress> Progress(Sheet sheet, int idLast = 0);
 
-        Task<AprovIceProgress> Trash(Sheet sheet);
+        Task<AprovIce> Trash(Sheet sheet);
 
         Task<long> Create(Sheet sheet, IceType iceType, string content);
 
         Task<bool> Switch(Sheet sheet, long iceId, string status);
 
-        Task<bool> Delete(Sheet sheet, long iceId);
+        Task<bool> Delete(long iceId);
 
-        Task<bool> Reply(Sheet sheet, long iceId);
+        Task<bool> Reply(long iceId);
+
+        Task<List<IceInfo>> IcesInfo(List<Sheet> sheets);
     }
 }

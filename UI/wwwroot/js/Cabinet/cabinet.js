@@ -42,6 +42,12 @@ function successAddCabinet(cabinet) {
 
     $('#tableCabinets').append($newRow);
 
+    let $newCheckboxInModalBindCabinet = $(`<div class="form-check d-flex align-items-center">
+                                                <input class="form-check-input" type="checkbox" id="${cabinet.id}" name="cabinets" value="${cabinet.id}" />
+                                                <label class="form-check-label" for="${cabinet.id}">${cabinet.name}</label>
+                                            </div>`);
+    $('#modalBindCabinet').find('.modal-body').append($newCheckboxInModalBindCabinet);
+
     setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
 }
 
@@ -191,8 +197,8 @@ function successBindCabinets(data) {
         }
 
         var htmlCabinets = `<div class="row">
-                            <div class="dropdown" style="max-width: 455px;">
-                                <a role="button" href="#" id="${userCabinets.userId}" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 btn-block dropdown-toggle" data-mdb-toggle="dropdown" aria-expanded="false">Total Cabinets ${userCabinets.cabinets.length}</a>
+                            <div class="dropdown" style="width: 200px;">
+                                <a role="button" href="#" id="${userCabinets.userId}" type="button" class="btn btn-sm btn-primary btn-rounded btn-block dropdown-toggle py-1" data-mdb-toggle="dropdown" aria-expanded="false">Total Cabinets ${userCabinets.cabinets.length}</a>
                                 <ul class="dropdown-menu w-100" aria-labelledby="${userCabinets.userId}">
                                     ${liCabinets}
                                     <li>
@@ -217,7 +223,7 @@ function successBindCabinets(data) {
         var btnCabinets = '';
         for (var i = 0; i < userCabinets.cabinets.length; i++) {
             btnCabinets = btnCabinets + `<div id="container_${userCabinets.userId}_${userCabinets.cabinets[i]}" class="btn-group" style="display: contents;">
-                                <button id="${userCabinets.userId}_${userCabinets.cabinets[i]}" type="button" class="btn btn-sm btn-primary btn-rounded my-md-1 dropdown-toggle btn-size-fixed" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">C${userCabinets.cabinets[i]}</button>
+                                <button id="${userCabinets.userId}_${userCabinets.cabinets[i]}" type="button" class="btn btn-sm btn-primary btn-rounded dropdown-toggle btn-size-fixed py-1" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">C${userCabinets.cabinets[i]}</button>
                                 <ul class="dropdown-menu dropdown-menu-width" aria-labelledby="${userCabinets.userId}_${userCabinets.cabinets[i]}">
                                     <li class="btn-size-fixed bg-danger">
                                         <button class="dropdown-item btn bg-danger text-center" onclick="unbindCabinetToUser(${userCabinets.cabinets[i]}, ${userCabinets.userId})">
@@ -229,14 +235,14 @@ function successBindCabinets(data) {
         }
         var htmlCabinets = `<div class="d-grid d-md-block gap-1">
                                 ${btnCabinets}
-                                <button type="button" class="btn btn-sm btn-success btn-rounded my-md-1 btn-size-fixed" onclick="bindCabinetToUser(this, ${userCabinets.userId}, '${userCabinets.userName}')">
+                                <button type="button" class="btn btn-sm btn-success btn-rounded btn-size-fixed py-1" onclick="bindCabinetToUser(this, ${userCabinets.userId}, '${userCabinets.userName}')">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>`;
         $tdUserCabinets.append(htmlCabinets);
     }
 
-    $tdUserCabinets.closest('tr').attr('data-cabinets', userCabinets.cabinets.join(','));
+    $tdUserCabinets.closest('tr').removeData('cabinets', undefined).attr('data-cabinets', userCabinets.cabinets.join(','));
 
     $('#modalBindCabinet').modal('hide')
 }

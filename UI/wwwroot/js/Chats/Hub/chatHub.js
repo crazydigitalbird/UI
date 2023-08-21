@@ -90,3 +90,7 @@ connection.on('ChangeNumberOfUsersOnline', function (sheetId, numberOfUsersOnlin
 connection.on('History', function () {
     LoadNewHistory();
 });
+
+connection.on('ChangeSheetIsOnline', function (sheetId, isOnline) {
+    onlineStatusSheet(sheetId, isOnline);
+});

@@ -50,7 +50,7 @@
                     <div class="w-100">
                         <div class="mb-2">
                             <div class="">@($"Баланс Анкет: ${Model?.Balance}")</div>
-                            <div class="text-small">@($"от прошлого мес. {Model?.BalanceIncrement}%")</div>
+                            <div class="text-small">@($"от прошлого мес. +{Model?.BalanceIncrement}%")</div>
                         </div>
                         <div class="">
                             <div class="">@($"Баланс сегодня: ${Model?.BalanceToday}")</div>
@@ -67,8 +67,8 @@
                 <div class="statTime d-flex align-items-center rounded-4 h-100 p-2">
                     <div class="w-100">
                         <div class="mb-2">
-                            <div class="">@($"Среднее время ответа: {Model?.ResponseTime}")</div>
-                            <div class="text-small">@($"Разница от прошлого мес. {Model?.ResponseTimeIncrement}%")</div>
+                            <div class="">@($"Среднее время ответа: {Model?.AverageResponseTime}")</div>
+                            <div class="text-small">@($"Разница от прошлого мес. {Model?.AverageResponseTime?.Increment()}%")</div>
                         </div>
                         <div class="">
                             <div class="">@($"Среднее время простоя: {Model?.Downtime}")</div>

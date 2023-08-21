@@ -19,6 +19,7 @@ namespace UI.Controllers
         private readonly IBalanceClient _balanceClient;
         private readonly IGroupClient _groupClient;
         private readonly IUserClient _userClient;
+        private readonly IStatisticClient _statisticClient;
         private readonly ILogger<AdminAgencyController> _logger;
 
         private readonly List<SelectListItem> _roles = new() { new("Admin Agency", "1"), new("Operator", "2")/*, new("User", "3")*/ };
@@ -29,6 +30,7 @@ namespace UI.Controllers
             IBalanceClient balanceClient,
             IGroupClient groupClient,
             IUserClient userClient,
+            IStatisticClient statisticClient,
             ILogger<AdminAgencyController> logger)
         {
             _adminAgencyClient = adminAgencyClient;
@@ -37,6 +39,7 @@ namespace UI.Controllers
             _balanceClient = balanceClient;
             _groupClient = groupClient;
             _userClient = userClient;
+            _statisticClient = statisticClient;
             _logger = logger;
         }
 
@@ -121,12 +124,13 @@ namespace UI.Controllers
             var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
             var sheetsTask = _adminAgencyClient.GetSheets(agencyId);
             var agencyBalanceStatisticTask = _balanceClient.GetAgencyBalanceStatistic(agencyId, beginDatetime, endDateTime);
-
-            await Task.WhenAll(balancesTask, sheetsTask, agencyBalanceStatisticTask);
+            var statisticTimeMetricTask = _statisticClient.GetAgencyAverageResponseTimeAsync(agencyId);
+            await Task.WhenAll(balancesTask, sheetsTask, agencyBalanceStatisticTask, statisticTimeMetricTask);
 
             var balances = balancesTask.Result;
             var sheets = sheetsTask.Result;
             statistics.OperatorAgencyBalanceStatistics = agencyBalanceStatisticTask.Result;
+            statistics.AverageResponseTime = statisticTimeMetricTask.Result;
 
             if (balances != null)
             {

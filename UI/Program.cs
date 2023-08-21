@@ -47,6 +47,7 @@ builder.Services.AddSingleton<IIcebreakersClient, ApiIcebreakersClient>();
 builder.Services.AddSingleton<IMediaClient, ApiMediaClient>();
 builder.Services.AddSingleton<IAutorespondersClient, ApiAutorespondersClient>();
 builder.Services.AddSingleton<IWorkingShiftClient, ApiWorkingShiftClient>();
+builder.Services.AddSingleton<IStatisticClient, ApiStatisticClient>();
 
 builder.Services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
 builder.Services.AddScoped<IChatHub, CallingSideChatHub>();

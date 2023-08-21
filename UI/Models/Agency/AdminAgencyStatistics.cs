@@ -26,9 +26,7 @@ namespace UI.Models
 
         public decimal BalanceTodayIncrement { get; set; }
 
-        public string ResponseTime { get; set; }
-
-        public string ResponseTimeIncrement { get; set; }
+        public AverageResponseTime AverageResponseTime { get; set; }
 
         public string Downtime { get; set; }
 

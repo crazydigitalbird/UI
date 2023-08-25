@@ -3,6 +3,7 @@ using Core.Models.Agencies.Operators;
 using Core.Models.Balances;
 using System.Net;
 using System.Security.Principal;
+using UI.Models;
 
 namespace UI.Infrastructure.API
 {
@@ -147,7 +148,43 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<List<AgencyBalanceStatistic>> GetAgencyBalanceStatistic(int agencyId, DateTime begin, DateTime end)
+        public async Task<BalanceStatisticAgency> GetBalanceStatisticAgencyAsync(int agencyId)
+        {
+            var endDateTime = DateTime.Now;
+            var beginDatetime = endDateTime.AddMonths(-1);
+            beginDatetime = new DateTime(beginDatetime.Year, beginDatetime.Month, 1);            
+
+            var balanceStatisticAgencyTask = GetBalanceStatisticAgencyAsync(agencyId, beginDatetime, endDateTime);
+            var balanceStatisticAgencyOperatorsTask = GetBalanceStatisticAgencyOperators(agencyId, beginDatetime, endDateTime);
+
+            await Task.WhenAll(balanceStatisticAgencyTask, balanceStatisticAgencyOperatorsTask);
+
+            var balanceStatisticAgency = balanceStatisticAgencyTask.Result ?? new BalanceStatisticAgency();
+            balanceStatisticAgency.Operators = balanceStatisticAgencyOperatorsTask.Result;
+            return balanceStatisticAgency;
+        }
+
+        public async Task<BalanceStatisticAgency> GetBalanceStatisticAgencyAsync(int agencyId, DateTime begin, DateTime end)
+        {
+            var balances = await GetAgencyBalance(agencyId, begin, end);
+            if (balances != null)
+            {
+                var lastPeriod = new DateTime(end.Year, end.Month, 1);
+                var statistics = new BalanceStatisticAgency();
+                statistics.BalancesLastMonth = GetBalancesMonth(DateTime.DaysInMonth(begin.Year, begin.Month), begin.Month, balances);
+                statistics.BalancesCurrentMonth = GetBalancesMonth(end.Day, end.Month, balances);
+                BalancesType(end.Year, end.Month, begin.Year, begin.Month, balances, statistics.BalancesType);
+                statistics.Balance = balances.Where(b => b.Date.Year == end.Year && b.Date.Month == end.Month).Sum(b => b.Cash);
+                statistics.BalanceIncrement = GetBalanceIncrement(balances, statistics.Balance, lastPeriod);
+                statistics.BalanceToday = balances.Where(b => b.Date.Year == end.Year && b.Date.Month == end.Month && b.Date.Day == end.Day).Sum(b => b.Cash);
+                statistics.BalanceTodayIncrement = GetBalanceTodayIncrement(balances, statistics.BalanceToday, end);
+                return statistics;
+            }
+
+            return null;
+        }
+
+        public async Task<List<AgencyBalanceStatistic>> GetBalanceStatisticAgencyOperators(int agencyId, DateTime begin, DateTime end)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
@@ -159,7 +196,7 @@ namespace UI.Infrastructure.API
 #if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
 #endif
-                    List<AgencyBalanceStatistic> agencyBalanceStatistics = await response.Content.ReadFromJsonAsync<List<AgencyBalanceStatistic>>();
+                    List<Core.Models.Balances.AgencyBalanceStatistic> agencyBalanceStatistics = await response.Content.ReadFromJsonAsync<List<Core.Models.Balances.AgencyBalanceStatistic>>();
                     return agencyBalanceStatistics;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -176,6 +213,59 @@ namespace UI.Infrastructure.API
                 _logger.LogError(ex, "Error getting agency balance statistic the agency with id: {agencyId}.", agencyId);
             }
             return null;
+        }
+
+        private decimal GetBalanceTodayIncrement(List<AgencyBalance> balances, decimal balanceToday, DateTime endDateTime)
+        {
+            var lasDayDate = endDateTime.AddDays(-1);
+            decimal balanceLastDay = balances.Where(b => b.Date.Year == lasDayDate.Year && b.Date.Month == lasDayDate.Month && b.Date.Day == lasDayDate.Day).Sum(b => b.Cash);
+            if (balanceLastDay > 0)
+            {
+                return balanceToday * 100 / balanceLastDay - 100;
+            }
+            return 0;
+        }
+
+        private decimal GetBalanceIncrement(List<AgencyBalance> balances, decimal balance, DateTime lastPeriod)
+        {
+            var balanceLastPeriod = balances.Where(b => b.Date < lastPeriod).Sum(b => b.Cash);
+            if (balanceLastPeriod != 0)
+            {
+                return balance * 100 / balanceLastPeriod - 100;
+            }
+            return 0;
+        }
+
+        private decimal[] GetBalancesMonth(int days, int month, List<AgencyBalance> balances)
+        {
+            var balancesMonth = new decimal[days];
+            for (int i = 0; i < balancesMonth.Length; i++)
+            {
+                balancesMonth[i] = balances.Where(b => b.Date.Month == month && b.Date.Day == i + 1).Sum(b => b.Cash); ;
+            }
+            return balancesMonth;
+        }
+
+        private void BalancesType(int currentYear, int currentMonth, int lastYear, int lastMonth, List<AgencyBalance> balances, Dictionary<string, BalanceType> balancesType)
+        {
+            foreach (var bt in balancesType)
+            {
+                var balanceCurrentMonthType = BalancesMonthType(currentYear, currentMonth, balances, bt.Key);
+                var balanceLastMonthType = BalancesMonthType(lastYear, lastMonth, balances, bt.Key);
+                if (balanceLastMonthType > 0)
+                {
+                    bt.Value.ChangePercent = (int)(balanceCurrentMonthType * 100 / balanceLastMonthType - 100);
+                }
+                else
+                {
+                    bt.Value.ChangePercent = 0;
+                }
+            }
+        }
+
+        private decimal BalancesMonthType(int year, int month, List<AgencyBalance> balances, string type)
+        {
+            return balances.Where(b => b.Type == type && b.Date.Year == year && b.Date.Month == month).Sum(b => b.Cash);
         }
 
         private string GetSessionGuid()
@@ -201,6 +291,10 @@ namespace UI.Infrastructure.API
 
         Task<List<AgencyBalance>> GetAgencyBalance(int agencyId, DateTime begin, DateTime end);
 
-        Task<List<AgencyBalanceStatistic>> GetAgencyBalanceStatistic(int agencyId, DateTime begin, DateTime end);
+        Task<BalanceStatisticAgency> GetBalanceStatisticAgencyAsync(int agencyId);
+
+        Task<BalanceStatisticAgency> GetBalanceStatisticAgencyAsync(int agencyId, DateTime begin, DateTime end);
+
+        Task<List<AgencyBalanceStatistic>> GetBalanceStatisticAgencyOperators(int agencyId, DateTime begin, DateTime end);
     }
 }

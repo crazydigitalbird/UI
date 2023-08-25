@@ -1,15 +1,26 @@
-﻿using UI.Models;
+﻿using Core.Models.Balances;
+using UI.Models;
 
 namespace UI.Infrastructure.API
 {
     public class ApiStatisticClient : IStatisticClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAdminAgencyClient _adminAgencyClient;
+        private readonly ISheetClient _sheetClient;
+        private readonly IBalanceClient _balanceClient;
         private readonly ILogger<ApiStatisticClient> _logger;
 
-        public ApiStatisticClient(IHttpClientFactory httpClientFactory, ILogger<ApiStatisticClient> logger) 
+        public ApiStatisticClient(IHttpClientFactory httpClientFactory, 
+            IAdminAgencyClient adminAgencyClient, 
+            ISheetClient sheetClient,
+            IBalanceClient balanceClient,
+        ILogger<ApiStatisticClient> logger) 
         {
             _httpClientFactory = httpClientFactory;
+            _adminAgencyClient = adminAgencyClient;
+            _sheetClient = sheetClient;
+            _balanceClient = balanceClient;
             _logger = logger;
         }
 
@@ -47,10 +58,24 @@ namespace UI.Infrastructure.API
             }
             return null;
         }
-    }
+
+        public async Task<AgencySheetsStatistic> GetSheetsStatisticAsync(int agencyId)
+        {
+            var sheets = await _adminAgencyClient.GetSheets(agencyId);
+            if (sheets != null)
+            {
+                await _sheetClient.GettingStatusAndMedia(sheets);
+                var agencySheetsStatistic = new AgencySheetsStatistic(sheets);
+                return agencySheetsStatistic;
+            }
+            return null;
+        }
+    }   
 
     public interface IStatisticClient
     {
         Task<AverageResponseTime> GetAgencyAverageResponseTimeAsync(int agencyId);
+
+        Task<AgencySheetsStatistic> GetSheetsStatisticAsync(int agencyId);
     }
 }

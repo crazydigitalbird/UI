@@ -2,22 +2,8 @@
 
 namespace UI.Models
 {
-    public class AdminAgencyStatistics
+    public class BalanceStatisticAgency
     {
-        public int SheetsCount { get; set; }
-
-        public int SheetsIncrement { get; set; }
-
-        public int SheetsCountInWork { get; set; }
-
-        public int NumberMessagesSent { get; set; }
-
-        public int NumberMessagesSentIncrement { get; set; }
-
-        public int NumberMailsSent { get; set; }
-
-        public int NumberMailsSentIncrement { get; set; }
-
         public decimal Balance { get; set; }
 
         public decimal BalanceIncrement { get; set; }
@@ -26,15 +12,11 @@ namespace UI.Models
 
         public decimal BalanceTodayIncrement { get; set; }
 
-        public AverageResponseTime AverageResponseTime { get; set; }
-
-        public string Downtime { get; set; }
-
-        public string DowntimeIncrement { get; set; }
-
         public decimal[] BalancesLastMonth { get; set; }
 
         public decimal[] BalancesCurrentMonth { get; set; }
+
+        public List<AgencyBalanceStatistic> Operators { get; internal set; }
 
         public Dictionary<string, BalanceType> BalancesType { get; set; } = new Dictionary<string, BalanceType>
         {
@@ -46,18 +28,5 @@ namespace UI.Models
             { "read_mail", new BalanceType{ CSSClass = "mail-chart", Text = "Письма" } },
             { "Другое", new BalanceType{ CSSClass = "other-chart", Text = "Другое" } }
         };
-
-        public List<AgencyBalanceStatistic> OperatorAgencyBalanceStatistics { get; set; }
-
-        public List<ApplicationUser> AdminSAgency { get; set; }
-    }
-
-    public class BalanceType
-    {
-        public int ChangePercent { get; set; }
-
-        public string CSSClass { get; set; }
-
-        public string Text { get; set; }
     }
 }

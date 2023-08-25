@@ -1,5 +1,4 @@
-﻿using Core.Models.Balances;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -111,100 +110,19 @@ namespace UI.Controllers
                 }
             }
 
-            var statistics = new AdminAgencyStatistics();
-
-            var endDateTime = DateTime.Now;
-            var currentMonth = endDateTime.Month;
-            var beginDatetime = endDateTime.AddMonths(-1);
-            var lastPeriod = new DateTime(endDateTime.Year, currentMonth, 1);
-            var lastMonth = beginDatetime.Month;
-            var lastYear = beginDatetime.Year;
-            beginDatetime = new DateTime(lastYear, lastMonth, 1);
-
-            var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
-            var sheetsTask = _adminAgencyClient.GetSheets(agencyId);
-            var agencyBalanceStatisticTask = _balanceClient.GetAgencyBalanceStatistic(agencyId, beginDatetime, endDateTime);
+            var balanceStatisticAgencyTask = _balanceClient.GetBalanceStatisticAgencyAsync(agencyId);
+            var sheetsStatisticTask = _statisticClient.GetSheetsStatisticAsync(agencyId);
             var statisticTimeMetricTask = _statisticClient.GetAgencyAverageResponseTimeAsync(agencyId);
-            await Task.WhenAll(balancesTask, sheetsTask, agencyBalanceStatisticTask, statisticTimeMetricTask);
+            await Task.WhenAll(balanceStatisticAgencyTask, sheetsStatisticTask, statisticTimeMetricTask);
 
-            var balances = balancesTask.Result;
-            var sheets = sheetsTask.Result;
-            statistics.OperatorAgencyBalanceStatistics = agencyBalanceStatisticTask.Result;
-            statistics.AverageResponseTime = statisticTimeMetricTask.Result;
-
-            if (balances != null)
+            var statisticsViewModel = new AdminAgencyStatisticsViewModel
             {
-                statistics.BalancesLastMonth = GetBalancesMonth(DateTime.DaysInMonth(lastYear, lastMonth), lastMonth, balances);
-                statistics.BalancesCurrentMonth = GetBalancesMonth(endDateTime.Day, currentMonth, balances);
-                BalancesType(endDateTime.Year, currentMonth, lastYear, lastMonth, balances, statistics.BalancesType);
-                statistics.Balance = balances.Where(b => b.Date.Year == endDateTime.Year && b.Date.Month == endDateTime.Month).Sum(b => b.Cash);
-                statistics.BalanceIncrement = GetBalanceIncrement(balances, statistics.Balance, lastPeriod);
-                statistics.BalanceToday = balances.Where(b => b.Date.Year == endDateTime.Year && b.Date.Month == endDateTime.Month && b.Date.Day == endDateTime.Day).Sum(b => b.Cash);
-                statistics.BalanceTodayIncrement = GetBalanceTodayIncrement(balances, statistics.BalanceToday, endDateTime);
-            }
+                BalanceStatisticAgency = balanceStatisticAgencyTask.Result,
+                AgencySheetsStatistic = sheetsStatisticTask.Result,
+                AverageResponseTime = statisticTimeMetricTask.Result
+            };
 
-            if (sheets != null)
-            {
-                await _sheetClient.GettingStatusAndMedia(sheets);
-                statistics.SheetsCount = sheets.Count;
-                statistics.SheetsIncrement = sheets.Count * 100 / sheets.Where(s => s.Created < lastPeriod).Count() - 100;
-                statistics.SheetsCountInWork = sheets.Where(s => s.Status == Status.Online).Count();
-            }
-
-            return View(statistics);
-        }
-
-        private decimal GetBalanceTodayIncrement(List<AgencyBalance> balances, decimal balanceToday, DateTime endDateTime)
-        {
-            var lasDayDate = endDateTime.AddDays(-1);
-            decimal balanceLastDay = balances.Where(b => b.Date.Year == lasDayDate.Year && b.Date.Month == lasDayDate.Month && b.Date.Day == lasDayDate.Day).Sum(b => b.Cash);
-            if (balanceLastDay > 0)
-            {
-                return balanceToday * 100 / balanceLastDay - 100;
-            }
-            return 0;
-        }
-
-        private decimal GetBalanceIncrement(List<AgencyBalance> balances, decimal balance, DateTime lastPeriod)
-        {
-            var balanceLastPeriod = balances.Where(b => b.Date < lastPeriod).Sum(b => b.Cash);
-            if (balanceLastPeriod != 0)
-            {
-                return balance * 100 / balanceLastPeriod - 100;
-            }
-            return 0;
-        }
-
-        private decimal[] GetBalancesMonth(int days, int month, List<AgencyBalance> balances)
-        {
-            var balancesMonth = new decimal[days];
-            for (int i = 0; i < balancesMonth.Length; i++)
-            {
-                balancesMonth[i] = balances.Where(b => b.Date.Month == month && b.Date.Day == i + 1).Sum(b => b.Cash); ;
-            }
-            return balancesMonth;
-        }
-
-        private void BalancesType(int currentYear, int currentMonth, int lastYear, int lastMonth, List<AgencyBalance> balances, Dictionary<string, BalanceType> balancesType)
-        {
-            foreach (var bt in balancesType)
-            {
-                var balanceCurrentMonthType = BalancesMonthType(currentYear, currentMonth, balances, bt.Key);
-                var balanceLastMonthType = BalancesMonthType(lastYear, lastMonth, balances, bt.Key);
-                if (balanceLastMonthType > 0)
-                {
-                    bt.Value.ChangePercent = (int)(balanceCurrentMonthType * 100 / balanceLastMonthType - 100);
-                }
-                else
-                {
-                    bt.Value.ChangePercent = 0;
-                }
-            }
-        }
-
-        private decimal BalancesMonthType(int year, int month, List<AgencyBalance> balances, string type)
-        {
-            return balances.Where(b => b.Type == type && b.Date.Year == year && b.Date.Month == month).Sum(b => b.Cash);
+            return View(statisticsViewModel);
         }
 
         [HttpPost]

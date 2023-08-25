@@ -1,4 +1,4 @@
-﻿@model AdminAgencyStatistics
+﻿@model AdminAgencyStatisticsViewModel
 
 @{
     ViewData["Title"] = "Statistics";
@@ -14,11 +14,11 @@
                 <div class="statSheets d-flex align-items-center rounded-4 h-100 p-2">
                     <div class="w-100">
                         <div class="mb-2">
-                            <div class="">@($"Всего Анкет: {Model?.SheetsCount}")</div>
-                            <div class="text-small">@($"от прошлого мес. {Model?.SheetsIncrement}%")</div>
+                            <div class="">@($"Всего анкет: {Model?.AgencySheetsStatistic?.Count}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.AgencySheetsStatistic?.Increment()}%")</div>
                         </div>
                         <div class="">
-                            <div class="">@($"Работает Анкет: {Model?.SheetsCountInWork}")</div>
+                            <div class="">@($"Работает анкет: {Model?.AgencySheetsStatistic?.CountInWork}")</div>
                         </div>
                     </div>
                     <div class="statImg">
@@ -49,12 +49,12 @@
                 <div class="statBalance d-flex align-items-center rounded-4 h-100 p-2">
                     <div class="w-100">
                         <div class="mb-2">
-                            <div class="">@($"Баланс Анкет: ${Model?.Balance}")</div>
-                            <div class="text-small">@($"от прошлого мес. +{Model?.BalanceIncrement}%")</div>
+                            <div class="">@($"Баланс анкет: ${Model?.BalanceStatisticAgency?.Balance}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.BalanceStatisticAgency?.BalanceIncrement}%")</div>
                         </div>
                         <div class="">
-                            <div class="">@($"Баланс сегодня: ${Model?.BalanceToday}")</div>
-                            <div class="text-small">@($"Разница от прошлого дня {Model?.BalanceTodayIncrement}%")</div>
+                            <div class="">@($"Баланс сегодня: ${Model?.BalanceStatisticAgency?.BalanceToday}")</div>
+                            <div class="text-small">@($"Разница от прошлого дня {Model?.BalanceStatisticAgency?.BalanceTodayIncrement}%")</div>
                         </div>
                     </div>
                     <div class="statImg">
@@ -86,7 +86,7 @@
         <div class="row gx-3">
 
             <div class="col-6">
-                <div class="area-top rounded-4">
+                <div class="area-top rounded-4 h-100">
                     <p class="fw-bold p-3">Топ: Операторов этого месяца</p>
                     <div class="px-3 pb-2 overflow-y-auto">
                         <table class="table table-sm table-dark table-bordered table-hover text-center m-0">
@@ -107,9 +107,9 @@
                             <tbody>
                                 @{
                                     int counter = 0;
-                                    if (Model?.OperatorAgencyBalanceStatistics != null)
+                                    if (Model?.BalanceStatisticAgency?.Operators != null)
                                     {
-                                        foreach (var op in Model.OperatorAgencyBalanceStatistics)
+                                        foreach (var op in Model.BalanceStatisticAgency.Operators)
                                         {
                                             counter++;
                                             <tr>
@@ -129,7 +129,7 @@
             </div>
 
             <div class="col-6">
-                <div class="area-top rounded-4">
+                <div class="area-top rounded-4 h-100">
                     <p class="fw-bold p-3">Топ: Админов этого месяца</p>
                     <div class="px-3 pb-2 overflow-y-auto">
                         <table class="table table-sm table-dark table-bordered table-hover text-center m-0">
@@ -196,8 +196,8 @@
         <div class="row gx-3 h-100">
             <div class="col-8 h-100">
                 <div class="area-top rounded-4 h-100 px-3">
-                    <input id="initialBalancesLastMonth" type="hidden" value="@string.Join(";", Model?.BalancesLastMonth ?? new decimal[0]).Replace(",", ".")" />
-                    <input id="initialBalancesCurrentMonth" type="hidden" value="@string.Join(";", Model?.BalancesCurrentMonth ?? new decimal[0]).Replace(",", ".")" />
+                    <input id="initialBalancesLastMonth" type="hidden" value="@string.Join(";", Model?.BalanceStatisticAgency?.BalancesLastMonth ?? new decimal[0]).Replace(",", ".")" />
+                    <input id="initialBalancesCurrentMonth" type="hidden" value="@string.Join(";", Model?.BalanceStatisticAgency?.BalancesCurrentMonth ?? new decimal[0]).Replace(",", ".")" />
                     <canvas id="balanceMonthsChart"></canvas>
                 </div>
             </div>
@@ -207,7 +207,7 @@
 
                     @if (Model != null)
                     {
-                        foreach (var bt in Model.BalancesType)
+                        foreach (var bt in Model.BalanceStatisticAgency?.BalancesType)
                         {
                             <div class="grid-income px-3 pb-2">
                                 <div class="incomeType text-small">@bt.Value.Text</div>

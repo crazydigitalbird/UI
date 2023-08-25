@@ -25,7 +25,10 @@ namespace UI.Models
                 {
                     return $"+{increment}";
                 }
-                return $"-{increment}";
+                else if (increment < 0)
+                {
+                    return $"-{increment}";
+                }
             }
             return "0";
         }

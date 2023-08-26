@@ -1,7 +1,6 @@
 ﻿using Core.Models.Sheets;
 using Newtonsoft.Json;
 using System.Net;
-using System.Security.Policy;
 using System.Security.Principal;
 using UI.Models;
 
@@ -214,7 +213,7 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        public async Task<List<SheetSite>> GetSites()
+        public async Task<List<SheetSite>> GetSites(bool isActive = true)
         {
             var sessionGuid = GetSessionGuid();
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -223,7 +222,12 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Sheets/GetSites?sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<List<SheetSite>>();
+                    var sites = await response.Content.ReadFromJsonAsync<List<SheetSite>>();
+                    if(isActive)
+                    {
+                       return sites?.Where(s => s.IsActive).ToList();
+                    }
+                    return sites;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -273,6 +277,6 @@ namespace UI.Infrastructure.API
         Task<bool> ChangePaassword(int sheetId, string password);
         Task<bool> DeleteSheet(int sheetId);
         Task<IEnumerable<Sheet>> GetSheets();
-        Task<List<SheetSite>> GetSites();
+        Task<List<SheetSite>> GetSites(bool isActive = true);
     }
 }

@@ -21,7 +21,7 @@ namespace UI.Controllers
          // GET: UserController
         public async Task<ActionResult> Index()
         {
-            ViewData["Sites"] = (await _userClient.GetSites())?.Where(s => s.IsActive).ToList();
+            ViewData["Sites"] = await _userClient.GetSites();
             return View(await _userClient.GetSheets());
         }
 

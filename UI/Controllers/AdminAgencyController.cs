@@ -69,7 +69,7 @@ namespace UI.Controllers
             var groups = groupsTask.Result;
             var cabinets = cabinetsTask.Result;
             var balances = balancesTask.Result;
-            var sites = sitesTask.Result?.Where(s => s.IsActive).ToList(); ;
+            var sites = sitesTask.Result;
 
             if (sheets != null)
             {

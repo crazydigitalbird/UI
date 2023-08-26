@@ -49,7 +49,7 @@ namespace UI.Controllers
                 agencyId = await _adminAgencyClient.GetAgencyId();
                 if (agencyId == 0)
                 {
-                    return View();
+                    return BadRequest();
                 }
             }
             var sheets = await _adminAgencyClient.GetSheets(agencyId);
@@ -106,7 +106,7 @@ namespace UI.Controllers
                 agencyId = await _adminAgencyClient.GetAgencyId();
                 if (agencyId == 0)
                 {
-                    return View();
+                    return BadRequest();
                 }
             }
 

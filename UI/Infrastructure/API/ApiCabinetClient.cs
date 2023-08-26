@@ -106,7 +106,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
-        public async Task<Cabinet> AddAsync(int agencyId, string name)
+        public async Task<AgencyCabinet> AddAsync(int agencyId, string name)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
@@ -116,7 +116,7 @@ namespace UI.Infrastructure.API
                 if (response.IsSuccessStatusCode)
                 {
                     var agencyCabinet = await response.Content.ReadFromJsonAsync<AgencyCabinet>();
-                    return (Cabinet)agencyCabinet;
+                    return agencyCabinet;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -314,7 +314,7 @@ namespace UI.Infrastructure.API
     public interface ICabinetClient
     {
         Task<IEnumerable<AgencyCabinet>> GetCabinetsAsync(int agencyId);
-        Task<Cabinet> AddAsync(int agencyId, string name);
+        Task<AgencyCabinet> AddAsync(int agencyId, string name);
         Task<bool> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId);
         Task<bool> UnbindCabinetToUserAsync(int cabinetId, int userId);
     }

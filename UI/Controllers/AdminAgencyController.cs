@@ -81,7 +81,7 @@ namespace UI.Controllers
 
                     if (cabinets?.Any(c => c.Sheets?.Any(acs => acs.Sheet.Id == sheet.Id) ?? false) ?? false)
                     {
-                        sheet.Cabinet = (Cabinet)cabinets.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
+                        sheet.Cabinet = cabinets.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
                     }
                     if (groups?.Any(g => g.Sheets?.Any(ags => ags.Sheet.Id == sheet.Id) ?? false) ?? false)
                     {

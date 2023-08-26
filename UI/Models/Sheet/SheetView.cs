@@ -1,4 +1,5 @@
-﻿using Core.Models.Agencies.Groups;
+﻿using Core.Models.Agencies.Cabinets;
+using Core.Models.Agencies.Groups;
 using Core.Models.Sheets;
 using Newtonsoft.Json;
 
@@ -34,7 +35,7 @@ namespace UI.Models
 
         public Shift Shift { get; set; }
 
-        public Cabinet Cabinet { get; set; }
+        public AgencyCabinet Cabinet { get; set; }
 
         public DateTime Created { get; set; }
 

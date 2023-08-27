@@ -32,20 +32,8 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Agencies/GetAgencySheets?agencyId={agencyId}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
-                    string s = await response.Content.ReadAsStringAsync();
                     var sheets = (await response.Content.ReadFromJsonAsync<IEnumerable<Sheet>>()).Where(s => s.IsActive);
                     var sheetsView = sheets.Select(s => (SheetView)s).ToList();
-
-                    //Dictionary<int, Task<IEnumerable<AgencyOperatorSession>>> tasks = new Dictionary<int, Task<IEnumerable<AgencyOperatorSession>>>();
-                    //foreach (var sheetView in sheetsView)
-                    //{
-                    //    tasks.Add(sheetView.Id, GetSheetAgencyOperators(sheetView.Id));
-                    //}
-
-                    //await Task.WhenAll(tasks.Values);
-
-                    //sheetsView.ForEach(s => s.Operators = tasks[s.Id].Result?.Count() ?? 0);
-
                     return sheetsView;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)

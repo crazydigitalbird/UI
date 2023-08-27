@@ -42,7 +42,7 @@ namespace UI.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(int agencyId = 0)
+        public async Task<IActionResult> Index(int agencyId)
         {
             if (agencyId == 0)
             {
@@ -52,51 +52,36 @@ namespace UI.Controllers
                     return BadRequest();
                 }
             }
-            var sheets = await _adminAgencyClient.GetSheets(agencyId);
 
-            var endDateTime = DateTime.Now;
-            var beginDatetime = endDateTime - TimeSpan.FromDays(30);
-
-            var statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheets);
+            var sheetsTask = _adminAgencyClient.GetSheets(agencyId);
             var groupsTask = _groupClient.GetGroupsAsync(agencyId);
             var cabinetsTask = _adminAgencyClient.GetCabinets(agencyId);
-            var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
             var sitesTask = _userClient.GetSites();
-            var opTask = _sheetClient.GetSheetAgencyOperatorSessionsCount(sheets);
-            await Task.WhenAll(statusAndMediaTask, groupsTask, cabinetsTask, balancesTask, sitesTask, opTask);
-            //var shifts = await _adminAgencyClient.GetShifts();
+            await Task.WhenAll(sheetsTask, groupsTask, cabinetsTask, sitesTask);
 
-            var groups = groupsTask.Result;
-            var cabinets = cabinetsTask.Result;
-            var balances = balancesTask.Result;
-            var sites = sitesTask.Result;
-
-            if (sheets != null)
+            if (sheetsTask.Result != null)
             {
-                foreach (var sheet in sheets)
-                {
-#if !DEBUGOFFLINE
-                    sheet.Balance = balances.Where(b => b.Sheet.Id == sheet.Id).Sum(sb => sb.Cash);
-#endif
+                var endDateTime = DateTime.Now;
+                var beginDatetime = endDateTime - TimeSpan.FromDays(30);
+                var statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheetsTask.Result);
+                var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
+                var sheetAgencyOperatorSessionsCountTask = _sheetClient.GetSheetAgencyOperatorSessionsCount(sheetsTask.Result);
+                await Task.WhenAll(statusAndMediaTask, balancesTask, sheetAgencyOperatorSessionsCountTask);
 
-                    if (cabinets?.Any(c => c.Sheets?.Any(acs => acs.Sheet.Id == sheet.Id) ?? false) ?? false)
-                    {
-                        sheet.Cabinet = cabinets.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
-                    }
-                    if (groups?.Any(g => g.Sheets?.Any(ags => ags.Sheet.Id == sheet.Id) ?? false) ?? false)
-                    {
-                        sheet.Group = groups.FirstOrDefault(g => g.Sheets.Any(ags => ags.Sheet.Id == sheet.Id));
-                    }
+                foreach (var sheet in sheetsTask.Result)
+                {
+                    sheet.Balance = balancesTask.Result?.Where(b => b.Sheet.Id == sheet.Id).Sum(sb => sb.Cash) ?? 0;
+                    sheet.Cabinet = cabinetsTask.Result?.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
+                    sheet.Group = groupsTask.Result?.FirstOrDefault(g => g.Sheets.Any(ags => ags.Sheet.Id == sheet.Id));
                 }
             }
 
             ViewData["agencyId"] = agencyId;
-            ViewData["Groups"] = groups?.Select(g => new SelectListItem(g.Description, g.Id.ToString()));
-            ViewData["Cabinets"] = cabinets?.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
-            ViewData["Sites"] = sites;
-            //ViewData["Shifts"] = shifts?.Select((s, i) => new SelectListItem(s, $"{i + 1}"));
+            ViewData["Groups"] = groupsTask.Result?.Select(g => new SelectListItem(g.Description, g.Id.ToString()));
+            ViewData["Cabinets"] = cabinetsTask.Result?.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
+            ViewData["Sites"] = sitesTask.Result;
 
-            return View(sheets);
+            return View(sheetsTask.Result);
         }
 
         public async Task<IActionResult> Statistics(int agencyId)
@@ -281,7 +266,7 @@ namespace UI.Controllers
 
                 if (user != null && agencyId != 0)
                 {
-                    ApplicationUser appUser = new ApplicationUser()
+                    ApplicationUser appUser = new()
                     {
                         Id = addUserTask.Result.Id,
                         UserName = userName,

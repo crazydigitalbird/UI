@@ -1,7 +1,6 @@
 ﻿using Core.Models.Sheets;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 using UI.Infrastructure.API;
 using UI.Models;
 
@@ -11,21 +10,18 @@ namespace UI.Infrastructure.Components
     {
         private readonly IChatClient _chatClient;
 
-        private readonly IOperatorClient _operatorClient;
-
         private readonly ILogger<AllNewMessagesFromAllMenViewComponent> _logger;
 
-        public AllNewMessagesFromAllMenViewComponent(IChatClient chatClient, IOperatorClient operatorClient, ILogger<AllNewMessagesFromAllMenViewComponent> logger)
+        public AllNewMessagesFromAllMenViewComponent(IChatClient chatClient, ILogger<AllNewMessagesFromAllMenViewComponent> logger)
         {
             _chatClient = chatClient;
-            _operatorClient = operatorClient;
             _logger = logger;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(List<Sheet> sheets)
         {
             var operatorId = 0;/*await _operatorClient.GetOperatorIdAsync();*/
-            List<(Dialogue Dialogue, SheetInfo SheetInfo)> dialoguesBindingToSheets = new List<(Dialogue Dialogue, SheetInfo SheetInfo)>();
+            List<(Dialogue Dialogue, SheetInfo SheetInfo)> dialoguesBindingToSheets = new();
 
             var sheetIdDialogsActiveTasksIEnumerable = sheets.Select(sheet => LoadDialogues(sheet, "active", 5, operatorId, 15));
             var sheetIdDialogsOnlineTasksIEnumerable = sheets.Select(sheet => LoadDialogues(sheet, "active,online", null, operatorId, 5));
@@ -122,11 +118,6 @@ namespace UI.Infrastructure.Components
                 dialoguesBindingToSheets.AddRange(dialogues.Select(d => (d, sheetInfo)));
             }
 
-#if !DEBUGOFFLINE
-            //Для LastMessage запрашиваем таймер
-            await SetTimerToLastMessages(dialoguesBindingToSheets);
-#endif
-
             //Заполняем диалоги данными о мужчине (имя, аватар, возраст, статус онлайн/оффлайн).
             var allDialogues = dialoguesBindingToSheets.Select(ds => ds.Dialogue).DistinctBy(d => d.IdInterlocutor).ToList();
             if (allDialogues.Count > 50)
@@ -168,8 +159,8 @@ namespace UI.Infrastructure.Components
             return View(dialoguesBindingToSheets.OrderByDescending(ds => ds.Dialogue.LastMessage.DateCreated));
         }
 
-        private async Task SetTimerToLastMessages(List<Dialogue> dialogues)
-        {
+        //private async Task SetTimerToLastMessages(List<Dialogue> dialogues)
+        //{
             //var idLastMessages = dialogues.Where(d => d.LastMessage.Type != MessageType.System).Select(d => d.LastMessage.Id);
             //if (idLastMessages.Count() > 0)
             //{
@@ -198,10 +189,10 @@ namespace UI.Infrastructure.Components
             ////        dialogues.FirstOrDefault(d => d.LastMessage.Id == dialogue.LastMessage.Id).LastMessage.Timer = timer;
             ////    }
             ////}
-        }
+        //}
 
-        private async Task SetTimerToLastMessages(List<(Dialogue Dialogue, SheetInfo SheetInfo)> dialoguesSheetInfo)
-        {
+        //private async Task SetTimerToLastMessages(List<(Dialogue Dialogue, SheetInfo SheetInfo)> dialoguesSheetInfo)
+        //{
             //var idLastMessages = dialoguesSheetInfo.Select(ds => ds.Dialogue).Where(d => d.LastMessage.Type != MessageType.System).Select(d => d.LastMessage.Id);
             //if (idLastMessages.Count() > 0)
             //{
@@ -230,7 +221,7 @@ namespace UI.Infrastructure.Components
             ////        dialoguesSheetInfo.FirstOrDefault(d => d.Dialogue.LastMessage.Id == dialogue.LastMessage.Id).Dialogue.LastMessage.Timer = timer;
             ////    }
             ////}
-        }
+        //}
 
         private async Task<KeyValuePair<int, List<Dialogue>>> LoadDialogues(Sheet sheet, string criteria, int? days, int operatorId, int limit)
         {
@@ -265,7 +256,7 @@ namespace UI.Infrastructure.Components
 
         //Возвращаем true если у всех диалогов значение поля DateUpdate младше dateThreshodl
         //Возвращаем fales если у хотбы у одного зи диалогов значение поля DateUpdate старше dateThreshodl
-        private bool IsLoadDialogues(Messenger messanger, DateTime? dateThreshold)
+        private static bool IsLoadDialogues(Messenger messanger, DateTime? dateThreshold)
         {
             if (dateThreshold.HasValue)
             {

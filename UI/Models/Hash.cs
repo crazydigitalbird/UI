@@ -7,8 +7,7 @@ namespace UI.Models
     {
         public static string HashPassword(string password)
         {
-            SHA512 sha = SHA512.Create();
-            byte[] hashPassword = sha.ComputeHash(Encoding.Unicode.GetBytes(password));
+            byte[] hashPassword = SHA512.HashData(Encoding.Unicode.GetBytes(password));
             return Convert.ToBase64String(hashPassword);
         }
     }

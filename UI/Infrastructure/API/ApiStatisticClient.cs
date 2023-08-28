@@ -1,5 +1,4 @@
-﻿using Core.Models.Balances;
-using UI.Models;
+﻿using UI.Models;
 
 namespace UI.Infrastructure.API
 {
@@ -8,19 +7,16 @@ namespace UI.Infrastructure.API
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAdminAgencyClient _adminAgencyClient;
         private readonly ISheetClient _sheetClient;
-        private readonly IBalanceClient _balanceClient;
         private readonly ILogger<ApiStatisticClient> _logger;
 
         public ApiStatisticClient(IHttpClientFactory httpClientFactory, 
             IAdminAgencyClient adminAgencyClient, 
             ISheetClient sheetClient,
-            IBalanceClient balanceClient,
         ILogger<ApiStatisticClient> logger) 
         {
             _httpClientFactory = httpClientFactory;
             _adminAgencyClient = adminAgencyClient;
             _sheetClient = sheetClient;
-            _balanceClient = balanceClient;
             _logger = logger;
         }
 
@@ -54,7 +50,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error getting time metric for agency with id: {id}. HttpStatusCode: {httpStatusCode}", agencyId);
+                _logger.LogError(ex, "Error getting time metric for agency with id: {id}. HttpStatusCode: {httpStatusCode}", agencyId);
             }
             return null;
         }

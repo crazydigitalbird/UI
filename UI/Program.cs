@@ -34,14 +34,14 @@ builder.Services.AddSingleton<IAuthenticationClient, ApiAuthenticationClient>();
 builder.Services.AddSingleton<IAdminClient, ApiAdminClient>();
 builder.Services.AddSingleton<IAdminAgencyClient, ApiAdminAgencyClient>();
 builder.Services.AddSingleton<IOperatorClient, ApiOperatorClient>();
-builder.Services.AddSingleton<IUserClient, ApiUserClient>();
+builder.Services.AddSingleton<ISheetClient, ApiSheetClient>();
 builder.Services.AddSingleton<ICabinetClient, ApiCabinetClient>();
 builder.Services.AddSingleton<IChatClient, ApiChatClient>();
 builder.Services.AddSingleton<ISiteClient, ApiSiteClient>();
 builder.Services.AddSingleton<ICommentClient, ApiCommentClient>();
 builder.Services.AddSingleton<IGroupClient, ApiGroupClient>();
 builder.Services.AddSingleton<IBalanceClient, ApiBalanceClient>();
-builder.Services.AddSingleton<ISheetClient, ApiSheetClient>();
+builder.Services.AddSingleton<IUserClient, ApiUserClient>();
 builder.Services.AddSingleton<IMailClient, ApiMailClient>();
 builder.Services.AddSingleton<IIcebreakersClient, ApiIcebreakersClient>();
 builder.Services.AddSingleton<IMediaClient, ApiMediaClient>();
@@ -57,8 +57,10 @@ builder.Services.AddHttpClient("api", client =>
     client.BaseAddress = new Uri(uriApi);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
-    var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
+    var handler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = ValidateServerCetification
+    };
     if (builder.Environment.IsDevelopment())
     {
     }
@@ -70,8 +72,10 @@ builder.Services.AddHttpClient("apiBot", client =>
     client.BaseAddress = new Uri(uriApiBot);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
-    var hadler = new HttpClientHandler();
-    hadler.ServerCertificateCustomValidationCallback = ValidateServerCetification;
+    var hadler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = ValidateServerCetification
+    };
     if (builder.Environment.IsDevelopment())
     {
     }

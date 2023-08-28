@@ -17,7 +17,7 @@ namespace UI.Controllers
         private readonly ISheetClient _sheetClient;
         private readonly IBalanceClient _balanceClient;
         private readonly IGroupClient _groupClient;
-        private readonly IUserClient _userClient;
+        private readonly ISiteClient _siteClient;
         private readonly IStatisticClient _statisticClient;
         private readonly ILogger<AdminAgencyController> _logger;
 
@@ -28,7 +28,7 @@ namespace UI.Controllers
             ISheetClient sheetClient,
             IBalanceClient balanceClient,
             IGroupClient groupClient,
-            IUserClient userClient,
+            ISiteClient siteClient,
             IStatisticClient statisticClient,
             ILogger<AdminAgencyController> logger)
         {
@@ -37,7 +37,7 @@ namespace UI.Controllers
             _sheetClient = sheetClient;
             _balanceClient = balanceClient;
             _groupClient = groupClient;
-            _userClient = userClient;
+            _siteClient = siteClient;
             _statisticClient = statisticClient;
             _logger = logger;
         }
@@ -56,7 +56,7 @@ namespace UI.Controllers
             var sheetsTask = _adminAgencyClient.GetSheets(agencyId);
             var groupsTask = _groupClient.GetGroupsAsync(agencyId);
             var cabinetsTask = _adminAgencyClient.GetCabinets(agencyId);
-            var sitesTask = _userClient.GetSites();
+            var sitesTask = _siteClient.GetSites();
             await Task.WhenAll(sheetsTask, groupsTask, cabinetsTask, sitesTask);
 
             if (sheetsTask.Result != null)
@@ -114,7 +114,7 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddSheet(int siteId, string login, string password)
         {
-            var sheet = await _userClient.AddSheet(siteId, login, password);
+            var sheet = await _sheetClient.AddAsync(siteId, login, password);
             if (sheet != null)
             {
                 return Ok(sheet);

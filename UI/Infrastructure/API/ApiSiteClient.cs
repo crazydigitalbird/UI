@@ -1,5 +1,4 @@
-﻿using Core.Models.Agencies;
-using Core.Models.Sheets;
+﻿using Core.Models.Sheets;
 using System.Net;
 using System.Security.Principal;
 
@@ -18,7 +17,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<List<SheetSite>> GetSites()
+        public async Task<List<SheetSite>> GetSites(bool isActive = true)
         {
             var sessionGuid = GetSessionGuid();
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -27,7 +26,12 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Sheets/GetSites?sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<List<SheetSite>>();
+                    var sites = await response.Content.ReadFromJsonAsync<List<SheetSite>>();
+                    if (isActive)
+                    {
+                        return sites?.Where(s => s.IsActive).ToList();
+                    }
+                    return sites;
                 }
                 else if(response.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -168,7 +172,7 @@ namespace UI.Infrastructure.API
 
     public interface ISiteClient
     {
-        Task<List<SheetSite>> GetSites();
+        Task<List<SheetSite>> GetSites(bool isActive = true);
         Task<bool> Add(SheetSite site);
         Task<bool> Update(SheetSite site);
         Task<bool> Delete(int siteId);

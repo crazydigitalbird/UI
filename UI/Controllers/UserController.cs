@@ -9,20 +9,22 @@ namespace UI.Controllers
     [APIAuthorize]
     public class UserController : Controller
     {
-        private readonly IUserClient _userClient;
+        private readonly ISheetClient _sheetClient;
+        private readonly ISiteClient _siteClient;
         private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserClient userClient, ILogger<UserController> logger)
+        public UserController(ISheetClient userClient, ISiteClient siteClient, ILogger<UserController> logger)
         {
-            _userClient = userClient;
+            _sheetClient = userClient;
+            _siteClient = siteClient;
             _logger = logger;
         }
 
          // GET: UserController
         public async Task<ActionResult> Index()
         {
-            ViewData["Sites"] = await _userClient.GetSites();
-            return View(await _userClient.GetSheets());
+            ViewData["Sites"] = await _siteClient.GetSites();
+            return View(await _sheetClient.GetSheetsAsync());
         }
 
         // POST: UserController/AddProfile
@@ -30,7 +32,7 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddSheet(int siteId, string login, string password)
         {
-            var sheet = await _userClient.AddSheet(siteId, login, password);
+            var sheet = await _sheetClient.AddAsync(siteId, login, password);
             if(sheet != null)
             {
                 return Ok(sheet);
@@ -43,7 +45,7 @@ namespace UI.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(int sheetId, string password)
         {
-            var sheet = await _userClient.UpdateSheet(sheetId, password);
+            var sheet = await _sheetClient.UpdateAsync(sheetId, password);
             if (sheet != null)
             {
                 return Ok(sheet);
@@ -56,7 +58,7 @@ namespace UI.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteSheet(int sheetId)
         {
-            if (await _userClient.DeleteSheet(sheetId))
+            if (await _sheetClient.DeleteAsync(sheetId))
             {
                 return Ok();
             }

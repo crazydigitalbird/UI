@@ -65,7 +65,7 @@ namespace UI.Controllers
                 var beginDatetime = endDateTime - TimeSpan.FromDays(30);
                 var statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheetsTask.Result);
                 var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
-                var sheetAgencyOperatorSessionsCountTask = _sheetClient.GetSheetAgencyOperatorSessionsCount(sheetsTask.Result);
+                var sheetAgencyOperatorSessionsCountTask = _sheetClient.GetSheetsAgencyOperatorSessionsCount(sheetsTask.Result);
                 await Task.WhenAll(statusAndMediaTask, balancesTask, sheetAgencyOperatorSessionsCountTask);
 
                 foreach (var sheet in sheetsTask.Result)

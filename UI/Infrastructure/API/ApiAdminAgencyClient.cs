@@ -109,61 +109,6 @@ namespace UI.Infrastructure.API
             return false;
         }
 
-        public async Task<IEnumerable<string>> GetShifts()
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
-            try
-            {
-                var response = await httpClient.GetAsync($"");
-                if (response.IsSuccessStatusCode)
-                {
-                    var shifts = await response.Content.ReadFromJsonAsync<IEnumerable<string>>();
-                    return shifts;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    SignOut();
-                }
-                else
-                {
-                    _logger.LogWarning("Error getting all the shifts. HttpStatusCode: {httpStatusCode}", response.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting all the shifts.");
-            }
-            return null;
-        }
-
-        public async Task<bool> ChangeShift(int sheetId, int shiftId)
-        {
-            HttpClient httpClient = _httpClientFactory.CreateClient("api");
-            var sessionGuid = GetSessionGuid();
-            try
-            {
-                var response = await httpClient.PostAsync($"", null);
-                if (response.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    SignOut();
-                }
-                else
-                {
-                    _logger.LogWarning("For sheet id: {sheetId}, the shift {shiftId} has not been changed. HttpStatusCode: {httpStatusCode}", sheetId, shiftId, response.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "For sheet id: {sheetId}, the shift {shiftId} has not been changed.", sheetId, shiftId);
-            }
-            return false;
-        }
-
         public async Task<IEnumerable<AgencyCabinet>> GetCabinets(int agencyId)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -857,10 +802,8 @@ namespace UI.Infrastructure.API
     public interface IAdminAgencyClient
     {
         Task<List<SheetView>> GetSheets(int agencyId);
-        Task<IEnumerable<string>> GetShifts();
-        Task<IEnumerable<AgencyCabinet>> GetCabinets(int agencyId);
         Task<bool> DeleteSheet(int sheetId);
-        Task<bool> ChangeShift(int sheetId, int shiftId);
+        Task<IEnumerable<AgencyCabinet>> GetCabinets(int agencyId);
         Task<bool> ChangeCabinet(int sheetId, int cabinetId);
 
         Task<IEnumerable<OperatorSessionsView>> GetAgencyOperators(int agencyId);

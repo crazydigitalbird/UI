@@ -161,16 +161,6 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeShift(int sheetId, int shiftId)
-        {
-            if (await _adminAgencyClient.ChangeShift(sheetId, shiftId))
-            {
-                return Ok();
-            }
-            return StatusCode(500, $"For sheet id: {sheetId}, the shift value has not been changed");
-        }
-
-        [HttpPost]
         public async Task<IActionResult> ChangeCabinet(int sheetId, int cabinetId)
         {
 

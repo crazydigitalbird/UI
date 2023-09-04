@@ -42,17 +42,9 @@ namespace UI.Controllers
             _logger = logger;
         }
 
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> Index(int agencyId)
         {
-            if (agencyId == 0)
-            {
-                agencyId = await _adminAgencyClient.GetAgencyId();
-                if (agencyId == 0)
-                {
-                    return BadRequest();
-                }
-            }
-
             var sheetsTask = _adminAgencyClient.GetSheets(agencyId);
             var groupsTask = _groupClient.GetGroupsAsync(agencyId);
             var cabinetsTask = _adminAgencyClient.GetCabinets(agencyId);
@@ -84,17 +76,9 @@ namespace UI.Controllers
             return View(sheetsTask.Result);
         }
 
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> Statistics(int agencyId)
         {
-            if (agencyId == 0)
-            {
-                agencyId = await _adminAgencyClient.GetAgencyId();
-                if (agencyId == 0)
-                {
-                    return BadRequest();
-                }
-            }
-
             var balanceStatisticAgencyTask = _balanceClient.GetBalanceStatisticAgencyAsync(agencyId);
             var sheetsStatisticTask = _statisticClient.GetSheetsStatisticAsync(agencyId);
             var statisticTimeMetricTask = _statisticClient.GetAgencyAverageResponseTimeAsync(agencyId);
@@ -197,16 +181,9 @@ namespace UI.Controllers
             return StatusCode(500, $"For sheet id: {sheetId}, the operator id: {operatorId} has not been added");
         }
 
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> Users(int agencyId)
         {
-            if (agencyId == 0)
-            {
-                agencyId = await _adminAgencyClient.GetAgencyId();
-                if (agencyId == 0)
-                {
-                    return View();
-                }
-            }
             AgencyView agency = await _adminAgencyClient.GetAgencyById(agencyId);
             ViewData["agencyId"] = agencyId;
             ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
@@ -234,31 +211,18 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> AddUser(int agencyId, string userName, [EmailAddress] string email, [Required] string pwd, Role role)
         {
             if (ModelState.IsValid)
             {
-                var addUserTask = _authenticationClient.AddUserAsync(userName, email, pwd);
-                Task<int> agencyIdTask;
-                if (agencyId == 0)
-                {
-                    agencyIdTask = _adminAgencyClient.GetAgencyId();
-                }
-                else
-                {
-                    agencyIdTask = Task.FromResult(agencyId);
-                }
-
-                await Task.WhenAll(addUserTask, agencyIdTask);
-
-                agencyId = agencyIdTask.Result;
-                var user = addUserTask.Result;
+                var user = await _authenticationClient.AddUserAsync(userName, email, pwd);
 
                 if (user != null && agencyId != 0)
                 {
                     ApplicationUser appUser = new()
                     {
-                        Id = addUserTask.Result.Id,
+                        Id = user.Id,
                         UserName = userName,
                         Email = email,
                         Role = role

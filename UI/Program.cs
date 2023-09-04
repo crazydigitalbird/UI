@@ -6,6 +6,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using UI.Infrastructure;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Filters;
 using UI.Infrastructure.Hubs;
 using UI.Infrastructure.Repository;
 using UI.Infrastructure.Services;
@@ -48,6 +49,7 @@ builder.Services.AddSingleton<IMediaClient, ApiMediaClient>();
 builder.Services.AddSingleton<IAutorespondersClient, ApiAutorespondersClient>();
 builder.Services.AddSingleton<IWorkingShiftClient, ApiWorkingShiftClient>();
 builder.Services.AddSingleton<IStatisticClient, ApiStatisticClient>();
+builder.Services.AddScoped<GetAgencyIdFilter>();
 
 builder.Services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
 builder.Services.AddScoped<IChatHub, CallingSideChatHub>();

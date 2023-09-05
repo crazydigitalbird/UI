@@ -4,15 +4,11 @@ namespace UI.Models
 {
     public class AdminAgencyStatisticsViewModel
     {
-        public int NumberMessagesSent { get; internal set; }
-
         public int NumberMessagesSentIncrement { get; internal set; }
-
-        public int NumberMailsSent { get; internal set; }
 
         public int NumberMailsSentIncrement { get; internal set; }
 
-        public AverageResponseTime AverageResponseTime { get; internal set; }
+        public AgencyMetrik Metrik { get; internal set; }
 
         public string Downtime { get; internal set; }
 

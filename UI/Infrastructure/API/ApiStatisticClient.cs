@@ -20,7 +20,7 @@ namespace UI.Infrastructure.API
             _logger = logger;
         }
 
-        public async Task<AverageResponseTime> GetAgencyAverageResponseTimeAsync(int agencyId)
+        public async Task<AgencyMetrik> GetAgencyMetrikAsync(int agencyId)
         {
 #if DEBUGOFFLINE || DEBUG
             string s;
@@ -40,7 +40,7 @@ namespace UI.Infrastructure.API
 #if DEBUGOFFLINE || DEBUG
                     s = await response.Content.ReadAsStringAsync();
 #endif
-                    var averageResponseTime = await response.Content.ReadFromJsonAsync<AverageResponseTime>();
+                    var averageResponseTime = await response.Content.ReadFromJsonAsync<AgencyMetrik>();
                     return averageResponseTime;
                 }
                 else
@@ -70,7 +70,7 @@ namespace UI.Infrastructure.API
 
     public interface IStatisticClient
     {
-        Task<AverageResponseTime> GetAgencyAverageResponseTimeAsync(int agencyId);
+        Task<AgencyMetrik> GetAgencyMetrikAsync(int agencyId);
 
         Task<AgencySheetsStatistic> GetSheetsStatisticAsync(int agencyId);
     }

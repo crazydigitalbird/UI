@@ -45,35 +45,8 @@ namespace UI.Controllers
         [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> Index(int agencyId)
         {
-            var sheetsTask = _adminAgencyClient.GetSheets(agencyId);
-            var groupsTask = _groupClient.GetGroupsAsync(agencyId);
-            var cabinetsTask = _adminAgencyClient.GetCabinets(agencyId);
-            var sitesTask = _siteClient.GetSites();
-            await Task.WhenAll(sheetsTask, groupsTask, cabinetsTask, sitesTask);
-
-            if (sheetsTask.Result != null)
-            {
-                var endDateTime = DateTime.Now;
-                var beginDatetime = endDateTime - TimeSpan.FromDays(30);
-                var statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheetsTask.Result);
-                var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
-                var sheetAgencyOperatorSessionsCountTask = _sheetClient.GetSheetsAgencyOperatorSessionsCount(sheetsTask.Result);
-                await Task.WhenAll(statusAndMediaTask, balancesTask, sheetAgencyOperatorSessionsCountTask);
-
-                foreach (var sheet in sheetsTask.Result)
-                {
-                    sheet.Balance = balancesTask.Result?.Where(b => b.Sheet.Id == sheet.Id).Sum(sb => sb.Cash) ?? 0;
-                    sheet.Cabinet = cabinetsTask.Result?.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
-                    sheet.Group = groupsTask.Result?.FirstOrDefault(g => g.Sheets.Any(ags => ags.Sheet.Id == sheet.Id));
-                }
-            }
-
-            ViewData["agencyId"] = agencyId;
-            ViewData["Groups"] = groupsTask.Result?.Select(g => new SelectListItem(g.Description, g.Id.ToString()));
-            ViewData["Cabinets"] = cabinetsTask.Result?.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
-            ViewData["Sites"] = sitesTask.Result;
-
-            return View(sheetsTask.Result);
+            var adminAgencyView = await _adminAgencyClient.GetAdminAgencyViewById(agencyId);
+            return View(adminAgencyView);
         }
 
         [ServiceFilter(typeof(GetAgencyIdFilter))]
@@ -156,6 +129,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public IActionResult GetOperators(int sheetId, int agencyId)
         {
             return ViewComponent("Operators", new { sheetId, agencyId });

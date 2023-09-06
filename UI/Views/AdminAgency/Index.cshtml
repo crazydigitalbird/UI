@@ -1,10 +1,7 @@
-﻿@model List<SheetView>
+﻿@model AdminAgencyView
 
 @{
     ViewData["Title"] = "Sheets";
-    var groups = (IEnumerable<SelectListItem>)ViewData["Groups"];
-    var shifts = (IEnumerable<SelectListItem>)ViewData["Shifts"];
-    var cabinets = (IEnumerable<SelectListItem>)ViewData["Cabinets"];
     int counter = 1;
 }
 
@@ -14,10 +11,9 @@
 
 <partial name="_AlertsPartial" />
 
-<input type="hidden" id="agencyId" value="@ViewData["agencyId"]" />
+<input type="hidden" asp-for="AgencyId" />
 
 <div id="tableDiv" class="d-none">
-
 
     <div id="toolbar" class="d-flex">
         <div>
@@ -31,10 +27,6 @@
                 <i class="fa-solid fa-plus"></i>
                 Add Group
             </button>
-            @*        <button id="addworkSchedule" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i>
-            Add Work Schedule
-            </button>*@
             <button id="addSheet" class="btn btn-sm btn-success">
                 <i class="fa-solid fa-plus"></i>
                 Add Sheets
@@ -42,7 +34,6 @@
 
         </div>
     </div>
-
 
     <table id="adminAgencyTable" class="table table-sm table-hover table-bordered"
            data-toggle="true"
@@ -68,31 +59,26 @@
                 <th data-field="media" class="text-center">Media materials</th>
                 <th data-field="operators" data-formatter="operatorsFormatter" class="text-center">Operators</th>
                 <th data-field="group" data-formatter="groupFormatter" data-width="200">
-                    <select id="groupsSelect" name="groupHeader" class="form-select form-select-sm" asp-items="@groups" onchange="filterGroup(event)">
+                    <select id="groupsSelect" name="groupHeader" class="form-select form-select-sm" asp-items="@Model?.Groups" onchange="filterGroup(event)">
                         <option value="0">All Groups</option>
                     </select>
                 </th>
-                <th data-field="shift" data-formatter="shiftFormatter" data-width="200" data-visible="false">
-                    <select id="shiftsSelect" name="shiftHeader" class="form-select form-select-sm" asp-items="@shifts" onchange="filterShift(event)">
-                        <option selected value="0">All Work Shifts</option>
-                    </select>
-                </th>
                 <th data-field="cabinet" data-formatter="cabinetFormatter" data-width="200">
-                    <select id="cabinetsSelect" name="cabinetHeader" class="form-select form-select-sm" asp-items="@cabinets" onchange="filterCabinet(event)">
+                    <select id="cabinetsSelect" name="cabinetHeader" class="form-select form-select-sm" asp-items="@Model?.Cabinets" onchange="filterCabinet(event)">
                         <option selected value="0">All Cabinets</option>
                     </select>
                 </th>
             </tr>
         </thead>
         <tbody>
-            @if (Model?.Count > 0)
+            @if (Model?.Sheets?.Count > 0)
             {
-                @foreach (var sheet in Model)
+                @foreach (var sheet in Model.Sheets)
                 {
                     <tr>
                         <td>@*@sheet.Id*@</td>
 
-                        <td>@counter</td>
+                        <td>@(counter++)</td>
 
                         <td class="p-1">
                             <div class="d-flex justify-content-center">
@@ -108,14 +94,6 @@
                                     }
                                 </div>
                             </div>
-@*                            @if (sheet.Status == Status.Online)
-                            {
-                                <i class="fa-solid fa-circle text-success"></i>
-                            }
-                            else
-                            {
-                                <i class="fa-solid fa-circle text-danger"></i>
-                            }*@
                         </td>
 
                         <td>@sheet.FirstName</td>
@@ -162,31 +140,18 @@
 
                         <td>@sheet.Group?.Id</td>
 
-                        <td>@sheet.Shift?.Id</td>
-
                         <td>@sheet.Cabinet?.Id</td>
                     </tr>
-                    counter++;
                 }
             }
         </tbody>
     </table>
 </div>
 
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
-    <div id="toast" class="toast text-white" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-mdb-delay="5000">
-        <div class="d-flex">
-            <div id="toastBody" class="toast-body">
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-mdb-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
-
 <partial name="_DeleteSheets" />
-<partial name="_AddGroup" model="@ViewData["agencyId"]" />
+<partial name="_AddGroup" model="@Model?.AgencyId" />
 <partial name="_AddWorkSchedule" />
-<partial name="_AddSheet" model="@ViewData["Sites"]" />
+<partial name="_AddSheet" model="@Model?.Sites" />
 <partial name="_Popover" />
 <partial name="_Toast" />
 

@@ -4,6 +4,7 @@ using Core.Models.Agencies.Operators;
 using Core.Models.Agencies.Sessions;
 using Core.Models.Sheets;
 using Core.Models.Users;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net;
 using System.Security.Principal;
 using UI.Models;
@@ -16,11 +17,28 @@ namespace UI.Infrastructure.API
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<ApiAdminAgencyClient> _logger;
 
-        public ApiAdminAgencyClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ApiAdminAgencyClient> logger)
+        private readonly ISheetClient _sheetClient;
+        private readonly IBalanceClient _balanceClient;
+        private readonly IGroupClient _groupClient;
+        private readonly ISiteClient _siteClient;
+
+        public ApiAdminAgencyClient(IHttpClientFactory httpClientFactory,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ApiAdminAgencyClient> logger,
+            ISheetClient sheetClient,
+            IBalanceClient balanceClient,
+            IGroupClient groupClient,
+            ISiteClient siteClient
+            )
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+
+            _sheetClient = sheetClient;
+            _balanceClient = balanceClient;
+            _groupClient = groupClient;
+            _siteClient = siteClient;
         }
 
         public async Task<List<SheetView>> GetSheets(int agencyId)
@@ -80,6 +98,42 @@ namespace UI.Infrastructure.API
                 _logger.LogError(ex, "Error getting agency Id.");
             }
             return 0;
+        }
+
+        public async Task<AdminAgencyView> GetAdminAgencyViewById(int agencyId)
+        {
+            var sheetsTask = GetSheets(agencyId);
+            var groupsTask = _groupClient.GetGroupsAsync(agencyId);
+            var cabinetsTask = GetCabinets(agencyId);
+            var sitesTask = _siteClient.GetSites();
+            await Task.WhenAll(sheetsTask, groupsTask, cabinetsTask, sitesTask);
+
+            if (sheetsTask.Result != null)
+            {
+                var endDateTime = DateTime.Now;
+                var beginDatetime = endDateTime - TimeSpan.FromDays(30);
+                var statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheetsTask.Result);
+                var balancesTask = _balanceClient.GetAgencyBalance(agencyId, beginDatetime, endDateTime);
+                var sheetAgencyOperatorSessionsCountTask = _sheetClient.GetSheetsAgencyOperatorSessionsCount(sheetsTask.Result);
+                await Task.WhenAll(statusAndMediaTask, balancesTask, sheetAgencyOperatorSessionsCountTask);
+
+                foreach (var sheet in sheetsTask.Result)
+                {
+                    sheet.Balance = balancesTask.Result?.Where(b => b.Sheet.Id == sheet.Id).Sum(sb => sb.Cash) ?? 0;
+                    sheet.Cabinet = cabinetsTask.Result?.FirstOrDefault(c => c.Sheets.Any(acs => acs.Sheet.Id == sheet.Id));
+                    sheet.Group = groupsTask.Result?.FirstOrDefault(g => g.Sheets.Any(ags => ags.Sheet.Id == sheet.Id));
+                }
+            }
+
+            var adminAgencyView = new AdminAgencyView
+            {
+                AgencyId = agencyId,
+                Sheets = sheetsTask.Result,
+                Groups = groupsTask.Result?.Select(g => new SelectListItem(g.Description, $"{g.Id}")),
+                Cabinets = cabinetsTask.Result?.Select(c => new SelectListItem(c.Name, $"{c.Id}")),
+                Sites = sitesTask.Result
+            };
+            return adminAgencyView;
         }
 
         public async Task<bool> DeleteSheet(int sheetId)
@@ -249,7 +303,7 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Agencies/Operators/GetAgencyOperatorSessions?operatorId={operatorId}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
-                    var agencyOperatorSessions = (await response.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>());
+                    var agencyOperatorSessions = (await response.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>()).Where(aos => aos.IsActive);
                     return agencyOperatorSessions;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -813,6 +867,7 @@ namespace UI.Infrastructure.API
         Task<bool> DeleteOperatorFromSheet(int operatorId, int sheetId);
 
         Task<int> GetAgencyId();
+        Task<AdminAgencyView> GetAdminAgencyViewById(int agencyId);
         Task<AgencyView> GetAgencyById(int agencyId);
         Task<bool> UpdateAgency(AgencyView agency, List<ApplicationUser> originalUsers);
         Task<List<ApplicationUser>> GetNonAgencyUsers();

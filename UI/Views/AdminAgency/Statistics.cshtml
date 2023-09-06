@@ -31,11 +31,11 @@
                 <div class="statSend d-flex align-items-center rounded-4 h-100 p-2">
                     <div class="w-100">
                         <div class="mb-2">
-                            <div class="">@($"Отправлено сообщений: {Model?.NumberMessagesSent}")</div>
+                            <div class="">@($"Отправлено сообщений: {Model?.Metrik?.Messages}")</div>
                             <div class="text-small">@($"от прошлого мес. {Model?.NumberMessagesSentIncrement}%")</div>
                         </div>
                         <div class="">
-                            <div class="">@($"Отправлено писем: {Model?.NumberMailsSent}")</div>
+                            <div class="">@($"Отправлено писем: {Model?.Metrik?.Mails}")</div>
                             <div class="text-small">@($"от прошлого мес. {Model?.NumberMailsSentIncrement}%")</div>
                         </div>
                     </div>
@@ -67,8 +67,8 @@
                 <div class="statTime d-flex align-items-center rounded-4 h-100 p-2">
                     <div class="w-100">
                         <div class="mb-2">
-                            <div class="">@($"Среднее время ответа: {Model?.AverageResponseTime}")</div>
-                            <div class="text-small">@($"Разница от прошлого мес. {Model?.AverageResponseTime?.Increment()}%")</div>
+                            <div class="">@($"Среднее время ответа: {Model?.Metrik}")</div>
+                            <div class="text-small">@($"Разница от прошлого мес. {Model?.Metrik?.AverageTimeIncrement()}%")</div>
                         </div>
                         <div class="">
                             <div class="">@($"Среднее время простоя: {Model?.Downtime}")</div>

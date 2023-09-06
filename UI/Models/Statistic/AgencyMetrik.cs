@@ -2,7 +2,7 @@
 
 namespace UI.Models
 {
-    public class AverageResponseTime
+    public class AgencyMetrik
     {
         [JsonPropertyName("average_time_current_month")]
         public double AverageTimeCurrentMonth { get; set; }
@@ -10,13 +10,19 @@ namespace UI.Models
         [JsonPropertyName("average_time_previous_month")]
         public double AverageTimePreviousMonth { get; set; }
 
+        [JsonPropertyName("sent_mails")]
+        public int Mails { get; set; }
+        
+        [JsonPropertyName("sent_messages")]
+        public int Messages { get; set; }
+
         public override string ToString()
         {
             var averageTimeCurrentMonthTimeSpan = TimeSpan.FromSeconds(AverageTimeCurrentMonth);
             return new DateTime(averageTimeCurrentMonthTimeSpan.Ticks).ToString("m мин. ss сек.");
         }
 
-        public string Increment()
+        public string AverageTimeIncrement()
         {
             if (AverageTimePreviousMonth != 0)
             {

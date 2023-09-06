@@ -81,14 +81,14 @@ namespace UI.Controllers
         {
             var balanceStatisticAgencyTask = _balanceClient.GetBalanceStatisticAgencyAsync(agencyId);
             var sheetsStatisticTask = _statisticClient.GetSheetsStatisticAsync(agencyId);
-            var statisticTimeMetricTask = _statisticClient.GetAgencyAverageResponseTimeAsync(agencyId);
-            await Task.WhenAll(balanceStatisticAgencyTask, sheetsStatisticTask, statisticTimeMetricTask);
+            var agencyMetrikTask = _statisticClient.GetAgencyMetrikAsync(agencyId);
+            await Task.WhenAll(balanceStatisticAgencyTask, sheetsStatisticTask, agencyMetrikTask);
 
             var statisticsViewModel = new AdminAgencyStatisticsViewModel
             {
                 BalanceStatisticAgency = balanceStatisticAgencyTask.Result,
                 AgencySheetsStatistic = sheetsStatisticTask.Result,
-                AverageResponseTime = statisticTimeMetricTask.Result
+                Metrik = agencyMetrikTask.Result
             };
 
             return View(statisticsViewModel);

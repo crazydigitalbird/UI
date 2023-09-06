@@ -14,7 +14,7 @@ namespace UI.Models
 
         public string Description { get; set; }
 
-        public virtual List<ApplicationUser> Users { get; set; }
+        public virtual List<ApplicationUser> Users { get; set; } =new List<ApplicationUser>();
 
         //[Required]
         //[DataType(DataType.Password)]

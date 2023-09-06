@@ -56,6 +56,15 @@
                             <li class="nav-item ps-1">
                                 <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Statistics">Statistics</a>
                             </li>
+@*                             <li class="nav-item">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
+                            </li> *@
                         }
                         else if (User.IsInRole(Role.Operator.ToString()))
                         {
@@ -91,7 +100,7 @@
     else
     {
         @*<script src="/js/bootstrap.bundle.js" asp-append-version="true"></script>*@
-        <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js"></script>
+        <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js" asp-append-version="true"></script>
     }
     <script src="~/js/site.js" asp-append-version="true"></script>
 

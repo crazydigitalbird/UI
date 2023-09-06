@@ -50,7 +50,7 @@ namespace UI.Infrastructure.API
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting time metric for agency with id: {id}. HttpStatusCode: {httpStatusCode}", agencyId);
+                _logger.LogError(ex, "Error getting time metric for agency with id: {id}.", agencyId);
             }
             return null;
         }

@@ -196,7 +196,7 @@ namespace UI.Infrastructure.API
 #if DEBUGOFFLINE || DEBUG
                     var s = await response.Content.ReadAsStringAsync();
 #endif
-                    List<Core.Models.Balances.AgencyBalanceStatistic> agencyBalanceStatistics = await response.Content.ReadFromJsonAsync<List<Core.Models.Balances.AgencyBalanceStatistic>>();
+                    List<AgencyBalanceStatistic> agencyBalanceStatistics = await response.Content.ReadFromJsonAsync<List<AgencyBalanceStatistic>>();
                     return agencyBalanceStatistics;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)

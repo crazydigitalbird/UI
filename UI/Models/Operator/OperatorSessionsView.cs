@@ -10,10 +10,11 @@ namespace UI.Models
 
         public int CountSheets()
         {
-            var individualSheets = Sessions.SelectMany(s => s.Session.Sheets);
-            var cabinetsSheets = Sessions.SelectMany(s => s.Session.Cabinets).SelectMany(c => c.Cabinet?.Sheets).Select(s => s.Sheet);
-            var countSheets = individualSheets.Count() + cabinetsSheets.Count();
-            return countSheets;
+            //var individualSheets = Sessions.SelectMany(s => s.Session.Sheets);
+            //var cabinetsSheets = Sessions.SelectMany(s => s.Session.Cabinets).SelectMany(c => c.Cabinet?.Sheets).Select(s => s.Sheet).Where(acs => acs.IsActive);
+            //var countSheets = individualSheets.Count() + cabinetsSheets.Count();
+            //return countSheets;
+            return Sessions.Count();
         }
 
         public bool IsBindedCabinet(int cabinetId)

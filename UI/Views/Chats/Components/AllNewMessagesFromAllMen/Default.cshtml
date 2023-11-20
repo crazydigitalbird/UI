@@ -23,7 +23,7 @@
 
             <div class="other-user-block col-2 pe-0">
                 <div class="position-relative">
-                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" loading="lazy" alt="No person image" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                     @if (ds.Dialogue.Status == Status.Online)
                     {
                         <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
@@ -96,7 +96,7 @@
             </div>
             <div class="user-block d-flex align-items-center rounded col-4 p-2">
                 <div class="me-3 position-relative">
-                    <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+                    <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" loading="lazy" alt="Person image" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                     @*                    @if (sd.SheetInfo.IsOnline)
             {
             <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
@@ -126,7 +126,7 @@
 
             <div class="other-user-block col-2 ps-0">
                 <div class="position-relative">
-                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" loading="lazy" alt="No person image" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                     @if (ds.Dialogue.Status == Status.Online)
                     {
                         <span class="status-circle-green other-user-block-status rounded-circle d-inline-block position-absolute bottom-0"></span>
@@ -206,7 +206,7 @@
             </div>
             <div class="user-block d-flex align-items-center rounded col-4 p-2">
                 <div class="me-3 position-relative">
-                    <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+                    <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" loading="lazy" alt="Person image" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                     @*                   @if (sd.SheetInfo.IsOnline)
             {
             <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>

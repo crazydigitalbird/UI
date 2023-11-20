@@ -29,7 +29,7 @@ select#selectIce {
     border-color: #454563 !important;
 }
 
-     select#selectIce:focus {
+    select#selectIce:focus {
         outline: 0;
         box-shadow: 0 0 0 0.25rem rgba(125, 106, 240, 0.25) !important;
     }
@@ -95,6 +95,11 @@ select#selectIce {
         .sheet-card .sheet-girl:hover {
             background: #2E2E4F;
         }
+
+.avatar {
+    height: 38px;
+    width: 38px;
+}
 
 /*.wrapper-list {
     background: rgba(217, 217, 217, 0.1);

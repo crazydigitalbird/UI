@@ -12,25 +12,25 @@
     bool isOwner = ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom && ds.Dialogue.LastMessage.Type != MessageType.System;
 
     <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}")" class="bottom-block-body__item d-flex w-100 cursor-pointer mb-2 text-white row p-1 rounded @(isOwner ? "flex-row-reverse": "flex-row")"
-         data-message-id="@ds.Dialogue.LastMessage.Id"
-         data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
-         data-owner-id="@($"{ds.SheetInfo.Id}")"
-         data-is-pinned="@ds.Dialogue.IsPinned"
-         data-is-bookmarked="@ds.Dialogue.IsBookmarked"
-         data-message-type="@(isOwner ? "" : ds.Dialogue.LastMessage.Type)"
-         data-online="@(isOwner ? ds.Dialogue.Status : "")"
-         onclick="goToChat(this)">
+     data-message-id="@ds.Dialogue.LastMessage.Id"
+     data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
+     data-owner-id="@($"{ds.SheetInfo.Id}")"
+     data-is-pinned="@ds.Dialogue.IsPinned"
+     data-is-bookmarked="@ds.Dialogue.IsBookmarked"
+     data-message-type="@(isOwner ? "" : ds.Dialogue.LastMessage.Type)"
+     data-online="@(isOwner ? ds.Dialogue.Status : "")"
+     onclick="goToChat(this)">
         <div class="other-user-block col-2 p-0">
             <div class="position-relative d-inline-block">
-                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="avatar" class="standart-image rounded">
-                    @if (ds.Dialogue.Status == Status.Online)
-                    {
-                        <span class="status-circle-green other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
-                    }
-                    else
-                    {
-                        <span class="status-circle-red other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
-                    }
+                <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
+                @if (ds.Dialogue.Status == Status.Online)
+                {
+                    <span class="status-circle-green other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
+                }
+                else
+                {
+                    <span class="status-circle-red other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
+                }
             </div>
 
             <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
@@ -93,7 +93,7 @@
         </div>
         <div class="user-block d-flex align-items-center rounded col-4 px-2">
             <div class="position-relative mx-1">
-                <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="avatar" class="standart-image rounded">
+                <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                 <span name="online-status-@ds.SheetInfo.SheetId" class="rounded-circle position-absolute bottom-0 end-0"></span>
                 @*                    @if (sd.SheetInfo.IsOnline)
             {
@@ -122,5 +122,4 @@
             </div>
         </div>
     </div>
-
 }

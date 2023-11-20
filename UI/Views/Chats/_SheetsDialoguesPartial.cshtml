@@ -81,7 +81,7 @@
                                 <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-active-{sheetOperator.Sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
-                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                                             @if (sheetOperator.Free)
                                             {
                                                 <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
@@ -168,7 +168,7 @@
                                 <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-bookmarked-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
-                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                        <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                                             @if (sheetOperator.Free)
                                             {
                                                 <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
@@ -251,7 +251,7 @@
                                 <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-premium-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
-                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                        <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                                             @if (sheetOperator.Free)
                                             {
                                                 <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
@@ -334,7 +334,7 @@
                                 <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-trash-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
-                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                        <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                                             @if (sheetOperator.Free)
                                             {
                                                 <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>

@@ -4,6 +4,6 @@
     {
         public int SheetId { get; set; }
 
-        public int SessionsCount { get; set; }
+        public int Count { get; set; }
     }
 }

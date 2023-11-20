@@ -2,7 +2,7 @@
 @model IEnumerable<SheetView>
 
 @{
-    Layout = "_LayoutNew";
+    Layout = "_LayoutGrid";
     ViewData["Title"] = "Operator";
     int counter = 1;
     var rnd = new Random();
@@ -15,218 +15,211 @@
 <input id="initialBalancesByMessageType" type="hidden" value="@ViewData["balancesByMessageType"]" />
 <input id="initialBalancesMonth" type="hidden" value="@ViewData["balancesMonth"]" />
 
-<div class="row bottom-block__items h-100 d-flex flex-column">
-    <div class="px-5 h-100">
-        <div class="d-flex flex-column overflow-hidden h-50">
+<div class="d-grid gap-3 overflow-hidden py-3 px-5" style="grid-template-rows: min-content auto minmax(50%, 1fr);">
 
-            <div class="d-flex mt-3 mb-3">
-                <div class="col-4 d-flex">
-                    <div class="select select-time position-relative">
-                        <div class="select-title d-flex align-items-center justify-content-between">
-                            <span class="select-title__text">Последние 24 часа</span>
-                            <svg class="arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.825 0L5 3.7085L1.175 0L0 1.1417L5 6L10 1.1417L8.825 0Z" fill="#9292A3"></path>
-                            </svg>
-                            <svg class="clock" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10 19.25C15.1086 19.25 19.25 15.1086 19.25 10C19.25 4.89137 15.1086 0.75 10 0.75C4.89137 0.75 0.75 4.89137 0.75 10C0.75 15.1086 4.89137 19.25 10 19.25Z" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                <path d="M10 10.82L7 8.76001" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                <path d="M10 10.82L14.11 7.72998" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
+    <div class="d-flex">
+        <div class="fs-4 fw-bold text-white col">Общий баланс: $ <span>@ViewData["balancesAll"]</span></div>
+        <div class="col-4 text-end px-0">
+            <partial name="_WorkingShiftPartial" />
+        </div>
+    </div>
+
+    <div id="containerTable" class="overflow-y-hidden">
+        <table id="operatorTable" class="table table-sm table-bordered rounded-1 table-dark overflow-x-hidden"
+               data-toggle="operatorTable"
+               data-sticky-header="true"
+               data-unique-id="id">
+            <thead>
+                <tr>
+                    <th data-field="number" data-width="20px" data-sortable="true" data-align="center" class="text-white-50">#</th>
+                    <th data-field="status"></th>
+                    <th data-field="name" data-sortable="true">Имя</th>
+                    <th data-field="lastName" data-sortable="true">Фамилия</th>
+                    <th data-field="sheetId" data-sortable="true" data-align="center">Профиль ID</th>
+                    <th data-field="balance" data-formatter="balanceFormatter" class="text-center">Баланс за 30 дней</th>
+                    <th data-field="media" class="text-center">Медиа материалы</th>
+                    <th data-field="detailedBalance" class="text-center">
+                        <div class="d-flex">
+                            <div class="col p-0">
+                                Чаты
+                            </div>
+                            <div class="col p-0">
+                                Чаты фото
+                            </div>
+                            <div class="col p-0">
+                                Чаты видео
+                            </div>
+                            <div class="col p-0">
+                                Чаты аудио
+                            </div>
+                            <div class="col p-0">
+                                Стикеры
+                            </div>
+                            <div class="col p-0">
+                                Письма
+                            </div>
+                            <div class="col p-0">
+                                Другое
+                            </div>
                         </div>
-                        <ul class="select-info position-absolute text-start">
-                            <li class="select-info__list">Последние 6 часов</li>
-                            <li class="select-info__list">Последние 12 часов</li>
-                            <li class="select-info__list">Последние 24 часа</li>
-                        </ul>
-                    </div>
-                    <button class="zoom">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8.97 17.19C4.43 17.19 0.75 13.51 0.75 8.97C0.75 4.43 4.43 0.75 8.97 0.75C13.51 0.75 17.19 4.43 17.19 8.97C17.19 13.51 13.51 17.19 8.97 17.19Z" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <path d="M19.25 19.25L15.14 15.14" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <path d="M6.92004 8.96997H11.03" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="total-balance text-white col">Общий баланс: $ <span>@ViewData["balancesAll"]</span></div>
-                <div class="col-4 text-end px-0">
-                    <partial name="_WorkingShiftPartial" />
-                </div>
-            </div>
-
-            <div id="containerTable" class="overflow-y-auto h-100">
-                <table id="operatorTable" class="table table-sm table-bordered rounded-1 table-dark overflow-x-hidden"
-                       data-toggle="operatorTable"
-                       data-sticky-header="true"
-                       data-unique-id="id">
-                    <thead>
+                    </th>
+                    <th data-field="id" data-visible="false">ID</th>
+                </tr>
+                <tr>
+                    <th colspan="9"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model?.Count() > 0)
+                {
+                    foreach (var sheet in Model)
+                    {
                         <tr>
-                            <th data-field="number" data-width="20px" data-sortable="true" data-align="center" class="text-white-50">#</th>
-                            <th data-field="status"></th>
-                            <th data-field="name" data-sortable="true">Имя</th>
-                            <th data-field="lastName" data-sortable="true">Фамилия</th>
-                            <th data-field="sheetId" data-sortable="true" data-align="center">Профиль ID</th>
-                            <th data-field="id" data-visible="false">ID</th>
-                            <th data-field="balance" data-formatter="balanceFormatter" class="text-center">Баланс за 30 дней</th>
-                            <th data-field="media" class="text-center">Медиа материалы</th>
-                            <th data-field="detailedBalance" class="text-center">
-                                <div class="d-flex">
-                                    <div class="col p-0">
-                                        Чаты
-                                    </div>
-                                    <div class="col p-0">
-                                        Чаты фото
-                                    </div>
-                                    <div class="col p-0">
-                                        Чаты видео
-                                    </div>
-                                    <div class="col p-0">
-                                        Чаты аудио
-                                    </div>
-                                    <div class="col p-0">
-                                        Стикеры
-                                    </div>
-                                    <div class="col p-0">
-                                        Письма
-                                    </div>
-                                    <div class="col p-0">
-                                        Другое
+                            <td class="text-white-50">@counter</td>
+
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center">
+                                    <div class="position-relative d-inline-flex">
+                                        <img src="@sheet.Avatar" alt="avatar" class="rounded" style="width:38px;">
+                                        @if (sheet.Status == Status.Online)
+                                        {
+                                            <span class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-circle-red rounded-circle position-absolute bottom-0 end-0"></span>
+                                        }
                                     </div>
                                 </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model?.Count() > 0)
+                                @*                                    @switch (sheet.Status)
                         {
-                            foreach (var sheet in Model)
-                            {
-                                <tr>
-                                    <td class="text-white-50">@counter</td>
+                        case Status.Online:
+                        <i class="fa-solid fa-circle text-success"></i>
+                        break;
 
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center">
-                                            <div class="position-relative d-inline-flex">
-                                                <img src="@sheet.Avatar" alt="avatar" class="rounded" style="width:38px;">
-                                                @if (sheet.Status == Status.Online)
-                                                {
-                                                    <span class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="status-circle-red rounded-circle position-absolute bottom-0 end-0"></span>
-                                                }
-                                            </div>
-                                        </div>
-                                        @*                                    @switch (sheet.Status)
-                                {
-                                case Status.Online:
-                                <i class="fa-solid fa-circle text-success"></i>
-                                break;
+                        case Status.Offline:
+                        <i class="fa-solid fa-circle text-danger"></i>
+                        break;
 
-                                case Status.Offline:
-                                <i class="fa-solid fa-circle text-danger"></i>
-                                break;
+                        default:
+                        <i class="fa-solid fa-circle text-warning"></i>
+                        break;
+                        }*@
+                            </td>
 
-                                default:
-                                <i class="fa-solid fa-circle text-warning"></i>
-                                break;
-                                }*@
-                                    </td>
+                            <td class="text-start ps-2">@sheet.FirstName</td>
 
-                                    <td class="text-start ps-2">@sheet.FirstName</td>
+                            <td class="text-start ps-2">@sheet.LastName</td>
 
-                                    <td class="text-start ps-2">@sheet.LastName</td>
+                            <td>@sheet.SheetId</td>
 
-                                    <td>@sheet.SheetId</td>
+                            <td>@sheet.Balance</td>
 
-                                    <td>@sheet.Id</td>
-
-                                    <td>@sheet.Balance</td>
-
-                                    <td>
+                            <td>
+                                <div class="d-flex">
+                                    <div class="col" title="Photo">
                                         <div class="d-flex">
-                                            <div class="col" title="Photo">
-                                                <div class="d-flex">
-                                                    <div class="col-4 pe-1 text-end">
-                                                        <i class="fa-solid fa-image fa-fw pe-1 text-white-50"></i>
-                                                    </div>
-                                                    <div class="col-8 text-start">
-                                                        @sheet.Photo
-                                                    </div>
-                                                </div>
+                                            <div class="col-4 pe-1 text-end">
+                                                <i class="fa-solid fa-image fa-fw pe-1 text-white-50"></i>
                                             </div>
-                                            <div class="col" title="Video">
-                                                <div class="d-flex">
-                                                    <div class="col-4 pe-1 text-end">
-                                                        <i class="fa-solid fa-video fa-fw pe-1 text-white-50"></i>
-                                                    </div>
-                                                    <div class="col-8 text-start">
-                                                        @sheet.Video
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col" title="Audio">
-                                                <div class="d-flex">
-                                                    <div class="col-4 pe-1 text-end">
-                                                        <i class="fa-solid fa-volume-high fa-fw pe-1 text-white-50"></i>
-                                                    </div>
-                                                    <div class="col-8 text-start">
-                                                        @sheet.Audio
-                                                    </div>
-                                                </div>
+                                            <div class="col-8 text-start">
+                                                @sheet.Photo
                                             </div>
                                         </div>
-                                    </td>
-
-                                    <td>
+                                    </div>
+                                    <div class="col" title="Video">
                                         <div class="d-flex">
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
+                                            <div class="col-4 pe-1 text-end">
+                                                <i class="fa-solid fa-video fa-fw pe-1 text-white-50"></i>
                                             </div>
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
-                                            </div>
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
-                                            </div>
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
-                                            </div>
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
-                                            </div>
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
-                                            </div>
-                                            <div class="col p-0">
-                                                @rnd.Next(0, 5000)
+                                            <div class="col-8 text-start">
+                                                @sheet.Video
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
-                                counter++;
-                            }
-                        }
-                    </tbody>
-                </table>
+                                    </div>
+                                    <div class="col" title="Audio">
+                                        <div class="d-flex">
+                                            <div class="col-4 pe-1 text-end">
+                                                <i class="fa-solid fa-volume-high fa-fw pe-1 text-white-50"></i>
+                                            </div>
+                                            <div class="col-8 text-start">
+                                                @sheet.Audio
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="d-flex">
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                    <div class="col p-0">
+                                        @rnd.Next(0, 5000)
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@sheet.Id</td>
+                        </tr>
+                        counter++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grid text-white">
+        <div class="row">
+            <div class="d-flex justify-content-center col-6">
+                <div class="months d-flex justify-content-center align-items-center w-25 border rounded p-1">
+                    <div class="col-2 d-flex h-100 justify-content-center">
+                        <a href="#!" class="btn btn-sm py-0 d-flex h-100 align-items-center" onclick="downDateTypeChart()">
+                            <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 8.825L2.2915 5L6 1.175L4.8583 0L0 5L4.8583 10L6 8.825Z" fill="#9292A3" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div id="dateTypeChart" class="col-8 d-flex justify-content-center">@($"{DateTime.Now.ToString("MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}")</div>
+                    <div class="col-2 d-flex h-100 justify-content-center">
+                        <a href="#!" class="btn btn-sm py-0 d-flex h-100 align-items-center" onclick="upDateTypeChart()">
+                            <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M-1.92948e-07 1.175L3.7085 5L-1.92948e-07 8.825L1.1417 10L6 5L1.1417 2.38419e-07L-1.92948e-07 1.175Z" fill="#9292A3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="h-50 py-3">
-
-            <div class="grid text-white">
-                <div class="d-flex justify-content-center">
-                    <div class="months d-flex justify-content-center align-items-center w-25 border rounded p-1">
-                        <div class="col-2">
-                            <a href="#!" class="btn btn-sm py-0" onclick="downDateTypeChart()">
+            <div class="d-flex justify-content-center col-6">
+                <div class="col-4"></div>
+                <div class="col-4 d-flex justify-content-center">
+                    <div class="months d-flex justify-content-center align-items-center w-75 border rounded p-1">
+                        <div class="col-2 d-flex h-100 justify-content-center">
+                            <a href="#!" class="btn btn-sm py-0 d-flex h-100 align-items-center" onclick="downDateBalancesAllMonthChart()">
                                 <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6 8.825L2.2915 5L6 1.175L4.8583 0L0 5L4.8583 10L6 8.825Z" fill="#9292A3" />
                                 </svg>
                             </a>
                         </div>
-                        <div id="dateTypeChart" class="col-8">@($"{DateTime.Now.ToString("MMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}")</div>
-                        <div class="col-2">
-                            <a href="#!" class="btn btn-sm py-0" onclick="upDateTypeChart()">
+                        <div id="dateBalanceAllMonth" class="col-8 d-flex h-100 justify-content-center">@($"{DateTime.Now.ToString("MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}")</div>
+                        <div class="col-2 d-flex h-100 justify-content-center">
+                            <a href="#!" class="btn btn-sm py-0 d-flex h-100 align-items-center" onclick="upDateBalancesAllMonthChart()">
                                 <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M-1.92948e-07 1.175L3.7085 5L-1.92948e-07 8.825L1.1417 10L6 5L1.1417 2.38419e-07L-1.92948e-07 1.175Z" fill="#9292A3" />
                                 </svg>
@@ -234,55 +227,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex justify-content-center">
-                    <div class="col-4"></div>
-                    <div class="col-4 d-flex justify-content-center">
-                        <div class="months d-flex justify-content-center align-items-center w-75 border rounded p-1">
-                            <div class="col-2">
-                                <a href="#!" class="btn btn-sm py-0" onclick="downDateBalancesAllMonthChart()">
-                                    <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 8.825L2.2915 5L6 1.175L4.8583 0L0 5L4.8583 10L6 8.825Z" fill="#9292A3" />
-                                    </svg>
-                                </a>
-                            </div>
-                            <div id="dateBalanceAllMonth" class="col-8">@($"{DateTime.Now.ToString("MMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"))}")</div>
-                            <div class="col-2">
-                                <a href="#!" class="btn btn-sm py-0" onclick="upDateBalancesAllMonthChart()">
-                                    <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M-1.92948e-07 1.175L3.7085 5L-1.92948e-07 8.825L1.1417 10L6 5L1.1417 2.38419e-07L-1.92948e-07 1.175Z" fill="#9292A3" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4 d-flex justify-content-end align-items-center pe-3">
-                        Всего: $<span id="balanceAllMonth"></span>
-                    </div>
-
+                <div class="col-4 d-flex justify-content-end align-items-center pe-3">
+                    Всего: $<span id="balanceAllMonth"></span>
                 </div>
-                <div class="chart-wrap pe-2">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 h-100">
+                <div class="chart-wrap h-100">
                     <canvas id="typeChart"></canvas>
                 </div>
-                <div class="chart-wrap ps-2">
+            </div>
+            <div class="col-6 h-100">
+                <div class="chart-wrap h-100">
                     <canvas id="balanceMonthChart"></canvas>
                 </div>
             </div>
-
-            @*    <div class="d-flex text-white" style="height: 5%;">
-            <div class="col-6 d-flex justify-content-center">Text1</div>
-            <div class="col-6 d-flex justify-content-center">Text1</div>
-            </div>
-
-            <div class="d-flex" style="height: 95%;">
-            <div class="col-6 d-flex justify-content-center">
-            <canvas id="typeChart"></canvas>
-            </div>
-
-            <div class="col-6 d-flex justify-content-center">
-            <canvas id="balanceMonthChart"></canvas>
-            </div>
-            </div>*@
-
         </div>
     </div>
 </div>

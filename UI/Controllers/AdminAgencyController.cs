@@ -10,6 +10,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class AdminAgencyController : Controller
     {
         private readonly IAdminAgencyClient _adminAgencyClient;
@@ -104,6 +105,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> AddGroup(int agencyId, [Required] string nameGroup)
         {
             if (ModelState.IsValid)
@@ -146,6 +148,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> AddOperatorFromSheet(int agencyId, int sheetId, int operatorId)
         {
             if (await _adminAgencyClient.AddOperatorFromSheet(agencyId, sheetId, operatorId))
@@ -208,6 +211,16 @@ namespace UI.Controllers
             }
 
             return StatusCode(500, $"Error adding user");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            if ( await _adminAgencyClient.DeleteUserAgency(userId))
+            {
+                return Ok();
+            }
+            return StatusCode(500, $"Error delete user");
         }
     }
 }

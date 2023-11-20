@@ -71,7 +71,7 @@
                             }
                         </div>
                         <div class="history-main d-flex justify-content-between flex-column">
-                            <div class="history-main-sup">
+                            <div class="history-main-sup rounded">
                                 <img src="@media[1].Url" alt="">
                                 @if (media[1].IsVideo)
                                 {
@@ -85,14 +85,14 @@
                             </div>
                             @if (media.Count > 3)
                             {
-                                <div class="history-main-box position-relative">
+                                <div class="history-main-box position-relative rounded">
                                     <img src="@media[2].Url" alt="">
                                     <div class="upload_count position-absolute">+<span class="count">@(media.Count - 3)</span></div>
                                 </div>
                             }
                             else
                             {
-                                <div class="history-main-sup position-relative)">
+                                <div class="history-main-sup position-relative rounded">
                                     <img src="@media[2].Url" alt="">
                                     @if (media[2].IsVideo)
                                     {

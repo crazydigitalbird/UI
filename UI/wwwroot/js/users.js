@@ -33,16 +33,22 @@ function clearFromAddUser() {
 function deleteUser(e, userId) {
     var tr = e.target.closest('tr');
 
-    var option = document.createElement('option');
-    $(option).attr('value', $(tr).find('td[name="email"]').text());
-    $(option).text($(tr).find('td[name="email"]').text());
-    $(option).attr('data-userid', $(tr).find('input').val());
-    $('datalist').append(option);
+    //var option = document.createElement('option');
+    //$(option).attr('value', $(tr).find('td[name="email"]').text());
+    //$(option).text($(tr).find('td[name="email"]').text());
+    //$(option).attr('data-userid', $(tr).find('input').val());
+    //$('datalist').append(option);
 
     /*var $optionDatalist = $(`<option value="${}" data-userid=${}>${}</option>`);*/
 
     tr.remove();
     updateCounterUsers();
+
+    //$.post('/AdminAgency/DeleteUser', { userId }, function () {
+    //}).fail(function (error) {
+    //    failureAddUser(error);
+    //});
+
 }
 
 function addUser(e) {
@@ -78,7 +84,7 @@ function successAddUser(user) {
     var index = $('tbody > tr:not(.tr-placeholder)').length;
 
     var originalUser = `<input type="hidden" name="originalUsers[${index}].Id" value="${user.id}" />
-                        <input type="hidden" name="originalUsers[${index}].Role" value="${user.role}" />`;            
+                        <input type="hidden" name="originalUsers[${index}].Role" value="${user.role}" />`;
 
     $('#originalUsersDiv').append(originalUser);
 

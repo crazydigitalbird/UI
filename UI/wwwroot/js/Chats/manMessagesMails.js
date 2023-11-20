@@ -7,6 +7,8 @@
         $('#ownerIdChatHeader').text(owner.Id);
         $('#ownerNameChatHeader').text(owner.Name);
         $('#ownerAvatarChatHeader').attr('src', owner.Avatar);
+        $('#ownerOnlineStatusChatHeader').attr('name', `online-status-${owner.SheetId}`);
+        $('#ownerOnlineStatusChatHeader').addClass(getStatusSheet(owner.SheetId));
 
         $('#interlocutorIdChatHeader').text(interlocutor.Id);
         $('#interlocutorNameChatHeader').text(interlocutor.Name);
@@ -30,9 +32,10 @@
     checkGifts(owner.SheetId, interlocutor.Id);
     checkPost(owner.SheetId, interlocutor.Id);
 
-
     clearMessageDiv();
     loadMessages(owner.SheetId, interlocutor.Id, true);
+
+    //CheckAtWorkSheet(owner.SheetId);
 }
 
 function AddToGroupAndRemoveFromGroupSignalR(sheetIdOld, idInterlocutorOld, sheetIdNew, idInterlocutorNew) {
@@ -53,20 +56,34 @@ function ManMessagesMailsLeft(sheetId, idRegularUser) {
             var messagesLeft = $('#messagesLeft').text();
             var mailsLeft = $('#mailsLeft').text();
             if (messagesLeft !== '0') {
-                $('#messagesLeft').removeClass('large-block-header-timer-text-opacity');
+                $('#messagesLeft').removeClass('opacity-25');
             }
             else {
-                $('#messagesLeft').addClass('large-block-header-timer-text-opacity');
+                $('#messagesLeft').addClass('opacity-25');
             }
             if (mailsLeft !== '0') {
-                $('#mailsLeft').removeClass('large-block-header-timer-text-opacity');
+                $('#mailsLeft').removeClass('opacity-25');
             }
             else {
-                $('#mailsLeft').addClass('large-block-header-timer-text-opacity');
+                $('#mailsLeft').addClass('opacity-25');
             }
         }
     });
 }
+
+//function CheckAtWorkSheet(sheetId) {
+//    let statusCSS = getStatusSheet(sheetId);
+//    $('#ownerOnlineStatusChatHeader').addClass(statusCSS);
+//    if (statusCSS === 'status-circle-at-work') {
+//        $('#btnSendMessage').removeClass('disabled');
+//        $('#toSendMedia').removeClass('disabled');
+        
+//    }
+//    else {
+//        $('#btnSendMessage').addClass('disabled');
+//        $('#toSendMedia').addClass('disabled');
+//    }
+//}
 
 function changeBookmarkChat(e) {
     var sheetId = $('#manMessagesMails').data('sheet-id');

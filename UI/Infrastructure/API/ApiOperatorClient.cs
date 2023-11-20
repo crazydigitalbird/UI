@@ -1,9 +1,6 @@
 ﻿using Core.Models.Agencies;
 using Core.Models.Agencies.Operators;
 using Core.Models.Sheets;
-using Core.Models.Users;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
 using UI.Models;
@@ -44,7 +41,7 @@ namespace UI.Infrastructure.API
                         var sheetsView = sheets.Where(s => s.IsActive).Select(s => (SheetView)s).ToList();
                         return sheetsView;
                     }
-                    else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         SignOut();
                     }
@@ -80,7 +77,7 @@ namespace UI.Infrastructure.API
                         var sheets = individualSheets.Concat(cabinetsSheets).Where(s => s.IsActive).ToList();
                         return sheets;
                     }
-                    else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         SignOut();
                     }
@@ -93,6 +90,34 @@ namespace UI.Infrastructure.API
                 {
                     _logger.LogError(ex, "Error getting all the sheets.");
                 }
+            }
+            return null;
+        }
+
+        public async Task<List<SheetOperatorCommunication>> GetSheetOperatorCommunicationAsync()
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            try
+            {
+                var response = await httpClient.PostAsync($"Agencies/Operators/GetSheets?sessionGuid={sessionGuid}", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    var sheetOperatorCommunication = (await response.Content.ReadFromJsonAsync<List<SheetOperatorCommunication>>()).Where(soc => soc.Sheet.IsActive).ToList();
+                    return sheetOperatorCommunication;
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting collections sheet-operator communication. HttpStatusCode {httpStatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting collections sheet-operator communication.");
             }
             return null;
         }
@@ -126,7 +151,7 @@ namespace UI.Infrastructure.API
                     var agencyMember = await response.Content.ReadFromJsonAsync<AgencyMember>();
                     return agencyMember;
                 }
-                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     SignOut();
                 }
@@ -154,7 +179,7 @@ namespace UI.Infrastructure.API
                     var agencyOperator = await response.Content.ReadFromJsonAsync<AgencyOperator>();
                     return agencyOperator;
                 }
-                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     SignOut();
                 }
@@ -217,6 +242,7 @@ namespace UI.Infrastructure.API
     {
         Task<List<SheetView>> GetSheetsViewAsync();
         Task<List<Sheet>> GetSheetsAsync();
+        Task<List<SheetOperatorCommunication>> GetSheetOperatorCommunicationAsync();
         Task<int> GetOperatorIdAsync();
         Task<List<ApplicationUser>> GetUsersLogins(IEnumerable<int> idUsers);
     }

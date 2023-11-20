@@ -1,18 +1,12 @@
-﻿using Core.Models.Balances;
-
-namespace UI.Models
+﻿namespace UI.Models
 {
     public class AdminAgencyStatisticsViewModel
     {
-        public int NumberMessagesSentIncrement { get; internal set; }
-
-        public int NumberMailsSentIncrement { get; internal set; }
-
-        public AgencyMetrik Metrik { get; internal set; }
-
         public string Downtime { get; internal set; }
 
         public string DowntimeIncrement { get; internal set; }
+
+        public AgencyMetrik Metrik { get; internal set; }
 
         public BalanceStatisticAgency BalanceStatisticAgency { get; internal set; }        
 

@@ -97,20 +97,20 @@ function selectedCabinet(e) {
             if (dataCabinets) {
                 var cabinets = dataCabinets.toString().split(',').map(Number);
                 if (cabinets.includes(cabinetId)) {
-                    if ($(this).hasClass('d-none-users')) {
-                        $(this).removeClass('d-none-users');
+                    if ($(this).hasClass('d-none')) {
+                        $(this).removeClass('d-none');
                     }
-                } else if (!$(this).hasClass('d-none-users')) {
-                    $(this).addClass('d-none-users');
+                } else if (!$(this).hasClass('d-none')) {
+                    $(this).addClass('d-none');
                 }
             }
             else {
-                $(this).addClass('d-none-users');
+                $(this).addClass('d-none');
             }
         });
     } else { // All cabinets
-        $('#tableUsers tbody tr.d-none-users').each(function () {
-            $(this).removeClass('d-none-users');
+        $('#tableUsers tbody tr.d-none').each(function () {
+            $(this).removeClass('d-none');
         });
     }
 }

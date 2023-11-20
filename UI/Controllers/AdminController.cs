@@ -11,6 +11,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class AdminController : Controller
     {
         private readonly IAdminClient _adminClient;

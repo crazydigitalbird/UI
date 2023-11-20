@@ -47,6 +47,7 @@ namespace UI.Infrastructure.API
             return null;
         }
 
+        //Only Role.User
         public async Task<IEnumerable<Sheet>> GetSheetsAsync()
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
@@ -151,14 +152,14 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.PostAsync($"Agencies/Operators/GetSheetsAgencyOperatorSessionsCount?sessionGuid={sessionGuid}", content);
                 if (response.IsSuccessStatusCode)
                 {
-#if DEBUG 
+#if DEBUG || DEBUGOFFLINE
                     var s = await response.Content.ReadAsStringAsync();
 #endif
                     var sheetsOperatorSessions = await response.Content.ReadFromJsonAsync<List<SheetOperatorSessions>>();
                     sheetsView.ForEach(s =>
                     {
                         var sheetOperatorSessions = sheetsOperatorSessions.FirstOrDefault(sos => sos.SheetId == s.Id);
-                        s.Operators = sheetOperatorSessions?.SessionsCount ?? 0;
+                        s.Operators = sheetOperatorSessions?.Count ?? 0;
                     });
                 }
                 else
@@ -302,7 +303,6 @@ namespace UI.Infrastructure.API
             var userId = int.Parse(user.FindFirst("Id")?.Value);
             return userId;
         }
-
 
         private async Task<SheetSite> GetSite(int siteId, HttpClient httpClient, string sessionGuid)
         {

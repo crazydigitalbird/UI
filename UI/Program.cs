@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Polly;
-using Polly.Contrib.WaitAndRetry;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -19,7 +17,7 @@ string uriApiBot = builder.Configuration["UriApiBot"];
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new UI.Infrastructure.DateTimeConverter());
+    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
 });
 
 builder.Services.AddSingleton<IDictionaryRepository<SheetDialogKey, NewMessage>, DictionaryChatRepository>();
@@ -50,6 +48,7 @@ builder.Services.AddSingleton<IAutorespondersClient, ApiAutorespondersClient>();
 builder.Services.AddSingleton<IWorkingShiftClient, ApiWorkingShiftClient>();
 builder.Services.AddSingleton<IStatisticClient, ApiStatisticClient>();
 builder.Services.AddScoped<GetAgencyIdFilter>();
+builder.Services.AddScoped<UpdateSessionAttribute>();
 
 builder.Services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
 builder.Services.AddScoped<IChatHub, CallingSideChatHub>();

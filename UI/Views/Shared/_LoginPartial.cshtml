@@ -18,10 +18,10 @@
                     <img src="/image/layout/Layout Grid.svg" alt="Grid">
                 </a>
             }
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarAccount">
-                <li>
+            <ul class="dropdown-menu dropdown-menu-dark m-0 p-0" aria-labelledby="navbarAccount" style="position: absolute; inset: 0px 0px auto auto; transform: translate(-4px, 43px);">
+@*                <li>
                     <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change password</a>
-                </li>
+                </li>*@
                 <li>
                     <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Logout</a>
                     @*                    <form class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">

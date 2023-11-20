@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Core.Models.Sheets;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UI.Infrastructure.API;
@@ -33,11 +34,25 @@ namespace UI.Controllers
             _logger = logger;
         }
 
+        [ServiceFilter(typeof(UpdateSessionAttribute))]
         public async Task<IActionResult> Index()
         {
-            var sheets = await _operatorClient.GetSheetsAsync() ?? new();
-            //ViewData["stickers"] = await _chatClient.GetStickersAsync(sheet);
-            return View(sheets);
+            //var sheets = await _operatorClient.GetSheetsAsync() ?? new();
+            var sheetOperatorCommunicationTask = _operatorClient.GetSheetOperatorCommunicationAsync();
+            var operatorIdTask = _operatorClient.GetOperatorIdAsync();
+            await Task.WhenAll(sheetOperatorCommunicationTask, operatorIdTask);
+            ViewData["operatorId"] = operatorIdTask.Result;
+            return View(sheetOperatorCommunicationTask.Result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> StatusSheets()
+        {
+            var sheetOperatorCommunicationTask = _operatorClient.GetSheetOperatorCommunicationAsync();
+            var operatorIdTask = _operatorClient.GetOperatorIdAsync();
+            await Task.WhenAll(sheetOperatorCommunicationTask, operatorIdTask);
+            var statusSheets = sheetOperatorCommunicationTask.Result.Select(soc => new { SheetId = soc.Sheet.Id, Status = soc.Free ? "Free" : (soc.Operator.Id == operatorIdTask.Result ? "AtWork" : "Busy") });
+            return Ok(statusSheets);
         }
 
         [HttpPost]
@@ -175,7 +190,6 @@ namespace UI.Controllers
             return BadRequest();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Stickers(int sheetId)
         {
@@ -281,9 +295,9 @@ namespace UI.Controllers
         public async Task<IActionResult> Sheets(string criteria, string cursor = "")
         {
             var sheets = await _operatorClient.GetSheetsViewAsync();
-            await _sheetClient.GettingStatusAndMedia(sheets);
             if (sheets != null)
             {
+                await _sheetClient.GettingStatusAndMedia(sheets);
                 return ViewComponent("Sheets", new { sheets, criteria, cursor });
             }
             return BadRequest();
@@ -328,6 +342,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(UpdateSessionAttribute))]
         public async Task<IActionResult> SendMessage(int sheetId, int idRegularUser, MessageType messageType, string message, long idLastMessage = 0)
         {
             var sheet = await _sheetClient.GetSheetAsync(sheetId);
@@ -404,6 +419,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(UpdateSessionAttribute))]
         public async Task<IActionResult> SendMail(int sheetId, int idRegularUser, long idLastMessage, string text, List<PhotoVideo> videos, List<PhotoVideo> photos)
         {
             if (text?.Length >= 200 && text?.Length <= 3500)
@@ -453,7 +469,7 @@ namespace UI.Controllers
                     return Ok(originalUrl);
                 }
             }
-            return BadRequest();            
+            return BadRequest();
         }
 
         [HttpGet]
@@ -487,6 +503,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(UpdateSessionAttribute))]
         public async Task<IActionResult> AddComment(int sheetId, int idRegularUser, string text)
         {
             var comment = await _commentClient.AddCommentAsync(sheetId, idRegularUser, text);

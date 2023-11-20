@@ -2,271 +2,189 @@
 @model List<Sheet>
 
 @{
-    Layout = "_LayoutNew";
+    Layout = "_LayoutGrid";
     ViewData["Title"] = "Ice";
     var icesInfo = (List<IceInfo>)ViewData["icesInfo"];
 }
-<div class="row bottom-block__items h-100 d-flex flex-column">
-    <div class="wrapper p-0 h-100">
-        <div class="container-fluid h-100">
-            <div class="row h-100">
-                <div class="col-12 d-flex justify-content-between flex-wrap  h-100">
-                    <div class="wrapper-item d-flex flex-column h-100">
-                        <div class="refresh text-start">
-                            <button class="refresh__btn mb-2">Обновить айсы</button>
-                        </div>
-                        <div class="wrapper-search position-relative">
-                            <input type="text" class="search__inp" placeholder="Искать по оператору" oninput="searchOperator(this)">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.97 17.19C4.43 17.19 0.75 13.51 0.75 8.97C0.75 4.43 4.43 0.75 8.97 0.75C13.51 0.75 17.19 4.43 17.19 8.97C17.19 13.51 13.51 17.19 8.97 17.19Z" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                <path d="M19.25 19.25L15.14 15.14" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                            <span class="search_count">10</span>
-                        </div>
-                        <div class="wrapper-search position-relative">
-                            <input type="text" class="search__inp" placeholder="Искать анкету" oninput="searchSheet(this)">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.97 17.19C4.43 17.19 0.75 13.51 0.75 8.97C0.75 4.43 4.43 0.75 8.97 0.75C13.51 0.75 17.19 4.43 17.19 8.97C17.19 13.51 13.51 17.19 8.97 17.19Z" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                <path d="M19.25 19.25L15.14 15.14" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                            <span class="search_count">@(Model?.Count ?? 0)</span>
-                        </div>
-                        <div class="wrapper-box h-100">
-                            @if (Model != null)
-                            {
-                                foreach (var sheet in Model.OrderByDescending(i => i.Created))
+
+<svg display="none">
+    <symbol id="messageSvg" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
+        <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
+        <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
+        <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="mailSvg" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16.85 15H3.15C1.83 15 0.75 13.93 0.75 12.6V3.4C0.75 2.08 1.82 1 3.15 1H16.85C18.17 1 19.25 2.07 19.25 3.4V12.6C19.25 13.93 18.18 15 16.85 15Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M18.22 1.77002L11.35 8.59002C10.58 9.36002 9.41999 9.36002 8.63999 8.59002L1.76999 1.77002" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M12.13 7.91998L18.22 13.83" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M1.78 13.83L7.94 8" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="searchSvg" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.97 17.19C4.43 17.19 0.75 13.51 0.75 8.97C0.75 4.43 4.43 0.75 8.97 0.75C13.51 0.75 17.19 4.43 17.19 8.97C17.19 13.51 13.51 17.19 8.97 17.19Z" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M19.25 19.25L15.14 15.14" stroke="#9292A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+</svg>
+
+<div class="d-grid h-100 overflow-hidden gap-2 p-2 text-white text-center" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3">
+        <div class="refresh text-start d-none">
+            <button class="refresh__btn mb-2">Обновить айсы</button>
+        </div>
+
+        <div class="search-block d-flex align-items-center gap-2 p-2 border rounded mb-3">
+            <div>
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <use xlink:href="#searchSvg"></use>
+                </svg>
+            </div>
+            <div class="flex-fill h-100">
+                <input type="text" class="w-100 h-100 text-white" placeholder="Искать по оператору" oninput="searchOperator(this)">
+            </div>
+            <span class="d-flex justify-content-center align-items-center border rounded h-100 text-white-50">
+                0
+            </span>
+        </div>
+
+        <div class="search-block d-flex align-items-center gap-2 p-2 border rounded mb-3">
+            <div>
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <use xlink:href="#searchSvg"></use>
+                </svg>
+            </div>
+            <div class="flex-fill h-100">
+                <input type="text" class="w-100 h-100 text-white" placeholder="Искать анкету" oninput="searchSheet(this)">
+            </div>
+            <span class="d-flex justify-content-center align-items-center border rounded h-100 text-white-50">
+                @(Model?.Count ?? 0)
+            </span>
+        </div>
+
+        <div class="h-100 overflow-y-auto">
+            @if (Model != null)
+            {
+                foreach (var sheet in Model.OrderByDescending(i => i.Created))
+                {
+                    var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
+                    var iceInfo = icesInfo.FirstOrDefault(i => i.IdTrustedUser == info.Id);
+
+                    <div name="sheet" class="sheet-card d-flex align-items-center justify-content-between border rounded cursor-pointer mb-2 p-2" data-sheet-id="@sheet.Id">
+                        <div class="sheet-girl col-4 d-flex align-items-center rounded p-2">
+                            <div class="avatar position-relative">
+                                <img src="@info.Personal.AvatarSmall" alt="" class="w-100 h-100 rounded">
+                                @if (iceInfo == null)
                                 {
-                                    var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                                    var iceInfo = icesInfo.FirstOrDefault(i => i.IdTrustedUser == info.Id);
-                                    <div name="sheet" class="wrapper-list d-flex align-items-center justify-content-between" data-sheet-id="@sheet.Id">
-                                        <div class="d-flex align-items-center">
-                                            <a href="#" class="user-box d-flex align-items-center">
-                                                <div class="avatar position-relative">
-                                                    <img src="@info.Personal.AvatarSmall" alt="" class="avatar__img w-100 h-100">
-                                                    @if (iceInfo == null)
-                                                    {
-                                                        <div class="offline position-absolute"></div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="online position-absolute"></div>
-                                                    }
-                                                </div>
-                                                <div class="">
-                                                    <p class="user__name">@info.Personal.Name</p>
-                                                    <p name="sheetId" class="user__info">@sheet.Identity</p>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="next-user">
-                                                <p class="user__name">Влад</p>
-                                                <p name="operatorId" class="user__info">32132132</p>
-                                            </a>
-                                        </div>
-                                        <div class="info-box">
-                                            <div class="info-box-chats">
-                                                <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
-                                                    <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
-                                                    <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
-                                                    <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                </svg>
-                                                <span class="info-box-chats__num">@(iceInfo?.NumberOfMessages)</span>
-                                            </div>
-                                            <div class="info-box-mess">
-                                                <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M16.85 15H3.15C1.83 15 0.75 13.93 0.75 12.6V3.4C0.75 2.08 1.82 1 3.15 1H16.85C18.17 1 19.25 2.07 19.25 3.4V12.6C19.25 13.93 18.18 15 16.85 15Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M18.22 1.77002L11.35 8.59002C10.58 9.36002 9.41999 9.36002 8.63999 8.59002L1.76999 1.77002" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M12.13 7.91998L18.22 13.83" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M1.78 13.83L7.94 8" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                </svg>
-                                                <span class="info-box-mess__num">@iceInfo?.NumberOfMails</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="chats-box d-flex justify-content-between flex-wrap">
-                                            <a href="#" class="">
-                                                <svg name="Message" @(@iceInfo?.MessageInProgress == 1 ? "" : "class=opacity-50") width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
-                                                    <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
-                                                    <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
-                                                    <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                </svg>
-                                            </a>
-                                            <a href="#" class="">
-                                                <svg name="Mail" @(@iceInfo?.MailInPprogress == 1 ? "" : "class=opacity-50") width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M16.85 15H3.15C1.83 15 0.75 13.93 0.75 12.6V3.4C0.75 2.08 1.82 1 3.15 1H16.85C18.17 1 19.25 2.07 19.25 3.4V12.6C19.25 13.93 18.18 15 16.85 15Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M18.22 1.77002L11.35 8.59002C10.58 9.36002 9.41999 9.36002 8.63999 8.59002L1.76999 1.77002" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M12.13 7.91998L18.22 13.83" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    <path d="M1.78 13.83L7.94 8" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </div>
+                                    <div class="status-circle-red rounded-circle position-absolute end-0 bottom-0"></div>
                                 }
-                            }
-                        </div>
-                    </div>
-
-                    <div class="wrapper-item d-flex flex-column h-100">
-                        <div class="middle-head d-flex justify-content-between p-2">
-                            <div class="middle-head-left">
-                                <span>
-                                    <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="filterIce(this, 'Message')">
-                                        <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
-                                        <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
-                                        <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
-                                        <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </span>
-                                <span>
-                                    <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="filterIce(this, 'Mail')">
-                                        <path d="M16.85 15H3.15C1.83 15 0.75 13.93 0.75 12.6V3.4C0.75 2.08 1.82 1 3.15 1H16.85C18.17 1 19.25 2.07 19.25 3.4V12.6C19.25 13.93 18.18 15 16.85 15Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        <path d="M18.22 1.77002L11.35 8.59002C10.58 9.36002 9.41999 9.36002 8.63999 8.59002L1.76999 1.77002" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        <path d="M12.13 7.91998L18.22 13.83" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        <path d="M1.78 13.83L7.94 8" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </span>
+                                else
+                                {
+                                    <div class="status-circle-green rounded-circle position-absolute end-0 bottom-0"></div>
+                                }
                             </div>
-                            <div class="d-flex">
-                                <div class="select position-relative">
-                                    <div class="select-title d-flex align-items-center justify-content-between">
-                                        <span class="select-title__text">Дата создания</span>
-                                        <svg class="arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.825 0L5 3.7085L1.175 0L0 1.1417L5 6L10 1.1417L8.825 0Z" fill="#9292A3"></path>
+
+                            <div class="d-grid w-100 ps-2">
+                                <p class="text-truncate">@info.Personal.Name</p>
+                                <p name="sheetId" class="text-truncate text-white-50 text-small">@sheet.Identity</p>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <p class="text-truncate">Оператор</p>
+                            <p name="operatorId" class="text-truncate text-white-50 text-small">32132132</p>
+                        </div>
+
+                        <div class="col">
+                            <div class="sheet-ice-counters d-grid gap-1 rounded p-1">
+                                <div class="row">
+                                    <div class="col-6 d-flex align-items-center justify-content-end p-0">
+                                        <svg width="20" height="18" viewBox="0 0 20 18">
+                                            <use xlink:href="#messageSvg"></use>
                                         </svg>
                                     </div>
-                                    <ul class="select-info position-absolute" onselect="sort">
-                                        <li id="data" class="select-info__list">Дата создания</li>
-                                        <li id="efficiency" class="select-info__list">Эффективный</li>
-                                        <li id="numberOfMessage" class="select-info__list">Количество чатов</li>
-                                        <li id="numberOfMail" class="select-info__list">Количество писем</li>
-                                    </ul>
+                                    <span class="col-6 d-flex align-items-center">@(iceInfo?.NumberOfMessages ?? 0)</span>
                                 </div>
-                                <button class="add__btn">
-                                    <svg class="me-1" width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M7.68018 1.58825L7.77564 14.4116" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        <path d="M1.31622 7.95221L14.1396 8.04767" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <div class="row">
+                                    <div class="col-6 d-flex align-items-center justify-content-end p-0">
+                                    <svg width="20" height="18" viewBox="0 0 20 18">
+                                        <use xlink:href="#mailSvg"></use>
                                     </svg>
-                                    Добавить
-                                </button>
+                                    </div>
+                                    <span class="col-6 d-flex align-items-center">@(iceInfo?.NumberOfMails ?? 0)</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="middle-box h-100">
-                        </div>
-                    </div>
 
-                    <div class="wrapper-item d-flex flex-column h-100">
-                        <div class="progress-head d-flex align-items-center justify-content-between">
-                            <span class="progress-head__text">In progress</span>
-                            <span class="view-trash">View Trash</span>
-                        </div>
-                        <div class="progress-box h-100">
+                        <div class="col d-flex justify-content-evenly p-2">
+                            <svg name="Message" @(@iceInfo?.MessageInProgress == 1 ? "" : "class=opacity-50") width="20" height="18" viewBox="0 0 20 18">
+                                <use xlink:href="#messageSvg"></use>
+                            </svg>
+                            <svg name="Mail" @(@iceInfo?.MailInPprogress == 1 ? "" : "class=opacity-50") width="20" height="18" viewBox="0 0 20 18">
+                                <use xlink:href="#mailSvg"></use>
+                            </svg>
                         </div>
                     </div>
-                </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3">
+        <div class="middle-head d-flex justify-content-between align-items-center p-2 rounded mb-3">
+            <div class="middle-head-left d-flex rounded">
+                <span class="d-flex justify-content-center align-items-center w-50">
+                    <svg class="cursor-pointer" width="20" height="18" viewBox="0 0 20 18" onclick="filterIce(this, 'Message')">
+                        <use xlink:href="#messageSvg"></use>
+                    </svg>
+                </span>
+                <span class="d-flex justify-content-center align-items-center w-50">
+                    <svg class="cursor-pointer" width="20" height="18" viewBox="0 0 20 18" onclick="filterIce(this, 'Mail')">
+                        <use xlink:href="#mailSvg"></use>
+                    </svg>
+                </span>
             </div>
+
+
+            <div class="d-flex justify-content-end h-100">
+                <select id="selectIce" class="form-control" onselect="sort">
+                    <option value="data" selected>Дата создания</option>
+                    <option value="efficiency">Эффективный</option>
+                    <option value="numberOfMessage">Количество чатов</option>
+                    <option value="numberOfMail">Количество писем</option>
+                </select>
+            </div>
+
+            <button class="add__btn fw-bold rounded">
+                <svg class="me-1" width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.68018 1.58825L7.77564 14.4116" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M1.31622 7.95221L14.1396 8.04767" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                Добавить
+            </button>
+        </div>
+        <div class="middle-box h-100 overflow-y-auto">
+        </div>
+    </div>
+
+    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3">
+        <div class="progress-head d-flex align-items-center justify-content-between rounded px-3 py-2 mb-3">
+            <span class="progress-head__text">In progress</span>
+            <span class="view-trash">View Trash</span>
+        </div>
+        <div class="progress-box h-100">
         </div>
     </div>
 </div>
+
 <!-- pop-up tarsh -->
 <div class="pop-up trash d-none">
-    <div class="pop-up-content">
+    <div class="pop-up-content w-50 h-75 d-flex flex-column">
         <p class="trash__title">Trash</p>
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="pop-up__close">
             <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
-        <div class="trash-box">
-            @*            <div class="trash-item">
-            <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-            <div class="avatar">
-            <img src="assets/img/png/user.png" alt="" class="avatar__img">
-            </div>
-            <a href="#" class="user__name">Alina</a>
-            </div>
-            <div class="">
-            <span class="chat me-2">
-            <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            </span>
-            <span class="reply">
-            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.799988 3.80005L3.69999 6.50005" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M0.799988 3.8L3.69999 1" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M1.79999 3.80005H10.4C13.1 3.80005 15.2 5.90005 15.2 8.40005C15.2 10.9 13 13 10.4 13" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            </span>
-            </div>
-            </div>
-            <p class="trash-item__text">The most. The worst. Movie you are ever seen. What was that?</p>
-            </div>
-            <div class="trash-item">
-            <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-            <div class="avatar">
-            <img src="assets/img/png/user.png" alt="" class="avatar__img">
-            </div>
-            <a href="#" class="user__name">Alina</a>
-            </div>
-            <div class="">
-            <span class="chat me-2">
-            <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            </span>
-            <span class="reply">
-            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.799988 3.80005L3.69999 6.50005" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M0.799988 3.8L3.69999 1" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M1.79999 3.80005H10.4C13.1 3.80005 15.2 5.90005 15.2 8.40005C15.2 10.9 13 13 10.4 13" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            </span>
-            </div>
-            </div>
-            <p class="trash-item__text">The most. The worst. Movie you are ever seen. What was that?</p>
-            </div>
-            <div class="trash-item">
-            <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-            <div class="avatar">
-            <img src="assets/img/png/user.png" alt="" class="avatar__img">
-            </div>
-            <a href="#" class="user__name">Alina</a>
-            </div>
-            <div class="">
-            <span class="chat me-2">
-            <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8.67 16.97C8.43 16.99 8.19 17 7.95 17C6.78 17 5.66999 16.72 4.67999 16.23L0.789993 16.79L1.38 12.88H1.39C0.989999 12 0.75 11.03 0.75 10C0.75 8.11001 1.51999 6.40001 2.75999 5.14001" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M8.86 8.77997C9.30183 8.77997 9.66 8.43075 9.66 7.99997C9.66 7.56919 9.30183 7.21997 8.86 7.21997C8.41817 7.21997 8.06 7.56919 8.06 7.99997C8.06 8.43075 8.41817 8.77997 8.86 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M12.06 8.77997C12.5018 8.77997 12.86 8.43075 12.86 7.99997C12.86 7.56919 12.5018 7.21997 12.06 7.21997C11.6182 7.21997 11.26 7.56919 11.26 7.99997C11.26 8.43075 11.6182 8.77997 12.06 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M15.25 8.77997C15.6918 8.77997 16.05 8.43075 16.05 7.99997C16.05 7.56919 15.6918 7.21997 15.25 7.21997C14.8082 7.21997 14.45 7.56919 14.45 7.99997C14.45 8.43075 14.8082 8.77997 15.25 8.77997Z" fill="#7D6AF0"></path>
-            <path d="M18.62 10.88L19.21 14.79L15.32 14.23C14.62 14.58 13.86 14.82 13.05 14.93C12.73 14.98 12.39 15 12.05 15C8.06999 15 4.85999 11.87 4.85999 8C4.85999 6.07 5.64998 4.35 6.94998 3.08C8.23998 1.79 10.05 1 12.06 1C16.04 1 19.25 4.13 19.25 8C19.25 9.03 19.01 10 18.61 10.88H18.62V10.88Z" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            </span>
-            <span class="reply">
-            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0.799988 3.80005L3.69999 6.50005" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M0.799988 3.8L3.69999 1" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M1.79999 3.80005H10.4C13.1 3.80005 15.2 5.90005 15.2 8.40005C15.2 10.9 13 13 10.4 13" stroke="#55DEA9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            </span>
-            </div>
-            </div>
-            <p class="trash-item__text">The most. The worst. Movie you are ever seen. What was that?</p>
-            </div>*@
+        <div class="trash-box text-center">
         </div>
     </div>
 </div>

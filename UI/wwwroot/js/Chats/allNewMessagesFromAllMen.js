@@ -43,6 +43,11 @@ $(function () {
 
 function initialAllNewMessagesFromAllMan(content) {
     $('#allNewMessages').html(content);
+    $('#allNewMessages').find('[name=newMessage]').each(function () {
+        let sheetId = $(this).data('sheet-id');
+        let onlineStatusCSS = getStatusSheet(sheetId);
+        $(this).find(`[name=online-status-${sheetId}]`).addClass(onlineStatusCSS);
+    });
     var dataFilters = $('#allNewMessagesFromAllMens').find('p.active').data('filters');
     filteringMessages(dataFilters);
     countNewMessages();
@@ -114,6 +119,9 @@ function addDialog(messageElement) {
 
     //Получаем id нового элемента
     var idElement = $newElement.attr('id');
+
+    //Получаем sheetId
+    var sheetId = $newElement.data('sheet-id');
 
     //Осуществляем поиск существующего элемента с таким же id, как у нового добавляемого элемента
     var $currentElement = $(`#${idElement}`);

@@ -2,12 +2,12 @@
     <div class="large-block__header_icons-block d-flex align-items-center justify-content-around rounded p-2 text-white">
         <div>
             <img src="~/image/layout/2 Speech Bubbles (Chat).svg" alt="Chat">
-            <p id="messagesLeft" class="large-block-header-timer-text large-block-header-timer-text-opacity">0</p>
+            <p id="messagesLeft" class="large-block-header-timer-text opacity-25 text-center fw-bold">0</p>
         </div>
         <img src="~/image/layout/Line 2.svg" alt="Line">
         <div>
             <img src="~/image/layout/Envelope Closed.svg" alt="Mail">
-            <p id="mailsLeft" class="large-block-header-timer-text large-block-header-timer-text-opacity">0</p>
+            <p id="mailsLeft" class="large-block-header-timer-text opacity-25 text-center fw-bold">0</p>
         </div>
     </div>
     <div class="large-block__header_users-block p-2 d-flex justify-content-between align-items-center">
@@ -15,9 +15,9 @@
             <div class="">
                 <img id="interlocutorAvatarChatHeader" class="small-image large-block__header_users-block-img rounded cursor-pointer" src="~/image/layout/place-holder-b-person.jpg" alt="No person">
             </div>
-            <div class="text-start text-white user-block-name-text_block">
+            <div class="text-start text-white w-100 px-2 user-block-name-text_block">
                 <p id="interlocutorNameChatHeader" class="other-name-text"></p>
-                <p id="interlocutorIdChatHeader" class="user-block-name-text half-opacity cursor-pointer" onclick="copyId(this)"></p>
+                <p id="interlocutorIdChatHeader" class="user-block-name-text opacity-50 cursor-pointer" onclick="copyId(this)"></p>
             </div>
             <div class="d-flex justify-content-center align-items-center">
                 <img id="commentBtn" class="large-block__header_users-icon-img cursor-pointer me-2" src="~/image/layout/Pencil.svg" alt="">
@@ -26,12 +26,12 @@
         <div class="large-block__header_users-block-item rounded d-flex justify-content-between align-items-center p-1">
             <div class="rounded position-relative">
                 <img id="ownerAvatarChatHeader" class="small-image large-block__header_users-block-img rounded cursor-pointer" src="~/image/layout/place-holder-b-person.jpg" alt="User">
-                <span class="large-block-header-status d-inline-block position-absolute rounded-circle bottom-0 end-0"></span>
+                <span id="ownerOnlineStatusChatHeader" class="rounded-circle position-absolute bottom-0 end-0"></span>
             </div>
 
-            <div class="text-start text-white user-block-name-text_block">
+            <div class="text-start text-white w-100 px-2 user-block-name-text_block">
                 <p id="ownerNameChatHeader" class="other-name-text"></p>
-                <p id="ownerIdChatHeader" class="user-block-name-text half-opacity cursor-pointer" onclick="copyId(this)"></p>
+                <p id="ownerIdChatHeader" class="user-block-name-text opacity-50 cursor-pointer" onclick="copyId(this)"></p>
             </div>
             <div class=""></div>
         </div>

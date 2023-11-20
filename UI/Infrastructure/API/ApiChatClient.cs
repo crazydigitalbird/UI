@@ -60,6 +60,9 @@ namespace UI.Infrastructure.API
                     var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
                     jsonOptions.Converters.Add(new DateTimeConverter());
                     var messenger = await response.Content.ReadFromJsonAsync<Messenger>(jsonOptions);
+
+                    //var messenger = await response.Content.ReadFromJsonAsync<Messenger>();
+
                     //string dU = messenger?.Dialogs[0]?.DateUpdated.Humanize(true);
                     //string dU2 = messenger?.Dialogs[0]?.DateUpdated.Humanize(false);
                     //string dC = messenger?.Dialogs[0]?.LastMessage.DateCreated.Humanize();

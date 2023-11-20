@@ -1,5 +1,5 @@
 ﻿<div class="pop-up gallery text-start d-none" data-id-sheet="" data-id-user="">
-    <div class="pop-up-content">
+    <div class="pop-up-content d-grid">
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="pop-up__close">
             <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -13,6 +13,10 @@
                     <p class="user__name"></p>
                 </div>
                 <p class="gallery__title">Media Gallery</p>
+                <div class="gallery-btns d-flex flex-grow-1 justify-content-end">
+                    <button id="markAsSent" class="btn attach-button rounded">Отметить как отправленные</button>
+                    <button id="toSendMedia" class="btn chat-button rounded">Отправить <span id="counter-selected-media">0</span></button>
+                </div>
             </div>
             <div class="gallery-filter">
                 <div class="filter filter__btn d-flex align-items-center" data-radio="filter_1">
@@ -71,10 +75,6 @@
                     <span id="counter-send-media" class="sent_num ms-1">(0)</span>
                     <div class="filter-border"></div>
                 </div>
-            </div>
-            <div class="gallery-btns d-flex position-absolute">
-                <button id="markAsSent" class="btn attach-button rounded">Отметить как отправленные</button>
-                <button id="toSendMedia" class="btn chat-button rounded">Отправить <span id="counter-selected-media">0</span></button>
             </div>
         </div>
 

@@ -49,6 +49,7 @@ $(function () {
                 }
             }
         }
+        updateStatusSheet();
         timerLoadingDialoguesId = setTimeout(loadingDialogues, 30000);
     }, 30000);
 
@@ -151,17 +152,78 @@ function changeNumberOfUsersOnline(sheetId, numberOfUsersOnline) {
     }
 }
 
+//Устанавливает статус анкеты online(зеленый) или offline(красный), через IHostedService->ChatServices посредствам SignalR
 function onlineStatusSheet(sheetId, isOnline) {
     $(`[name="online-status-${sheetId}"]`).each(function () {
         if (isOnline && $(this).hasClass('status-circle-red')) {
             $(this).removeClass('status-circle-red');
             $(this).addClass('status-circle-green');
         }
-        else if (!isOnline && $(this).hasClass('status-circle-green')) {
-            $(this).removeClass('status-circle-green');
+        else if (!isOnline && !$(this).hasClass('status-circle-red')) {
+            $(this).removeClass('status-circle-green', 'status-circle-at-work', 'status-circle-busy');
             $(this).addClass('status-circle-red');
         }
     });
+}
+
+//Обновление индикатора статуса анкеты для пользоветелей с ролью оператор.
+//Если статус анкеты Offline(status-circle-red), статус не изменяется.
+function updateStatusSheet() {
+    $.get('/Chats/StatusSheets', function (statusSheets) {
+        statusSheets.forEach((element) => {
+            $(`[name="online-status-${element.sheetId}"]`).each(function () {
+
+                if ($(this).hasClass('status-circle-red')) {
+                    return;
+                }
+
+                switch (element.status) {
+                    case 'Free':
+                        if ($(this).hasClass('status-circle-green')) {
+                            return;
+                        }
+                        $(this).removeClass('status-circle-at-work status-circle-busy');
+                        $(this).addClass('status-circle-green');
+                        break;
+
+                    case 'AtWork':
+                        if ($(this).hasClass('status-circle-at-work')) {
+                            return;
+                        }
+                        $(this).removeClass('status-circle-green status-circle-busy');
+                        $(this).addClass('status-circle-at-work');
+                        break;
+
+                    case 'Busy': 
+                        if ($(this).hasClass('status-circle-busy')) {
+                            return;
+                        }
+                        $(this).removeClass('status-circle-green status-circle-at-work');
+                        $(this).addClass('status-circle-busy');
+                        break;
+                }
+            });
+        });
+    });    
+}
+
+//Метод возвращает текущий статус анкеты, в виде CSS класса
+function getStatusSheet(sheetId) {
+    let $onlineStatus = $(`#sheetsDialoguesTabContent #active .accordion-items [name="online-status-${sheetId}"]`);
+    if ($onlineStatus.length > 0) {
+        if ($onlineStatus.hasClass('status-circle-green')) {
+            return 'status-circle-green';
+        }
+        if ($onlineStatus.hasClass('status-circle-red')) {
+            return 'status-circle-red';
+        }
+        if ($onlineStatus.hasClass('status-circle-at-work')) {
+            return 'status-circle-at-work';
+        }
+        if ($onlineStatus.hasClass('status-circle-busy')) {
+            return 'status-circle-busy';
+        }
+    }
 }
 
 function countDialoguesSheet(sheetId, currentTab) {
@@ -226,16 +288,3 @@ function changePremium(e) {
         $input.prop('checked', !addPin);
     });
 }
-
-//function enableSpinner($e, name) {
-//    var spinner = $(`<div id="spinnerNavTabs" class="d-flex justify-content-center my-1">
-//                        <div id="spinner${name}" class="spinner-grow spinner-grow-sm ms-2" role="status">
-//                            <span class="visually-hidden">Loading...</span>
-//                        </div>
-//                     </div>`);
-//    $e.append(spinner);
-//}
-
-//function disableSpinner(name) {
-//    $(`#spinner${name}`).remove();
-//}

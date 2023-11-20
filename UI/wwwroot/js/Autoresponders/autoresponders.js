@@ -1,20 +1,3 @@
-const option = document.querySelectorAll('.select-info__list'),
-    selects = document.querySelectorAll('.select-title');
-
-option.forEach(list => {
-    list.addEventListener('click', () => {
-        let selectText = list.parentElement.parentElement.children[0].children[0]
-        selectText.textContent = list.textContent
-        list.parentElement.parentElement.classList.toggle('showSelect')
-    });
-});
-
-selects.forEach(select => {
-    select.addEventListener('click', () => {
-        select.parentElement.classList.toggle('showSelect')
-    });
-});
-
 function settingRemove() {
     $('table').each(function () {
         let findFirst = false;
@@ -67,13 +50,13 @@ function showEditPopUp(e) {
 
     $('#avatarPopUp').attr('src', $activeSheet.find('img').attr('src'));
 
-    if ($activeSheet.find('[name=status]').hasClass('online')) {
-        $('#statusPopUp').removeClass('offline');
-        $('#statusPopUp').addClass('online');
+    if ($activeSheet.find('[name=status]').hasClass('status-circle-green')) {
+        $('#statusPopUp').removeClass('status-circle-red');
+        $('#statusPopUp').addClass('status-circle-green');
     }
     else {
-        $('#statusPopUp').removeClass('online');
-        $('#statusPopUp').addClass('offline');
+        $('#statusPopUp').removeClass('status-circle-green');
+        $('#statusPopUp').addClass('status-circle-red');
     }
 
     $('#namePopUp').text($activeSheet.find('.user__name').text());

@@ -78,7 +78,6 @@ namespace UI.Models
         public long? IdMessage { get; set; }
     }
 
-
     public class Content
     {
         public int Id { get; set; }

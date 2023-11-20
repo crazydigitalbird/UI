@@ -1,6 +1,4 @@
-﻿var $messagesDiv = $('#messages');
-
-// Загрузка новых сообщений
+﻿// Загрузка новых сообщений
 function LoadNewMessages(sheetId, idInterlocutor, idNewMessage) {
     // проверяем что пользователь за время запроса осталься в том же диалоге
     if (CheckCurrentChat(sheetId, idInterlocutor)) {
@@ -17,7 +15,7 @@ function LoadNewMessages(sheetId, idInterlocutor, idNewMessage) {
                     // Сверяем id самого нового сообщения до загрузки и после загрузки новых сообщений
                     // Если id совпадают то пользователь не осуществлял действий, которые могли привести к обновлению окна переписки
                     if (idLastMessage === currentIdLastMessage) {
-                        $messagesDiv.append(messages);
+                        $('#messages').append(messages);
                         updateAllDateHumanize();
                         scroll();
                         ManMessagesMailsLeft(sheetId, idInterlocutor);
@@ -30,19 +28,19 @@ function LoadNewMessages(sheetId, idInterlocutor, idNewMessage) {
 }
 
 function loadMessages(sheetId, idInterlocutor, newLoading) {
-    var loadAllMessages = $messagesDiv.data('load-all-messages').toLowerCase();
+    var loadAllMessages = $('#messages').data('load-all-messages').toLowerCase();
     if (loadAllMessages === 'false') {
-        var idLastMessage = $messagesDiv.data('id-last-message');
+        var idLastMessage = $('#messages').data('id-last-message');
         enableSpinnerLoadMessages();
         $.post("/Chats/LoadMessages", { sheetId: sheetId, idInterlocutor: idInterlocutor, idLastMessage: idLastMessage }, function (data) {
             if (CheckCurrentChat(sheetId, idInterlocutor)) {
                 if (newLoading) {
-                    $messagesDiv.html(data);
+                    $('#messages').html(data);
                     scroll(null);
                 }
                 else {
-                    var oldHeight = $messagesDiv[0].scrollHeight;
-                    $messagesDiv.prepend(data);
+                    var oldHeight = $('#messages')[0].scrollHeight;
+                    $('#messages').prepend(data);
                     scroll(oldHeight);
                 }
                 updateDataInMessageDiv();
@@ -55,7 +53,7 @@ function loadMessages(sheetId, idInterlocutor, newLoading) {
 }
 
 function loadHistoryChat(e) {
-    var idLastMessage = $messagesDiv.data('id-last-message');
+    var idLastMessage = $('#messages').data('id-last-message');
     if (idLastMessage) {
         var scrollTop = e.scrollTop;
         if (scrollTop == 0) {
@@ -83,7 +81,7 @@ function enableSpinnerLoadMessages() {
                             <span class="visually-hidden">Loading...</span>
                         </div>
                      </div>`);
-    $messagesDiv.prepend(spinner);
+    $('#messages').prepend(spinner);
 }
 
 function disableSpinnerLoadMessages() {
@@ -95,8 +93,8 @@ function updateDataInMessageDiv() {
     if ($inputTemp) {
         var dataIdLastMessage = $inputTemp.data('id-last-message');
         var dataLoadAllMessage = $inputTemp.data('load-all-messages');
-        $messagesDiv.data('id-last-message', dataIdLastMessage);
-        $messagesDiv.data('load-all-messages', dataLoadAllMessage);
+        $('#messages').data('id-last-message', dataIdLastMessage);
+        $('#messages').data('load-all-messages', dataLoadAllMessage);
         $inputTemp.remove();
     }
 }
@@ -111,28 +109,28 @@ function scroll(oldHeight) {
 }
 
 function scrollToEndMessages() {
-    $messagesDiv.animate({ scrollTop: $messagesDiv[0].scrollHeight }, 0);
+    $('#messages').animate({ scrollTop: $('#messages')[0].scrollHeight }, 0);
     setTimeout(function () {
-        $messagesDiv.animate({ scrollTop: $messagesDiv[0].scrollHeight }, 0);
+        $('#messages').animate({ scrollTop: $('#messages')[0].scrollHeight }, 0);
     }, 1000);
 
-    //$messagesDiv.animate({ scrollTop: $messagesDiv.outerHeight(true) + 1000 }, 0);
+    //$('#messages').animate({ scrollTop: $('#messages').outerHeight(true) + 1000 }, 0);
     //setTimeout(function () {
-    //    $messagesDiv.animate({ scrollTop: $messagesDiv.outerHeight(true) + 1000 }, 0);
+    //    $('#messages').animate({ scrollTop: $('#messages').outerHeight(true) + 1000 }, 0);
     //}, 1000);
 
-    //$messagesDiv.scrollTop = $messagesDiv[].scrollHeight;
+    //$('#messages').scrollTop = $('#messages')[].scrollHeight;
     //setTimeout(function () {
-    //    $messagesDiv.scrollTop = $messagesDiv.scrollHeight;
+    //    $('#messages').scrollTop = $('#messages').scrollHeight;
     //}, 1000);
 }
 
 function scrollToOldPositionMessages(oldHeight) {
-    $messagesDiv[0].scrollTo(0, ($messagesDiv[0].scrollHeight - oldHeight));
+    $('#messages')[0].scrollTo(0, ($('#messages')[0].scrollHeight - oldHeight));
 }
 
 function clearMessageDiv() {
-    $messagesDiv.empty();
-    $messagesDiv.data('load-all-messages', 'false');
-    $messagesDiv.data('id-last-message', '');
+    $('#messages').empty();
+    $('#messages').data('load-all-messages', 'false');
+    $('#messages').data('id-last-message', '');
 }

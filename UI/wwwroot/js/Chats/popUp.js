@@ -1,5 +1,6 @@
-﻿const popUpInformation = document.querySelector('.pop-up.information'),
-    popUpGallery = document.querySelector('.pop-up.gallery'),
+﻿const popUpGallery = document.querySelector('.pop-up.gallery'),
+    popUpInformation = document.querySelector('.pop-up.information'),
+    //popUpInformation = document.getElementById('information'),
     popUpVideo = document.querySelector('.pop-up.vidoe-player'),
     popUpPreviewPost = document.querySelector('.pop-up.preview'),
     popUpMail = document.querySelector('.pop-up.chatAndMail'),
@@ -87,14 +88,17 @@ function informationPerson(e) {
     }
     if (sheetId && idUser) {
         var idUserPopup = popUpInformation.getAttribute('data-id-user');
+        //var informationModal = new bootstrap.Modal(popUpInformation);
         if (idUser === idUserPopup) {
             popUpInformation.classList.remove('d-none');
+            //informationModal.show();
         }
         else {
             $.post('/Chats/InformationPerson', { sheetId: sheetId, idUser: idUser }, function (data) {
                 $('#informationPersonBody').html(data);
                 popUpInformation.setAttribute('data-id-user', idUser);
                 popUpInformation.classList.remove('d-none');
+                //informationModal.show();
             });
         }
     }

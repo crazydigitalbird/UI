@@ -19,7 +19,7 @@
          aria-controls="@($"flush-collapse-mail-{mailMessage.Id}")"
          role="button">
                 <div class="other-user-block col-2 p-0">
-                    <div class="standart-image-block position-relative d-inline-block">
+                    <div class="position-relative d-inline-block">
                         <img name="ownerAvatar" src="@(isOwner ? ownerInfo?.Personal.AvatarSmall : regularInfo.Personal.AvatarSmall)" alt="avatar" class="standart-image rounded">
                     </div>
                     <p name="date-created" class="user-block-name-text small-text-wrapp" data-date="@mailMessage.DateCreated.ToString("O")"></p>
@@ -28,15 +28,15 @@
                     <p class="other-name-text">
                         @(isOwner ? ownerInfo.Personal.Name : regularInfo.Personal.Name)
                     </p>
-                    <p class="other-name-text-mutiline small-text-opacity">
+                    <p class="other-name-text-mutiline opacity-50">
                         @mailMessage.Title
                     </p>
                 </div>
-                <div class="user-block d-flex align-items-center col-4 px-1">
-                    <div class="standart-image-block position-relative px-1">
+                <div class="user-block d-flex align-items-center rounded col-4 px-1">
+                    <div class="position-relative px-1">
                         <img name="interlocutorAvatar" src="@(isOwner ?  regularInfo.Personal.AvatarSmall : ownerInfo?.Personal.AvatarSmall)" alt="avatar" class="standart-image rounded">
                     </div>
-                    <div class="user-block-info text-center d-grid w-100">
+                    <div class="text-center d-grid w-100">
                         <p name="interlocutorName" class="user-block-name-text">
                             @(isOwner ? regularInfo.Personal.Name : ownerInfo.Personal.Name)
                         </p>

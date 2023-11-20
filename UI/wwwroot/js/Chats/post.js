@@ -199,6 +199,7 @@ function createExclusivePostClear() {
     $(post).find('textarea').val('');
     $(post).find('.uploaded-file').empty();
     $(`#sentPost`).addClass('disabled');
+    $('#textPostLength').text(0);
 }
 
 //<----- Send Post ----->
@@ -223,8 +224,9 @@ function checkSendPost() {
             countPhoto = countPhoto + 1;
         }
     });
-    
-    if (allowedSendMessages(1) && textLength >= 200 && textLength <= 3500 && (countVideo >= 1 || countPhoto >= 4)) {
+
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    if (allowedSendMessages(1) && IsAtWorkSheet(sheetId) && textLength >= 200 && textLength <= 3500 && (countVideo >= 1 || countPhoto >= 4)) {
         if($('#sentPost').hasClass('disabled'))
         {
             $('#sentPost').removeClass('disabled')

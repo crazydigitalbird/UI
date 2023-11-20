@@ -6,9 +6,9 @@
 }
 
 function send(messageType, message) {
-    if (allowedSendMessages(1)) {
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    if (allowedSendMessages(1) && IsAtWorkSheet(sheetId)) {
         var idRegularUser = $('#interlocutorIdChatHeader').text();
-        var sheetId = $('#manMessagesMails').data('sheet-id');
         var idLastMessage = $('#messages').find('[name=message]').last().data('id-message');
         var date = Date.now();
 
@@ -17,7 +17,7 @@ function send(messageType, message) {
             var tempMessage = $(`<div id="tempMessage-${date}-${idLastMessage}" class="large-block__body-item mt-2 me-1">
                                     <div class="large-block__body-item-top d-flex align-items-end flex-row-reverse">
                                         <div class="large-block__body-item-image position-relative ms-2">
-                                            <div class="standart-image-block position-relative">
+                                            <div class="position-relative">
                                                 <img src="${ownerAvatar}" alt="avatar" class="small-image rounded">
                                             </div>
                                         </div>
@@ -84,6 +84,18 @@ function allowedSendMessages(count) {
     return false;
 }
 
+//Проверка что оператор работает на данной анкете
+function IsAtWorkSheet(sheetId) {
+    let statusCSS = getStatusSheet(sheetId);
+    $('#ownerOnlineStatusChatHeader').addClass(statusCSS);
+    if (statusCSS === 'status-circle-at-work') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 //Уменьшаем счетчик доступных сообщений
 function reduceMessagesLeft() {
     var $messagesLeft = $('#messagesLeft');
@@ -93,8 +105,8 @@ function reduceMessagesLeft() {
         if (newMessagesLeft >= 0) {
             $messagesLeft.text(newMessagesLeft);
         }
-        if (newMailsLeft === 0) {
-            $messagesLeft.addClass('large-block-header-timer-text-opacity');
+        if (newMessagesLeft === 0) {
+            $messagesLeft.addClass('opacity-25');
         }
     }
 }

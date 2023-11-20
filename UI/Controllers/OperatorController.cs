@@ -1,11 +1,7 @@
-﻿using Core.Models.Sheets;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Text;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Filters;
-using UI.Models;
 
 namespace UI.Controllers
 {
@@ -24,6 +20,7 @@ namespace UI.Controllers
             _balanceClient = balanceClient;
         }
 
+        [ServiceFilter(typeof(UpdateSessionAttribute))]
         public async Task<IActionResult> Index()
         {
             var sheets = await _operatorClient.GetSheetsViewAsync();
@@ -37,19 +34,19 @@ namespace UI.Controllers
             await Task.WhenAll(statusAndMediaTask, operatorIdTask);
 
             var operatorId = operatorIdTask.Result;
+
             var endDateTime = DateTime.Now;
+            var currentMonth = endDateTime.Month;
             var days = endDateTime.Day == 31 ? 31 : 30;
             var beginDateTime = endDateTime - TimeSpan.FromDays(days);
             var balances = await _balanceClient.GetOperatorBalances(operatorId, beginDateTime, endDateTime);
 #if DEBUGOFFLINE
             balances.ForEach(b => b.Sheet.Id = 1);
-#endif
+#endif            
             foreach (var sheet in sheets)
             {
                 sheet.Balance = balances.Where(b => b.Sheet.Id == sheet.Id).Sum(ob => ob.Cash);
             }
-
-            var currentMonth = endDateTime.Month;
 
             var currentMonthBalances = balances.Where(b => b.Date.Month == currentMonth).ToArray();
             var balancesByMessageType = new decimal[7];
@@ -69,7 +66,6 @@ namespace UI.Controllers
 
             ViewData["balancesByMessageType"] = string.Join(";", balancesByMessageType).Replace(",", ".");
             ViewData["balancesMonth"] = string.Join(";", balancesMonth).Replace(",", ".");
-
             ViewData["balancesAll"] = balances.Sum(b => b.Cash);
 
             return View(sheets);

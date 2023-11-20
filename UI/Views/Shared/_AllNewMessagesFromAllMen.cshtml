@@ -11,7 +11,7 @@
     //Проверяем кто написал последнее сообщение в диалоге, владелица анкеты или мужчина. Если условие выполняется, то сообщение написал владелица анкеты
     bool isOwner = ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom && ds.Dialogue.LastMessage.Type != MessageType.System;
 
-    <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}")" class="bottom-block-body__item d-flex mb-2 text-white row p-1 rounded @(isOwner ? "flex-row-reverse": "flex-row")"
+    <div name="newMessage" id="@($"{ds.SheetInfo.SheetId}-{ds.Dialogue.IdInterlocutor}")" class="bottom-block-body__item d-flex w-100 cursor-pointer mb-2 text-white row p-1 rounded @(isOwner ? "flex-row-reverse": "flex-row")"
          data-message-id="@ds.Dialogue.LastMessage.Id"
          data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
          data-owner-id="@($"{ds.SheetInfo.Id}")"
@@ -21,8 +21,8 @@
          data-online="@(isOwner ? ds.Dialogue.Status : "")"
          onclick="goToChat(this)">
         <div class="other-user-block col-2 p-0">
-            <div class="standart-image-block position-relative d-inline-block">
-                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
+            <div class="position-relative d-inline-block">
+                    <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="avatar" class="standart-image rounded">
                     @if (ds.Dialogue.Status == Status.Online)
                     {
                         <span class="status-circle-green other-user-block-status rounded-circle position-absolute bottom-0 end-0"></span>
@@ -88,12 +88,13 @@
                         break;
                 }
             </p>
-            <p name="date-created" class="user-block-name-text small-text-opacity" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
+            <p name="date-created" class="user-block-name-text opacity-50" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
             </p>
         </div>
-        <div class="user-block d-flex align-items-center col-4 px-2">
-            <div class="standart-image-block position-relative px-1">
-                <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
+        <div class="user-block d-flex align-items-center rounded col-4 px-2">
+            <div class="position-relative mx-1">
+                <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="avatar" class="standart-image rounded">
+                <span name="online-status-@ds.SheetInfo.SheetId" class="rounded-circle position-absolute bottom-0 end-0"></span>
                 @*                    @if (sd.SheetInfo.IsOnline)
             {
             <span class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 end-0"></span>
@@ -104,7 +105,7 @@
             }*@
             </div>
 
-            <div class="user-block-info text-center d-grid w-100">
+            <div class="text-center d-grid w-100">
                 <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
                 @if (!isOwner)
                 {

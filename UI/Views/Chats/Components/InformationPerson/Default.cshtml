@@ -4,102 +4,102 @@
     var photos = (PhotosPerson)ViewData["photosPerson"];
 }
 
-<div class="information-man text-start">
+<div class="d-flex flex-column position-relative w-50">
     <div class="d-flex justify-content-between align-items-start">
         <div class="d-flex w-100">
-            <div class="avatar">
-                <img src="@Model.Personal.AvatarSmall" alt="" class="avatar__img">
+            <div class="avatar me-3">
+                <img src="@Model.Personal.AvatarSmall" alt="" class="avatar__img rounded-1 h-100">
             </div>
             <div class="d-flex flex-column justify-content-between col-7">
                 <div class="col-8">
-                    <p class="user__name">@($"{Model.Personal.Name}, {Model.Personal.Age}")</p>
+                    <p class="user__name fw-bold">@($"{Model.Personal.Name}, {Model.Personal.Age}")</p>
                     <p class="data__year">@Model.Personal.DateBirth</p>
                 </div>
-                <div class="information__id">ID: <span>@Model.Id</span></div>
-                <p class="address">@Model.Personal.Country <span class="city">@Model.Personal.City</span></p>
+                <div class="information__id d-flex position-absolute top-0 end-0 me-3 rounded-4 px-3 py-1">ID: <span>@Model.Id</span></div>
+                <p class="address fw-bold">@Model.Personal.Country <span class="ms-1">@Model.Personal.City</span></p>
             </div>
         </div>
     </div>
-    <div class="information-man-box">
-        <ul class="information-item">
-            <li>
-                <span>Height</span>
-                <span>
+    <div class="overflow-y-auto mt-3">
+        <ul class="w-75">
+            <li class="d-flex mb-1">
+                <span class="w-100">Height</span>
+                <span class="w-100 fw-bold">
                     @(Model.Personal.Height > 0 ? $"{Model.Personal.Height} cm" : "Не указано")
                 </span>
             </li>
-            <li>
-                <span>Weight</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Weight</span>
+                <span class="w-100 fw-bold">
                     @(Model.Personal.Weight > 0 ? $"{Model.Personal.Weight}" : "Не указано")
                 </span>
             </li>
-            <li>
-                <span>Body type</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Body type</span>
+                <span class="w-100 fw-bold">
                     @(!string.IsNullOrWhiteSpace(Model.Personal.BodyType) ? Model.Personal.BodyType : "Не указано")
                 </span>
             </li>
-            <li>
-                <span>Matirial status</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Matirial status</span>
+                <span class="w-100 fw-bold">
                     @(!string.IsNullOrWhiteSpace(Model.Personal.MaritalStatus) ? Model.Personal.MaritalStatus : "Не указано")
                 </span>
             </li>
-            <li>
-                <span>Children</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Children</span>
+                <span class="w-100 fw-bold">
                     @Model.Personal.CountChildren
                 </span>
             </li>
-            <li>
-                <span>Smoking</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Smoking</span>
+                <span class="w-100 fw-bold">
                     @Model.Personal.Smoking.GetDisplayName()
                 </span>
             </li>
-            <li>
-                <span>Drinking</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Drinking</span>
+                <span class="w-100 fw-bold">
                     @Model.Personal.Drinking.GetDisplayName()
                 </span>
             </li>
-            <li>
-                <span>Education</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Education</span>
+                <span class="w-100 fw-bold">
                     @(!string.IsNullOrWhiteSpace(Model.Personal.Education) ? Model.Personal.Education : "Не указано")
                 </span>
             </li>
-            <li>
-                <span>Occupation</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Occupation</span>
+                <span class="w-100 fw-bold">
                     @(!string.IsNullOrWhiteSpace(Model.Personal.Occupation) ? Model.Personal.Occupation : "Не указано")
                 </span>
             </li>
         </ul>
-        <p class="information-item__title">Perfect pather</p>
-        <ul class="information-item">
-            <li>
-                <span>Age</span>
-                <span>
+        <p class="fs-5 fw-bold my-4">Perfect pather</p>
+        <ul class="w-75">
+            <li class="d-flex mb-1">
+                <span class="w-100">Age</span>
+                <span class="w-100 fw-bold">
                     @Model.Preferences.Age()
                 </span>
             </li>
-            <li>
-                <span>Height</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Height</span>
+                <span class="w-100 fw-bold">
                     @Model.Preferences.Height()
                 </span>
             </li>
-            <li>
-                <span>Weight</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Weight</span>
+                <span class="w-100 fw-bold">
                     @Model.Preferences.Weight()
                 </span>
             </li>
-            <li>
-                <span>Body type</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Body type</span>
+                <span class="w-100 fw-bold">
                     Не указано
                     @*@(!string.IsNullOrWhiteSpace(Model.Preferences.BodyType) ? Model.Preferences.BodyType : "Не указано")*@
                 </span>
@@ -108,21 +108,21 @@
             <span>Matirial status</span>
             <span>Single</span>
             </li>*@
-            <li>
-                <span>Children</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Children</span>
+                <span class="w-100 fw-bold">
                     @Model.Preferences.HasChildren
                 </span>
             </li>
-            <li>
-                <span>Smoking</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Smoking</span>
+                <span class="w-100 fw-bold">
                     @Model.Preferences.Smokes.GetDisplayName()
                 </span>
             </li>
-            <li>
-                <span>Drinking</span>
-                <span>
+            <li class="d-flex mb-1">
+                <span class="w-100">Drinking</span>
+                <span class="w-100 fw-bold">
                     @Model.Preferences.Drinks.GetDisplayName()
                 </span>
             </li>
@@ -137,8 +137,8 @@
         </ul>
     </div>
 </div>
-<div class="information-photos">
-    <p class="information-photos__title text-center">Фотографии</p>
+<div class="w-50">
+    <p class="fw-bold text-center mb-3">Фотографии</p>
     @if (photos?.Public?.Count > 0)
     {
         <div class="information-photos-box d-flex justify-content-start flex-wrap">

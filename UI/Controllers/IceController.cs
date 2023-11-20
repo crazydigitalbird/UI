@@ -8,6 +8,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class IceController : Controller
     {
         private readonly IIcebreakersClient _icebreakersClient;
@@ -22,6 +23,7 @@ namespace UI.Controllers
             _sheetClient = sheetClient;
             _logger = logger;
         }
+
         public async Task<IActionResult> Index()
         {
             var sheets = await _operatorClient.GetSheetsAsync();

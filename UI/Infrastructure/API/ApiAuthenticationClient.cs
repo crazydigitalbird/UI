@@ -8,20 +8,25 @@ namespace UI.Infrastructure.API
     public class ApiAuthenticationClient : IAuthenticationClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<ApiAuthenticationClient> _logger;
 
-        public ApiAuthenticationClient(IHttpClientFactory httpClientFactory, ILogger<ApiAuthenticationClient> logger)
+        public ApiAuthenticationClient(IHttpClientFactory httpClientFactory,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ApiAuthenticationClient> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
-        public async Task<ApplicationUser> LogInAsync(string login, string passowrd)
+        public async Task<ApplicationUser> LogInAsync(string login, string password)
         {
             var client = _httpClientFactory.CreateClient("api");
             try
             {
-                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength=720", null);
+                password = WebUtility.UrlEncode(password);
+                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={password}&sessionLength=30", null);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var userSession = await response.Content.ReadFromJsonAsync<UserSession>();
@@ -119,6 +124,7 @@ namespace UI.Infrastructure.API
             var client = _httpClientFactory.CreateClient("api");
             try
             {
+                password = WebUtility.UrlEncode(password);
                 var response = await client.PutAsync($"Users/AddUser?userLogin={login}&userEmail={email}&userPassword={password}", null);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -137,6 +143,7 @@ namespace UI.Infrastructure.API
             var client = _httpClientFactory.CreateClient("api");
             try
             {
+                password = WebUtility.UrlEncode(password);
                 var response = await client.PutAsync($"Users/AddUser?userLogin={login}&userEmail={email}&userPassword={password}", null);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -180,11 +187,33 @@ namespace UI.Infrastructure.API
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
+
+        public async Task UpdateSession()
+        {
+            var client = _httpClientFactory.CreateClient("api");
+            try
+            {
+                var sessionGuid = GetSessionGuid();
+                var response = await client.PostAsync($"Users/UpdateSession?sessionGuid={sessionGuid}", null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "An error update session.");
+            }
+        }
+
+        private string GetSessionGuid()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+            var sessionGuid = user.FindFirst("SessionGuid")?.Value;
+            return sessionGuid;
+        }
     }
 
     public interface IAuthenticationClient
     {
         Task<ApplicationUser> LogInAsync(string login, string password);
+        Task UpdateSession();
         Task<bool> RegisterAsync(string login, string email, string password);
         Task<User> AddUserAsync(string login, string email, string password);
         Task<HttpResponseMessage> ChangePassowrdAsync(string password, string newPassword);

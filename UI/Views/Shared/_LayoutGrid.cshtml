@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/css/mdb.dark.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <link rel="stylesheet" href="/css/bootstrap.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
     <title>@ViewData["Title"]</title>
 </head>
-<body>
+<body class="d-grid vh-100" style="grid-template-rows: min-content 1fr;">
     <header class="sticky-top">
         <nav id="navMenu" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow">
             <div class="container-fluid">
@@ -45,15 +45,15 @@
                             <li class="nav-item ps-1">
                                 <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Statistics">Statistics</a>
                             </li>
-                            @*                            <li class="nav-item ps-1">
-                        <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
-                        </li>
-                        <li class="nav-item ps-1">
-                        <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
-                        </li>
-                        <li class="nav-item ps-1">
-                        <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
-                        </li> *@
+@*                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
+                            </li>
+                            <li class="nav-item ps-1">
+                                <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
+                            </li> *@
                         }
                         else if (User.IsInRole(Role.Operator.ToString()))
                         {
@@ -76,13 +76,11 @@
             </div>
         </nav>
     </header>
-
-    <div class="container-fluid">
-        @RenderBody()
-    </div>
+    
+    @RenderBody()
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
-    <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js" asp-append-version="true"></script>
+    <script src="/js/bootstrap.bundle.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

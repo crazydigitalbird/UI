@@ -7,6 +7,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class UserController : Controller
     {
         private readonly ISheetClient _sheetClient;

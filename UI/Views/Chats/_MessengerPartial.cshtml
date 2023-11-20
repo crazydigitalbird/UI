@@ -1,15 +1,13 @@
-﻿<div class="col-6 px-0 h-100">
-    <div class="bottom-block__item d-flex flex-column justify-content-between align-items-center h-100 p-1">
+﻿<div class="wrapper-item d-flex flex-column overflow-hidden rounded border justify-content-between align-items-center h-100 p-2">
 
-        <partial name="_MessengerHeaderPartial" />
+    <partial name="_MessengerHeaderPartial" />
 
-        <div class="large-block__body p-2 d-flex flex-column justify-content-end w-100">
-            <div id="messages" class="large-block__body-items mb-2" data-load-all-messages="false" data-id-last-message="" onscroll="loadHistoryChat(this)">
-                <vc:messages></vc:messages>
-            </div>
-            
-            <partial name="_MessengerEditorPartial" />
-
+    <div class="large-block__body d-flex flex-column overflow-y-auto justify-content-end w-100">
+        <div id="messages" class="overflow-y-auto my-3" data-load-all-messages="false" data-id-last-message="" onscroll="loadHistoryChat(this)">
+            <vc:messages></vc:messages>
         </div>
+
+        <partial name="_MessengerEditorPartial" />
+
     </div>
 </div>

@@ -1,6 +1,4 @@
-﻿const option = document.querySelectorAll('.select-info__list'),
-    selectText = document.querySelector('.select-title__text'),
-    select = document.querySelector('.select-title'),
+﻿const select = document.querySelector('#selectIce'),
     viewTrashBtn = document.querySelector('.view-trash'),
     addBtn = document.querySelector('.add__btn'),
     popUpTrash = document.querySelector('.pop-up.trash'),
@@ -33,13 +31,9 @@ $(function () {
             });
         });
     });
-});
 
-option.forEach(list => {
-    list.addEventListener('click', () => {
-        selectText.textContent = list.textContent;
-        select.parentElement.classList.toggle('showSelect');
-        sortIces(list.id);
+    select.addEventListener('change', (event) => {
+        sortIces(event.target.value);
     });
 });
 
@@ -92,10 +86,6 @@ function sortIces(criterion) {
             break;
     }
 }
-
-select.addEventListener('click', () => {
-    select.parentElement.classList.toggle('showSelect');
-});
 
 popUpClose.forEach(close => {
     close.addEventListener('click', () => {
@@ -244,7 +234,7 @@ function resetFltersIce() {
 }
 
 function resetSortIce() {
-    selectText.textContent = option[0].textContent;
+    select.value = 'data';
 }
 
 function clearBoxIce() {
@@ -270,7 +260,7 @@ function removeSpinnerIce(id) {
 
 function searchSheet(e) {
     var searchSheetIdentity = e.value.toLowerCase();
-    $('.wrapper-box [name="sheet"]').each(function () {
+    $('[name="sheet"]').each(function () {
         var sheetIdentity = $(this).find('[name="sheetId"]').text();
         if (!sheetIdentity.includes(searchSheetIdentity)) {
             $(this).addClass('d-none');
@@ -283,7 +273,7 @@ function searchSheet(e) {
 
 function searchOperator(e) {
     var searchOperatorIdentity = e.value.toLowerCase();
-    $('.wrapper-box [name="sheet"]').each(function () {
+    $('[name="sheet"]').each(function () {
         var operatorIdentity = $(this).find('[name="operatorId"]').text();
         if (!operatorIdentity.includes(searchOperatorIdentity)) {
             $(this).addClass('d-none');

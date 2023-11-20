@@ -16,29 +16,6 @@
     {
         bool isOwner = m.IdUserFrom != chat.IdInterlocutor;
 
-        @*        if (m.Type == MessageType.Photo_batch)
-        {
-            foreach (var photo in m.Content.Photos)
-            {
-                <div class="large-block__body-item mt-2 me-1">
-                    <div class="large-block__body-item-top d-flex align-items-end @(isOwner? "flex-row-reverse" : "")">
-                        <div class="large-block__body-item-image  @(isOwner? "position-relative ms-2" : "me-2")">
-                            <div class="standart-image-block position-relative">
-                                <img src="@(isOwner ? Model.Sheet.Personal.AvatarSmall: chat.Avatar)" alt="avatar" class="small-image rounded">
-                            </div>
-                        </div>
-                        <div name="message" class="@(isOwner ? "large-block__body-item-message-answer rounded-start" : "large-block__body-item-message rounded-end") d-flex align-items-center justify-content-start p-2 rounded-top" data-id-message="@m.Id">
-                            <p class="text-white large-block__body-item-text">
-                                <img src="@photo.Url" class="img-thumbnail" style="width: 100px;" />
-                            </p>
-                        </div>
-                    </div>
-
-                    <p name="date-created" class="large-block__body-item-small-text @(isOwner? "text-end" : "text-start")" data-date="@m.DateCreated.ToString("O")"></p>
-                </div>
-            }
-        }*@
-
         if (m.Type == MessageType.System)
         {
             <div class="large-block__body-item mt-2">
@@ -56,7 +33,7 @@
             <div class="large-block__body-item mt-2 me-1">
                 <div class="large-block__body-item-top d-flex align-items-end @(isOwner? "flex-row-reverse" : "")">
                     <div class="large-block__body-item-image @(isOwner? "position-relative ms-2" : "me-2")">
-                        <div class="standart-image-block position-relative">
+                        <div class="position-relative">
                             <img src=@(isOwner ? Model.Sheet.Personal.AvatarSmall: chat.Avatar) alt="avatar" class="small-image rounded">
                             @*<span class="large-block-header-status-green d-inline-block position-absolute rounded-circle bottom-0 end-0"></span>*@
                         </div>
@@ -190,8 +167,8 @@
                             break;
 
                         case MessageType.Virtual_Gift:
-                            <div name="message" class="" data-id-message="@m.Id">
-                                <p class="text-white large-block__body-item-text">
+                            <div name="message" class="w-50" data-id-message="@m.Id">
+                                <p class="text-white large-block__body-item-text text-center">
                                     <img src="@m.Content.ImageSrc" style="width: 100px;" />
                                     <br />
                                     @m.Content.Message
@@ -334,7 +311,7 @@
                                                                         }
                                                                     </div>
                                                                     <div class="history-main d-flex justify-content-between flex-column">
-                                                                        <div class="history-main-sup position-relative">
+                                                                        <div class="history-main-sup position-relative rounded">
                                                                             <img src="@media[1].Url" alt="" />
                                                                             @if (media[1].IsVideo)
                                                                             {
@@ -348,14 +325,14 @@
                                                                         </div>
                                                                         @if (media.Count > 3)
                                                                         {
-                                                                            <div class="history-main-box position-relative">
+                                                                            <div class="history-main-box position-relative rounded">
                                                                                 <img src="@media[2].Url" alt="">
                                                                                 <div class="upload_count position-absolute">+<span class="count">@($"{(media.Count - 3)}")</span></div>
                                                                             </div>
                                                                         }
                                                                         else
                                                                         {
-                                                                            <div class="history-main-sup position-relative">
+                                                                            <div class="history-main-sup position-relative rounded">
                                                                                 <img src="@media[2].Url" alt="">
                                                                                 @if (media[2].IsVideo)
                                                                                 {

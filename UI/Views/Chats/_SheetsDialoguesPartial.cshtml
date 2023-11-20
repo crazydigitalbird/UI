@@ -1,32 +1,36 @@
 ﻿@using Newtonsoft.Json;
-@model List<Sheet>
+@model List<SheetOperatorCommunication>
 
-<div id="sheetsDialogues" class="col-3 ps-2 h-100">
-    <div class="bottom-block__item h-100 p-2">
-        <div class="bottom-block-header">
+@{
+    int operatorId = (int)ViewData["operatorId"];
+}
+
+<div id="sheetsDialogues" class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-2">
+
+        <div class="bottom-block-header mb-3">
             <ul class="d-flex justify-content-between text-white" id="sheetsDialogues" role="tablist">
-                <li class="block__nav-item" role="presentation">
-                    <p class="nav-link active block__nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" role="tab" aria-controls="active" aria-selected="true">
+            <li class="d-flex justify-content-center" role="presentation">
+                <p class="nav-link active block__nav-link d-flex flex-column justify-content-center fw-bold cursor-pointer" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" role="tab" aria-controls="active" aria-selected="true">
                         Профили
                     </p>
                 </li>
-                <li class="block__nav-item" role="presentation">
-                    <p class="nav-link block__nav-link" id="hisoty-tab" data-bs-toggle="tab" data-bs-target="#history" role="tab" aria-controls="history" aria-selected="false" tabindex="-1">
+                <li class="d-flex justify-content-center" role="presentation">
+                <p class="nav-link block__nav-link d-flex flex-column justify-content-center fw-bold cursor-pointer" id="hisoty-tab" data-bs-toggle="tab" data-bs-target="#history" role="tab" aria-controls="history" aria-selected="false" tabindex="-1">
                         История
                     </p>
                 </li>
-                <li class="block__nav-item" role="presentation">
-                    <p class="nav-link block__nav-link" id="bookmarked-tab" data-bs-toggle="tab" data-bs-target="#bookmarked" role="tab" aria-controls="bookmarked" aria-selected="false" tabindex="-1">
+                <li class="d-flex justify-content-center" role="presentation">
+                    <p class="nav-link block__nav-link d-flex flex-column justify-content-center fw-bold cursor-pointer" id="bookmarked-tab" data-bs-toggle="tab" data-bs-target="#bookmarked" role="tab" aria-controls="bookmarked" aria-selected="false" tabindex="-1">
                         Букмарк
                     </p>
                 </li>
-                <li class="block__nav-item" role="presentation">
-                    <p class="nav-link block__nav-link" id="premium-tab" data-bs-toggle="tab" data-bs-target="#premium" role="tab" aria-controls="premium" aria-selected="false" tabindex="-1">
+                <li class="d-flex justify-content-center" role="presentation">
+                <p class="nav-link block__nav-link d-flex flex-column justify-content-center fw-bold cursor-pointer" id="premium-tab" data-bs-toggle="tab" data-bs-target="#premium" role="tab" aria-controls="premium" aria-selected="false" tabindex="-1">
                         Премиум
                     </p>
                 </li>
-                <li class="block__nav-item" role="presentation">
-                    <p class="nav-link block__nav-link" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash" role="tab" aria-controls="trash" aria-selected="false" tabindex="-1">
+            <li class="d-flex justify-content-center" role="presentation">
+                <p class="nav-link block__nav-link d-flex flex-column justify-content-center fw-bold cursor-pointer" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash" role="tab" aria-controls="trash" aria-selected="false" tabindex="-1">
                         Треш
                     </p>
                 </li>
@@ -36,75 +40,85 @@
         <div id="sheetsDialoguesTabContent" class="tab-content text-white d-flex justify-content-end">
 
             @*<---------- All ------------->*@
-            <div class="tab-pane active w-100 d-grid-sheeits-dialog" id="active" role="tabpanel" aria-labelledby="active-tab">
-                <div class="d-flex gap-2">
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
-                        </div>
-                        <input id="searchSheetInput-active" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
-                        <div class="input-group-append p-1">
-                            <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
-                                @Model.Count
+            <div class="tab-pane active w-100" id="active" role="tabpanel" aria-labelledby="active-tab">
+                <div class="grid-sheeits-dialog">
+                    <div class="d-flex gap-2">
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchSheetInput-active" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
+                            <div class="input-group-append p-1">
+                                <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
+                                    @Model?.Count
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('active')">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('active')">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchMan-active" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'active')" oninput="clearSearchMan(this, 'active')">
                         </div>
-                        <input id="searchMan-active" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'active')" oninput="clearSearchMan(this, 'active')">
                     </div>
-                </div>
 
-                <div class="status-block d-flex justify-content-end align-items-center my-1">
-                    <div class="status-block-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-end align-items-center my-1">
                         <input type="checkbox" checked class="status-icon-text-checkbox position-absolute opacity-0" id="isOnlineOnly-active" name="isOnlineOnly-active" value="yes" wfd-id="id2">
                         <span class="status-icon rounded-circle"></span>
-                        <label for="isOnlineOnly-active" class="status-icon-text">Online</label>
+                        <label for="isOnlineOnly-active" class="status-icon-text cursor-pointer ps-1">Online</label>
                     </div>
-                </div>
 
-                <div class="accordion-items">
-                    @if (Model != null)
-                    {
-                        @foreach (var sheet in Model)
+                    <div class="accordion-items">
+                        @if (Model != null)
                         {
-                            var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                            <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheet.Identity" data-sheet-id="@sheet.Id">
-                                <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-active-{sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
-                                    <div class="accordion-image position-relative pe-2">
-                                        <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        <span name="@($"online-status-{sheet.Id}")" class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
+                            @foreach (var sheetOperator in Model)
+                            {
+                                var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
+                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                                    <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-active-{sheetOperator.Sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
+                                        <div class="position-relative">
+                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                            @if (sheetOperator.Free)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else if (sheetOperator.Operator.Id == operatorId)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-at-work rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-busy rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                        </div>
+                                        <div class="accordion-info d-flex flex-column justify-content-center align-items-center ps-2">
+                                            <p name="ownerName">
+                                                @info?.Personal?.Name
+                                            </p>
+                                            <p name="ownerId" class="text-small">
+                                                @info?.Id
+                                            </p>
+                                        </div>
+                                        <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
+                                            <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
+                                                <div id="@($"count-dialogues-active-{sheetOperator.Sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
+                                                <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
-                                        <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
-                                            @info.Personal.Name
-                                        </p>
-                                        <p name="ownerId" class="accordion-info-text accordion-info-smalltext">
-                                            @info.Id
-                                        </p>
-                                    </div>
-                                    <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
-                                        <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
-                                            <div id="@($"count-dialogues-active-{sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
-                                            <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                    <div id="@($"flush-collapse-active-{sheetOperator.Sheet.Id}")" class="accordion-collapse collapse mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
+                                        <div id="@($"dialogues-active-{sheetOperator.Sheet.Id}")" name="dialogues" class="accordion-body d-grid gap-2 overflow-y-auto">
+                                            @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="@($"flush-collapse-active-{sheet.Id}")" class="accordion-collapse collapse mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
-                                    <div id="@($"dialogues-active-{sheet.Id}")" name="dialogues" class="accordion-body">
-                                        @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
-                                    </div>
-                                </div>
-                            </div>
+                            }
                         }
-                    }
+                    </div>
                 </div>
             </div>
 
@@ -113,224 +127,253 @@
             </div>
 
             @*<---------- bookmarked --------->*@
-            <div class="tab-pane w-100 d-grid-sheeits-dialog" id="bookmarked" role="tabpanel" aria-labelledby="bookmarked-tab">
-                <div class="d-flex gap-2">
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
-                        </div>
-                        <input id="searchSheetInput-bookmarked" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
-                        <div class="input-group-append p-1">
-                            <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
-                                @Model.Count
+            <div class="tab-pane w-100" id="bookmarked" role="tabpanel" aria-labelledby="bookmarked-tab">
+                <div class="grid-sheeits-dialog">
+                    <div class="d-flex gap-2">
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchSheetInput-bookmarked" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
+                            <div class="input-group-append p-1">
+                                <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
+                                    @Model?.Count
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('bookmarked')">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('bookmarked')">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchMan-bookmarked" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'bookmarked')" oninput="clearSearchMan(this, 'bookmarked')">
                         </div>
-                        <input id="searchMan-bookmarked" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'bookmarked')" oninput="clearSearchMan(this, 'bookmarked')">
                     </div>
-                </div>
 
-                <div class="status-block d-flex justify-content-end align-items-center my-1">
-                    <div class="status-block-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-end align-items-center my-1">
                         <input type="checkbox" checked class="status-icon-text-checkbox position-absolute opacity-0" id="isOnlineOnly-bookmarked" name="isOnlineOnly-bookmarked" value="yes" wfd-id="id2">
                         <span class="status-icon rounded-circle"></span>
-                        <label for="isOnlineOnly-bookmarked" class="status-icon-text">Online</label>
+                        <label for="isOnlineOnly-bookmarked" class="status-icon-text cursor-pointer ps-1">Online</label>
                     </div>
-                </div>
 
-                <div class="accordion-items">
-                    @if (Model != null)
-                    {
-                        @foreach (var sheet in Model)
+                    <div class="accordion-items">
+                        @if (Model != null)
                         {
-                            var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                            <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheet.Identity" data-sheet-id="@sheet.Id">
-                                <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-bookmarked-{sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
-                                    <div class="accordion-image position-relative pe-2">
-                                        <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        <span name="@($"online-status-{sheet.Id}")" class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
+                            @foreach (var sheetOperator in Model)
+                            {
+                                var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
+                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                                    <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-bookmarked-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
+                                        <div class="position-relative">
+                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                            @if (sheetOperator.Free)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else if (sheetOperator.Operator.Id == operatorId)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-at-work rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-busy rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                        </div>
+                                        <div class="accordion-info d-flex flex-column justify-content-center align-items-center ps-2">
+                                            <p name="ownerName">
+                                                @info?.Personal?.Name
+                                            </p>
+                                            <p name="ownerId" class="text-small">
+                                                @info?.Id
+                                            </p>
+                                        </div>
+                                        <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
+                                            <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
+                                                <div id="@($"count-dialogues-bookmarked-{sheetOperator.Sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
+                                                <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
-                                        <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
-                                            @info.Personal.Name
-                                        </p>
-                                        <p name="ownerId" class="accordion-info-text accordion-info-smalltext">
-                                            @info.Id
-                                        </p>
-                                    </div>
-                                    <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
-                                        <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
-                                            <div id="@($"count-dialogues-bookmarked-{sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
-                                            <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                    <div id="@($"flush-collapse-bookmarked-{sheetOperator.Sheet.Id}")" class="accordion-collapse collapse show mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
+                                        <div id="@($"dialogues-bookmarked-{sheetOperator.Sheet.Id}")" name="dialogues" class="accordion-body d-grid gap-2 overflow-y-auto">
+                                            @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="@($"flush-collapse-bookmarked-{sheet.Id}")" class="accordion-collapse collapse show mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
-                                    <div id="@($"dialogues-bookmarked-{sheet.Id}")" name="dialogues" class="accordion-body">
-                                        @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
-                                    </div>
-                                </div>
-                            </div>
+                            }
                         }
-                    }
+                    </div>
                 </div>
             </div>
 
             @*<---------- Premium ---------->*@
-            <div class="tab-pane w-100" d-grid-sheeits-dialog id="premium" role="tabpanel" aria-labelledby="premium-tab">
-                <div class="d-flex gap-2">
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
-                        </div>
-                        <input id="searchSheetInput-premium" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
-                        <div class="input-group-append p-1">
-                            <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
-                                @Model.Count
+            <div class="tab-pane w-100" id="premium" role="tabpanel" aria-labelledby="premium-tab">
+                <div class="grid-sheeits-dialog">
+                    <div class="d-flex gap-2">
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchSheetInput-premium" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
+                            <div class="input-group-append p-1">
+                                <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
+                                    @Model?.Count
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('premium')">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('premium')">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchMan-premium" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'premium')" oninput="clearSearchMan(this, 'premium')">
                         </div>
-                        <input id="searchMan-premium" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'premium')" oninput="clearSearchMan(this, 'premium')">
                     </div>
-                </div>
 
-                <div class="status-block d-flex justify-content-end align-items-center my-1">
-                    <div class="status-block-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-end align-items-center my-1">
                         <input type="checkbox" checked class="status-icon-text-checkbox position-absolute opacity-0" id="isOnlineOnly-premium" name="isOnlineOnly-premium" value="yes" wfd-id="id2">
                         <span class="status-icon rounded-circle"></span>
-                        <label for="isOnlineOnly-premium" class="status-icon-text">Online</label>
+                        <label for="isOnlineOnly-premium" class="status-icon-text cursor-pointer ps-1">Online</label>
                     </div>
-                </div>
 
-                <div class="accordion-items">
-                    @if (Model != null)
-                    {
-                        @foreach (var sheet in Model)
+                    <div class="accordion-items">
+                        @if (Model != null)
                         {
-                            var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                            <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheet.Identity" data-sheet-id="@sheet.Id">
-                                <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-premium-{sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
-                                    <div class="accordion-image position-relative  pe-2">
-                                        <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        <span name="@($"online-status-{sheet.Id}")" class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
+                            @foreach (var sheetOperator in Model)
+                            {
+                                var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
+                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                                    <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-premium-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
+                                        <div class="position-relative">
+                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                            @if (sheetOperator.Free)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else if (sheetOperator.Operator.Id == operatorId)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-at-work rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-busy rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                        </div>
+                                        <div class="accordion-info d-flex flex-column justify-content-center align-items-center ps-2">
+                                            <p name="ownerName">
+                                                @info?.Personal?.Name
+                                            </p>
+                                            <p name="ownerId" class="text-small">
+                                                @info?.Id
+                                            </p>
+                                        </div>
+                                        <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
+                                            <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
+                                                <div id="@($"count-dialogues-premium-{sheetOperator.Sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
+                                                <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
-                                        <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
-                                            @info.Personal.Name
-                                        </p>
-                                        <p name="ownerId" class="accordion-info-text accordion-info-smalltext">
-                                            @info.Id
-                                        </p>
-                                    </div>
-                                    <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
-                                        <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
-                                            <div id="@($"count-dialogues-premium-{sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
-                                            <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                    <div id="@($"flush-collapse-premium-{sheetOperator.Sheet.Id}")" class="accordion-collapse collapse show mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
+                                        <div id="@($"dialogues-premium-{sheetOperator.Sheet.Id}")" name="dialogues" class="accordion-body d-grid gap-2 overflow-y-auto">
+                                            @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="@($"flush-collapse-premium-{sheet.Id}")" class="accordion-collapse collapse show mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
-                                    <div id="@($"dialogues-premium-{sheet.Id}")" name="dialogues" class="accordion-body">
-                                        @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
-                                    </div>
-                                </div>
-                            </div>
+                            }
                         }
-                    }
+                    </div>
                 </div>
             </div>
 
             @*<---------- Trash ------------>*@
-            <div class="tab-pane w-100 d-grid-sheeits-dialog" id="trash" role="tabpanel" aria-labelledby="trash-tab">
-                <div class="d-flex gap-2">
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
-                        </div>
-                        <input id="searchSheetInput-trash" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
-                        <div class="input-group-append p-1">
-                            <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
-                                @Model.Count
+            <div class="tab-pane w-100" id="trash" role="tabpanel" aria-labelledby="trash-tab">
+                <div class="grid-sheeits-dialog">
+                    <div class="d-flex gap-2">
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchSheetInput-trash" type="text" placeholder="Поиск профилей" class="form-control ps-1 border-0 text-white" oninput="searchSheet(this)">
+                            <div class="input-group-append p-1">
+                                <div class="input-gorup-text text-white-50 rounded d-flex justify-content-center align-items-center h-100" style="min-width: 24px; background-color: #454563;">
+                                    @Model?.Count
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group input-group-sm rounded" style="border: 1px solid #454563;">
-                        <div class="input-group-prepend p-1">
-                            <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('active')">
-                                <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
-                            </span>
+                        <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
+                            <div class="input-group-prepend p-1">
+                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('active')">
+                                    <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
+                                </span>
+                            </div>
+                            <input id="searchMan-trash" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'trash')" oninput="clearSearchMan(this, 'trash')">
                         </div>
-                        <input id="searchMan-trash" type="text" placeholder="Поиск мужчин" class="form-control border-0 text-white" onkeypress="searchManKeyPress(event, 'trash')" oninput="clearSearchMan(this, 'trash')">
                     </div>
-                </div>
 
-                <div class="status-block d-flex justify-content-end align-items-center my-1">
-                    <div class="status-block-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-end align-items-center my-1">
                         <input type="checkbox" checked class="status-icon-text-checkbox position-absolute opacity-0" id="isOnlineOnly-trash" name="isOnlineOnly-trash" value="yes" wfd-id="id2">
                         <span class="status-icon rounded-circle"></span>
-                        <label for="isOnlineOnly-trash" class="status-icon-text">Online</label>
+                        <label for="isOnlineOnly-trash" class="status-icon-text cursor-pointer ps-1">Online</label>
                     </div>
-                </div>
 
-                <div class="accordion-items">
-                    @if (Model != null)
-                    {
-                        @foreach (var sheet in Model)
+                    <div class="accordion-items">
+                        @if (Model != null)
                         {
-                            var info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
-                            <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheet.Identity" data-sheet-id="@sheet.Id">
-                                <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-trash-{sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheet.Id}")" role="button">
-                                    <div class="accordion-image position-relative pe-2">
-                                        <img name="ownerAvatar" src="@info.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
-                                        <span name="@($"online-status-{sheet.Id}")" class="status-circle-green rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>
-                                        @* <span class="status-circle-red rounded-circle d-inline-block position-absolute bottom-0 accordion-info-status"></span>*@
+                            @foreach (var sheetOperator in Model)
+                            {
+                                var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
+                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                                    <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-trash-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
+                                        <div class="position-relative">
+                                            <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" alt="avatar" class="standart-image rounded">
+                                            @if (sheetOperator.Free)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else if (sheetOperator.Operator.Id == operatorId)
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-at-work rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                            else
+                                            {
+                                                <span name="@($"online-status-{sheetOperator.Sheet.Id}")" class="status-circle-busy rounded-circle position-absolute bottom-0 end-0"></span>
+                                            }
+                                        </div>
+                                        <div class="accordion-info d-flex flex-column justify-content-center align-items-center ps-2">
+                                            <p name="ownerName">
+                                                @info?.Personal?.Name
+                                            </p>
+                                            <p name="ownerId" class="text-small">
+                                                @info?.Id
+                                            </p>
+                                        </div>
+                                        <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
+                                            <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
+                                                <div id="@($"count-dialogues-trash-{sheetOperator.Sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
+                                                <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="accordion-info d-flex flex-column justify-content-center align-items-center">
-                                        <p name="ownerName" class="accordion-info-text accordion-info-bigtext">
-                                            @info.Personal.Name
-                                        </p>
-                                        <p name="ownerId" class="accordion-info-text accordion-info-smalltext">
-                                            @info.Id
-                                        </p>
-                                    </div>
-                                    <div class="accordion-count__block pe-2 d-flex justify-content-end align-items-center">
-                                        <div class="accordion-count__block-items d-flex flex-column justify-content-between align-items-center">
-                                            <div id="@($"count-dialogues-trash-{sheet.Id}")" class="accordion-count p-1 d-flex justify-content-center align-items-center rounded"></div>
-                                            <img src="/image/layout/VectorDownArrow.svg" alt="DownArrow" class="mt-1">
+                                    <div id="@($"flush-collapse-trash-{sheetOperator.Sheet.Id}")" class="accordion-collapse collapse show mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
+                                        <div id="@($"dialogues-trash-{sheetOperator.Sheet.Id}")" name="dialogues" class="accordion-body d-grid gap-2 overflow-y-auto">
+                                            @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="@($"flush-collapse-trash-{sheet.Id}")" class="accordion-collapse collapse show mt-3" @*data-bs-parent="#sheetsDialoguesTabContent"*@>
-                                    <div id="@($"dialogues-trash-{sheet.Id}")" name="dialogues" class="accordion-body">
-                                        @*<vc:sheet-dialogues sheet="sheet" online="true"></vc:sheet-dialogues>*@
-                                    </div>
-                                </div>
-                            </div>
+                            }
                         }
-                    }
+                    </div>
                 </div>
             </div>
 
         </div>
-    </div>
 </div>

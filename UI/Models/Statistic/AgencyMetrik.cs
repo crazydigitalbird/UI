@@ -10,11 +10,17 @@ namespace UI.Models
         [JsonPropertyName("average_time_previous_month")]
         public double AverageTimePreviousMonth { get; set; }
 
-        [JsonPropertyName("sent_mails")]
-        public int Mails { get; set; }
+        [JsonPropertyName("sent_mails_current_month")]
+        public int MailsCurrentMonth { get; set; }
         
-        [JsonPropertyName("sent_messages")]
-        public int Messages { get; set; }
+        [JsonPropertyName("sent_messages_current_month")]
+        public int MessagesCurrentMonth { get; set; }
+
+        [JsonPropertyName("sent_mails_previous_month")]
+        public int MailsPreviousMonth { get; set; }
+
+        [JsonPropertyName("sent_messages_previous_month")]
+        public int MessagesPreviousMonth { get; set; }
 
         public override string ToString()
         {
@@ -33,7 +39,34 @@ namespace UI.Models
                 }
                 else if (increment < 0)
                 {
-                    return $"-{increment}";
+                    return $"{increment}";
+                }
+            }
+            return "0";
+        }
+
+        public string MailsIncrement()
+        {
+            return Increment(MailsCurrentMonth, MailsPreviousMonth);
+        }
+
+        public string MessagesIncrement()
+        {
+            return Increment(MessagesCurrentMonth, MessagesPreviousMonth);
+        }
+
+        private string Increment(int currentMonth, int previousMonth)
+        {
+            if (previousMonth != 0)
+            {
+                int increment = currentMonth * 100 / previousMonth - 100;
+                if (increment > 0)
+                {
+                    return $"+{increment}";
+                }
+                else if (increment < 0)
+                {
+                    return $"{increment}";
                 }
             }
             return "0";

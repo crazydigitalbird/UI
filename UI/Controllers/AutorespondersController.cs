@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Filters;
 using UI.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace UI.Controllers
 {
+    [Authorize]
+    [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class AutorespondersController : Controller
     {
         private readonly IOperatorClient _operatorClient;

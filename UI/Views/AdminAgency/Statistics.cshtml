@@ -2,13 +2,13 @@
 
 @{
     ViewData["Title"] = "Statistics";
-    Layout = "_LayoutNew";
+    Layout = "_LayoutGrid";
 }
 
-<div class="h-100 px-5 text-white text-start grid-admin-agency">
+<div class="grid-admin-agency overflow-hidden text-white text-start px-5">
     <div class="container-fluid first-container p-0">
 
-        <div class="row statNots gx-3 fw-bold pt-2 pb-3">
+        <div class="row gx-3 fw-bold pt-2 pb-3">
 
             <div class="col-3">
                 <div class="statSheets d-flex align-items-center rounded-4 h-100 p-2">
@@ -31,12 +31,12 @@
                 <div class="statSend d-flex align-items-center rounded-4 h-100 p-2">
                     <div class="w-100">
                         <div class="mb-2">
-                            <div class="">@($"Отправлено сообщений: {Model?.Metrik?.Messages}")</div>
-                            <div class="text-small">@($"от прошлого мес. {Model?.NumberMessagesSentIncrement}%")</div>
+                            <div class="">@($"Отправлено сообщений: {Model?.Metrik?.MessagesCurrentMonth}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.Metrik?.MessagesIncrement()}%")</div>
                         </div>
                         <div class="">
-                            <div class="">@($"Отправлено писем: {Model?.Metrik?.Mails}")</div>
-                            <div class="text-small">@($"от прошлого мес. {Model?.NumberMailsSentIncrement}%")</div>
+                            <div class="">@($"Отправлено писем: {Model?.Metrik?.MailsCurrentMonth}")</div>
+                            <div class="text-small">@($"от прошлого мес. {Model?.Metrik?.MailsIncrement()}%")</div>
                         </div>
                     </div>
                     <div class="statImg">
@@ -85,7 +85,7 @@
 
         <div class="row gx-3">
 
-            <div class="col-6">
+            <div class="@*col-6*@ col-12">
                 <div class="area-top rounded-4 h-100">
                     <p class="fw-bold p-3">Топ: Операторов этого месяца</p>
                     <div class="px-3 pb-2 overflow-y-auto">
@@ -128,7 +128,7 @@
                 </div>
             </div>
 
-            <div class="col-6">
+            <div class="col-6 d-none">
                 <div class="area-top rounded-4 h-100">
                     <p class="fw-bold p-3">Топ: Админов этого месяца</p>
                     <div class="px-3 pb-2 overflow-y-auto">

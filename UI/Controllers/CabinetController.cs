@@ -9,6 +9,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class CabinetController : Controller
     {
         private readonly ICabinetClient _cabinetClient;

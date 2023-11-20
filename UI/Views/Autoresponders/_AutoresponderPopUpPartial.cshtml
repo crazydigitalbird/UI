@@ -5,7 +5,7 @@
             <div class="d-flex align-items-center">
                 <div class="avatar position-relative">
                     <img id="avatarPopUp" src="" alt="" class="w-100 rounded">
-                    <div id="statusPopUp" class="position-absolute bottom-0 end-0"></div>
+                    <div id="statusPopUp" class="rounded-circle position-absolute bottom-0 end-0"></div>
                 </div>
                 <div class="ps-2 text-start">
                     <P id="namePopUp"></P>
@@ -30,12 +30,12 @@
         </svg>
 
         <div class="d-flex justify-content-between flex-column h-100">
-            <div class="autoresponder-item p-1 d-flex bd-highlight flex-column h-100 w-100">
+            <div class="autoresponder-item p-1 d-flex bd-highlight flex-column h-100 w-100 position-relative rounded">
                 <div class="flex-grow-1 p-2">
                     <textarea id="textAutoresponder" class="autoresponder__write h-100" maxlength="300" placeholder="Введите текст" oninput="changeCounter()"></textarea>
                 </div>
                 <div id="mailUploadedFile" class="uploaded-file d-flex overflow-x-auto overflow-y-hidden"></div>
-                <div class="autoresponder-item-footer d-flex align-items-center justify-content-end p-1">
+                <div class="d-flex align-items-center justify-content-end text-small p-1">
                     <span id="counter">0</span> <span class="mx-1">/</span> <span>300</span> <span class="ms-1">символов</span>
                 </div>
             </div>

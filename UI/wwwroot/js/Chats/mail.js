@@ -94,7 +94,7 @@ function reduceMailsLeft() {
             $mailsLeft.text(newMailsLeft);
         }
         if (newMailsLeft === 0) {
-            $mailsLeft.addClass('large-block-header-timer-text-opacity');
+            $mailsLeft.addClass('opacity-25');
         }
     }
 }
@@ -109,7 +109,8 @@ function changeMailCounter() {
 }
 
 function checkSendMail(textLength) {
-    if (allowedSendMeils(1) && textLength >= 200 && textLength <= 3500) {
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    if (allowedSendMeils(1) && IsAtWorkSheet(sheetId) && textLength >= 200 && textLength <= 3500) {
         if ($('#sendMail').hasClass('disabled')) {
             $('#sendMail').removeClass('disabled');
         }
@@ -124,7 +125,8 @@ function checkSendMail(textLength) {
 function clearMailPopup() {
     //Проверяем возможность отправки почтового сообщения, если отправка невозможна, блокируем кнопку отправки почтовых сообщений в модальном окне
     //В противном случае данную кнопку разблокируем
-    if (allowedSendMeils(1)) {
+    var sheetId = $('#manMessagesMails').data('sheet-id');
+    if (allowedSendMeils(1) && IsAtWorkSheet(sheetId)) {
         $('#sendMail').removeClass('disabled');
     }
     else {

@@ -7,6 +7,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class WorkingShiftController : Controller
     {
         private readonly IWorkingShiftClient _workingShiftClient;

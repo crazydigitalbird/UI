@@ -41,7 +41,35 @@ namespace UI.Infrastructure.API
             _siteClient = siteClient;
         }
 
-        public async Task<List<SheetView>> GetSheets(int agencyId)
+        public async Task<List<Sheet>> GetSheetsAsync(int agencyId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("api");
+            var sessionGuid = GetSessionGuid();
+            try
+            {
+                var response = await httpClient.GetAsync($"Agencies/GetAgencySheets?agencyId={agencyId}&sessionGuid={sessionGuid}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var sheets = (await response.Content.ReadFromJsonAsync<IEnumerable<Sheet>>()).Where(s => s.IsActive).ToList();
+                    return sheets;
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    SignOut();
+                }
+                else
+                {
+                    _logger.LogWarning("Error getting all the sheets. HttpStatusCode: {httpStatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all the sheets.");
+            }
+            return null;
+        }
+
+        public async Task<List<SheetView>> GetSheetsViewAsync(int agencyId)
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
@@ -102,7 +130,7 @@ namespace UI.Infrastructure.API
 
         public async Task<AdminAgencyView> GetAdminAgencyViewById(int agencyId)
         {
-            var sheetsTask = GetSheets(agencyId);
+            var sheetsTask = GetSheetsViewAsync(agencyId);
             var groupsTask = _groupClient.GetGroupsAsync(agencyId);
             var cabinetsTask = GetCabinets(agencyId);
             var sitesTask = _siteClient.GetSites();
@@ -303,6 +331,7 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.GetAsync($"Agencies/Operators/GetAgencyOperatorSessions?operatorId={operatorId}&sessionGuid={sessionGuid}");
                 if (response.IsSuccessStatusCode)
                 {
+                    //Не верное значение возможно если в объекте AgencyOperatorSession.Session.Sheet == null 
                     var agencyOperatorSessions = (await response.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>()).Where(aos => aos.IsActive);
                     return agencyOperatorSessions;
                 }
@@ -833,6 +862,11 @@ namespace UI.Infrastructure.API
             }
         }
 
+        public Task<bool> DeleteUserAgency(int userId)
+        {
+            return Task.FromResult(true);
+        }
+
         private int GetUserId()
         {
             var user = _httpContextAccessor.HttpContext.User;
@@ -855,7 +889,8 @@ namespace UI.Infrastructure.API
 
     public interface IAdminAgencyClient
     {
-        Task<List<SheetView>> GetSheets(int agencyId);
+        Task<List<Sheet>> GetSheetsAsync(int agencyId);
+        Task<List<SheetView>> GetSheetsViewAsync(int agencyId);
         Task<bool> DeleteSheet(int sheetId);
         Task<IEnumerable<AgencyCabinet>> GetCabinets(int agencyId);
         Task<bool> ChangeCabinet(int sheetId, int cabinetId);
@@ -873,5 +908,6 @@ namespace UI.Infrastructure.API
         Task<List<ApplicationUser>> GetNonAgencyUsers();
         Task AddUserAgency(HttpClient httpClient, string sessionGuid, int agencyId, ApplicationUser user);
         Task<bool> AddUserAgency(int agencyId, ApplicationUser user);
+        Task<bool> DeleteUserAgency(int userId);
     }
 }

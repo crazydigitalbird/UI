@@ -57,7 +57,7 @@ namespace UI.Infrastructure.API
 
         public async Task<AgencySheetsStatistic> GetSheetsStatisticAsync(int agencyId)
         {
-            var sheets = await _adminAgencyClient.GetSheets(agencyId);
+            var sheets = await _adminAgencyClient.GetSheetsViewAsync(agencyId);
             if (sheets != null)
             {
                 await _sheetClient.GettingStatusAndMedia(sheets);

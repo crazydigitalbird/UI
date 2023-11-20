@@ -1,8 +1,18 @@
 ﻿let dateTypeChart = moment().startOf('month');
 let dateBalancesAllMonth = moment().startOf('month');
+//let dataTypeChart;
+//let dataBalancesAllMonth;
 
+/*$('body').css('overflow', 'hidden');*/
 
-$('body').css('overflow', 'hidden');
+//$(window).resize(function () {
+//    let typeChart = Chart.getChart('typeChart');
+//    let balanceMonthChart = Chart.getChart('balanceMonthChart');
+//    typeChart.destroy();
+//    balanceMonthChart.destroy();
+//    drawTypeChat(dataTypeChart);
+//    drawBalanceMonthChat(dataBalancesAllMonth);
+//});
 
 $(function () {
     $('#operatorTable').on('reset-view.bs.table', function (e) {
@@ -190,6 +200,7 @@ function failure(error) {
 }
 
 function drawTypeChat(data) {
+    //dataTypeChart = data;
     const ctx = document.getElementById('typeChart');
 
     new Chart(ctx, {
@@ -258,6 +269,7 @@ const chartAreaBorder = {
 };
 
 function drawBalanceMonthChat(balancesMonth) {
+    //dataBalancesAllMonth = balancesMonth;
     var labels = Array.from({ length: balancesMonth.length }, (_, i) => i + 1);
     const ctx = document.getElementById('balanceMonthChart').getContext('2d');
 
@@ -345,7 +357,7 @@ function drawBalanceMonthChat(balancesMonth) {
 }
 
 function downDateTypeChart() {
-    downDate(dateTypeChart);    
+    downDate(dateTypeChart);
     updateTypeChart();
 }
 
@@ -364,6 +376,7 @@ function updateTypeChart() {
         var currentMonth = dateTypeChart.locale('ru').format('M');
         if (currentMonth === month) {
             var chart = Chart.getChart('typeChart');
+            //dataTypeChart = data;
             chart.data.datasets[0].data = data;
             chart.update();
         }
@@ -396,6 +409,7 @@ function updateBalancesAllMonthChart() {
             var chart = Chart.getChart('balanceMonthChart');
             var labels = Array.from({ length: data.length }, (_, i) => i + 1);
             chart.data.labels = labels;
+            //dataBalancesAllMonth = data;
             chart.data.datasets[0].data = data;
             chart.update();
         }

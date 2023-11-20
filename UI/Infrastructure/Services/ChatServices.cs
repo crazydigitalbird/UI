@@ -15,6 +15,7 @@ namespace UI.Infrastructure.Services
     {
         private Timer _timer;
         private static volatile bool _started;
+        private static string sessionGuid;
 
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -94,16 +95,15 @@ namespace UI.Infrastructure.Services
             stopwatch1.Start();
 #endif
 
-#if DEBUGOFFLINE
+#if DEBUGOFFLINE1
             return;
 #endif
             using var scope = _serviceProvider.CreateScope();
             var _chatHub = scope.ServiceProvider.GetRequiredService<IChatHub>();
 
-            var sessionGuid = await LogInAsync("admin", "admin");
             if (string.IsNullOrWhiteSpace(sessionGuid))
             {
-                return;
+                sessionGuid = await LogInAsync("admin", "admin");
             }
 
             List<SheetChat> sheets = await GetSheetsFast(sessionGuid);
@@ -149,7 +149,7 @@ namespace UI.Infrastructure.Services
             Dictionary<SheetDialogKey, NewMessage> newActiveSheetDialogs = new Dictionary<SheetDialogKey, NewMessage>();
             Dictionary<SheetDialogKey, long> oldUpdateActiveSheetDialogs = new Dictionary<SheetDialogKey, long>();
             ImmutableDictionary<SheetDialogKey, NewMessage> newUpdateActiveSheetDialogsImmutable = null;
-
+            int sheetId = 0;
             lock (_dictionary)
             {
                 // Получаем все ключи первой последовательности, которых нет во второй последовательности.
@@ -175,9 +175,17 @@ namespace UI.Infrastructure.Services
                         sheetDialog.Value.SheetInfo = sheet.SheetInfo;
                     }
                 }
+
+                if (_dictionary.SheetsIsOnline?.Count > 0)
+                {
+                    sheetId = _dictionary.SheetsIsOnline.FirstOrDefault(s => s.Value).Key;
+                }
             }
 
-            await FillingInNewDialoguesProfiles(sheets.First(), newActiveSheetDialogs);
+            if (sheetId > 0)
+            {
+                await FillingInNewDialoguesProfiles(sheets.First(s => s.Id == sheetId), newActiveSheetDialogs);
+            }
 
             ImmutableDictionary<SheetDialogKey, NewMessage> newActiveSheetDialogsImmutable = ImmutableDictionary.CreateRange(newActiveSheetDialogs);
 
@@ -415,7 +423,7 @@ namespace UI.Infrastructure.Services
             var client = _httpClientFactory.CreateClient("api");
             try
             {
-                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength=8766", null);
+                var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength={int.MaxValue}", null);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var userSession = await response.Content.ReadFromJsonAsync<UserSession>();

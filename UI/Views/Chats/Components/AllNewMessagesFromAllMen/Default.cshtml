@@ -12,7 +12,7 @@
     if (ds.SheetInfo.Id == ds.Dialogue.LastMessage.IdUserFrom)
     @*if (!ds.Dialogue.HasNewMessage)*@
     {
-        <div name="newMessage" class="bottom-block-body__item d-flex flex-row-reverse mb-2 align-items-center text-white row p-2 rounded"
+        <div name="newMessage" class="bottom-block-body__item d-flex w-100 cursor-pointer flex-row-reverse mb-2 align-items-center text-white row p-2 rounded"
              data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
              data-owner-id="@($"{ds.SheetInfo.Id}")"
              data-is-pinned="@ds.Dialogue.IsPinned"
@@ -22,7 +22,7 @@
              onclick="goToChat(this)">
 
             <div class="other-user-block col-2 pe-0">
-                <div class="standart-image-block position-relative">
+                <div class="position-relative">
                     <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
                     @if (ds.Dialogue.Status == Status.Online)
                     {
@@ -90,12 +90,12 @@
                             break;
                     }
                 </p>
-                <p class="user-block-name-text small-text-opacity">
+                <p class="user-block-name-text opacity-50">
                     @ds.Dialogue.LastMessage.DateCreated.Humanize()
                 </p>
             </div>
-            <div class="user-block d-flex align-items-center col-4 p-2">
-                <div class="standart-image-block me-3 position-relative">
+            <div class="user-block d-flex align-items-center rounded col-4 p-2">
+                <div class="me-3 position-relative">
                     <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
                     @*                    @if (sd.SheetInfo.IsOnline)
             {
@@ -107,7 +107,7 @@
             }*@
                 </div>
 
-                <div class="user-block-info text-center col-4">
+                <div class="text-center col-4">
                     <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
                 </div>
             </div>
@@ -115,7 +115,7 @@
     }
     else
     {
-        <div name="newMessage" class="bottom-block-body__item d-flex flex-row align-items-center text-white row p-2 rounded mb-2"
+        <div name="newMessage" class="bottom-block-body__item d-flex w-100 cursor-pointer flex-row align-items-center text-white row p-2 rounded mb-2"
              data-sheet-id="@($"{ds.SheetInfo.SheetId}")"
              data-owner-id="@($"{ds.SheetInfo.Id}")"
              data-is-pinned="@ds.Dialogue.IsPinned"
@@ -125,7 +125,7 @@
              onclick="goToChat(this)">
 
             <div class="other-user-block col-2 ps-0">
-                <div class="standart-image-block position-relative">
+                <div class="position-relative">
                     <img name="interlocutorAvatar" src="@ds.Dialogue.Avatar" alt="No person image" class="standart-image rounded">
                     @if (ds.Dialogue.Status == Status.Online)
                     {
@@ -193,7 +193,7 @@
                             break;
                     }
                 </p>
-                <p class="user-block-name-text small-text-opacity">
+                <p class="user-block-name-text opacity-50">
                     @if (ds.Dialogue.LastMessage.Type == MessageType.System)
                     {
                         @:@ds.Dialogue.DateUpdated.Humanize()
@@ -204,8 +204,8 @@
                     }
                 </p>
             </div>
-            <div class="user-block d-flex align-items-center col-4 p-2">
-                <div class="standart-image-block me-3 position-relative">
+            <div class="user-block d-flex align-items-center rounded col-4 p-2">
+                <div class="me-3 position-relative">
                     <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" alt="Person image" class="standart-image rounded">
                     @*                   @if (sd.SheetInfo.IsOnline)
             {
@@ -217,7 +217,7 @@
             }*@
                 </div>
 
-                <div class="user-block-info text-center col-4">
+                <div class="text-center col-4">
                     <p name="ownerName" class="user-block-name-text">@ds.SheetInfo.Personal.Name</p>
                     <p class="user-block-timer-text timer" @*data-minutes-left="1"*@ data-seconds-left="@(ds.Dialogue.LastMessage.Timer?.TimeLeft() ?? 0)" data-sheetInfo-id="@ds.SheetInfo.Id" data-id-interlocutor="@ds.Dialogue.IdInterlocutor"></p>
                 </div>

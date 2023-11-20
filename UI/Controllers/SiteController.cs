@@ -1,9 +1,14 @@
 ﻿using Core.Models.Sheets;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI.Infrastructure.API;
+using UI.Infrastructure.Filters;
 
 namespace UI.Controllers
 {
+    [Authorize]
+    [APIAuthorize]
+    [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class SiteController : Controller
     {
         private readonly ISiteClient _siteClient;

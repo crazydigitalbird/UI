@@ -13,6 +13,8 @@ namespace UI.Models
 
         public int MemeberId { get; internal set; }
 
+        public int OperatorId { get; internal set; }
+
         public string SesstionGuid { get; set; }
 
         public Role Role { get; set; }
@@ -36,6 +38,7 @@ namespace UI.Models
             else if(member.AgencyOperators.Count > 0)
             {
                 appUser.Role = Role.Operator;
+                appUser.OperatorId = member.AgencyOperators.First().Id;
             }
             else
             {
@@ -66,6 +69,7 @@ namespace UI.Models
             else if (user.AgencyMembers?.FirstOrDefault()?.AgencyOperators.Count > 0)
             {
                 appUser.Role = Role.Operator;
+                appUser.OperatorId = user.AgencyMembers.First().AgencyOperators.First().Id;
             }
             else
             {

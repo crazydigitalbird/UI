@@ -82,10 +82,11 @@ namespace UI.Controllers
         {
             var claims = new List<Claim>
                 {
-                    new Claim("Id", user.Id.ToString()),
+                    new Claim("Id", $"{user.Id}"),
+                    new Claim("OperatorId", $"{user.OperatorId}"),
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role.ToString()),
+                    new Claim(ClaimTypes.Role, $"{user.Role}"),
                     new Claim("SessionGuid", user.SesstionGuid)
                 };
 

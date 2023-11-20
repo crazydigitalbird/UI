@@ -24,7 +24,7 @@ namespace UI.Infrastructure.API
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
-            var operatorId = await GetOperatorIdAsync();
+            var operatorId = GetOperatorId();
             if (operatorId > 0)
             {
                 try
@@ -62,7 +62,7 @@ namespace UI.Infrastructure.API
         {
             HttpClient httpClient = _httpClientFactory.CreateClient("api");
             var sessionGuid = GetSessionGuid();
-            var operatorId = await GetOperatorIdAsync();
+            var operatorId = GetOperatorId();
             if (operatorId > 0)
             {
                 try
@@ -123,6 +123,16 @@ namespace UI.Infrastructure.API
         }
 
         #region Get operator Id
+
+        public int GetOperatorId()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+            if (int.TryParse(user.FindFirst("OperatorId")?.Value, out int operatorId))
+            {
+                return operatorId;
+            }
+            return 0;
+        }
 
         public async Task<int> GetOperatorIdAsync()
         {
@@ -243,6 +253,7 @@ namespace UI.Infrastructure.API
         Task<List<SheetView>> GetSheetsViewAsync();
         Task<List<Sheet>> GetSheetsAsync();
         Task<List<SheetOperatorCommunication>> GetSheetOperatorCommunicationAsync();
+        int GetOperatorId();
         Task<int> GetOperatorIdAsync();
         Task<List<ApplicationUser>> GetUsersLogins(IEnumerable<int> idUsers);
     }

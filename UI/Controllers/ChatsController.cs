@@ -37,21 +37,17 @@ namespace UI.Controllers
         [ServiceFilter(typeof(UpdateSessionAttribute))]
         public async Task<IActionResult> Index()
         {
-            //var sheets = await _operatorClient.GetSheetsAsync() ?? new();
-            var sheetOperatorCommunicationTask = _operatorClient.GetSheetOperatorCommunicationAsync();
-            var operatorIdTask = _operatorClient.GetOperatorIdAsync();
-            await Task.WhenAll(sheetOperatorCommunicationTask, operatorIdTask);
-            ViewData["operatorId"] = operatorIdTask.Result;
-            return View(sheetOperatorCommunicationTask.Result);
+            ViewData["operatorId"] = _operatorClient.GetOperatorId();
+            var sheetOperatorCommunication = await _operatorClient.GetSheetOperatorCommunicationAsync();
+            return View(sheetOperatorCommunication);
         }
 
         [HttpGet]
         public async Task<IActionResult> StatusSheets()
         {
-            var sheetOperatorCommunicationTask = _operatorClient.GetSheetOperatorCommunicationAsync();
-            var operatorIdTask = _operatorClient.GetOperatorIdAsync();
-            await Task.WhenAll(sheetOperatorCommunicationTask, operatorIdTask);
-            var statusSheets = sheetOperatorCommunicationTask.Result.Select(soc => new { SheetId = soc.Sheet.Id, Status = soc.Free ? "Free" : (soc.Operator.Id == operatorIdTask.Result ? "AtWork" : "Busy") });
+            var operatorId = _operatorClient.GetOperatorId();
+            var sheetOperatorCommunication = await _operatorClient.GetSheetOperatorCommunicationAsync();
+            var statusSheets = sheetOperatorCommunication.Select(soc => new { SheetId = soc.Sheet.Id, Status = soc.Free ? "Free" : (soc.Operator.Id == operatorId ? "AtWork" : "Busy") });
             return Ok(statusSheets);
         }
 

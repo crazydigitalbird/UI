@@ -25,19 +25,19 @@ namespace UI.Controllers
         }
 
         public async Task<IActionResult> Index()
-        {
-            var sheets = await _operatorClient.GetSheetsAsync();
-            Task<Dictionary<string, AutoresponderInfo>> AutorespondersInfoTask = _autorespondersClient.GetAutorespondersInfoAsync(sheets);
-            Task<int> operatorIdTask = _operatorClient.GetOperatorIdAsync();
-            await Task.WhenAll(AutorespondersInfoTask, operatorIdTask);
-
-            var operatorId = operatorIdTask.Result;
+        {            
+            var operatorId = _operatorClient.GetOperatorId();
             var endDateTime = DateTime.Now;
             var days = endDateTime.Day == 31 ? 31 : 30;
             var beginDateTime = endDateTime - TimeSpan.FromDays(days);
-            var balances = await _balanceClient.GetOperatorBalances(operatorId, beginDateTime, endDateTime);
+
+            var sheets = await _operatorClient.GetSheetsAsync();
+            Task<Dictionary<string, AutoresponderInfo>> AutorespondersInfoTask = _autorespondersClient.GetAutorespondersInfoAsync(sheets);
+            var balancesTask = _balanceClient.GetOperatorBalances(operatorId, beginDateTime, endDateTime);
+            await Task.WhenAll(AutorespondersInfoTask, balancesTask);
+
             ViewData["AutorespondersInfo"] = AutorespondersInfoTask.Result;
-            ViewData["BalancesAll"] = balances.Sum(b => b.Cash);
+            ViewData["BalancesAll"] = balancesTask.Result.Sum(b => b.Cash);
 
             return View(sheets);
         }

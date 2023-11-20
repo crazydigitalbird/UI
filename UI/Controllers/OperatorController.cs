@@ -29,17 +29,17 @@ namespace UI.Controllers
                 return View();
             }
 
-            Task statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheets);
-            Task<int> operatorIdTask = _operatorClient.GetOperatorIdAsync();
-            await Task.WhenAll(statusAndMediaTask, operatorIdTask);
-
-            var operatorId = operatorIdTask.Result;
-
+            var operatorId = _operatorClient.GetOperatorId();
             var endDateTime = DateTime.Now;
             var currentMonth = endDateTime.Month;
             var days = endDateTime.Day == 31 ? 31 : 30;
             var beginDateTime = endDateTime - TimeSpan.FromDays(days);
-            var balances = await _balanceClient.GetOperatorBalances(operatorId, beginDateTime, endDateTime);
+
+            var statusAndMediaTask = _sheetClient.GettingStatusAndMedia(sheets);
+            var balancesTask = _balanceClient.GetOperatorBalances(operatorId, beginDateTime, endDateTime);
+            await Task.WhenAll(statusAndMediaTask, balancesTask);
+            var balances = balancesTask.Result;
+
 #if DEBUGOFFLINE
             balances.ForEach(b => b.Sheet.Id = 1);
 #endif            
@@ -76,8 +76,7 @@ namespace UI.Controllers
         {
             try
             {
-                var operatorId = await _operatorClient.GetOperatorIdAsync();
-
+                var operatorId = _operatorClient.GetOperatorId();
                 var beginDateTime = new DateTime(year, month, 1);
                 var days = DateTime.DaysInMonth(year, month);
                 var endDateTime = new DateTime(year, month, days);
@@ -105,8 +104,7 @@ namespace UI.Controllers
         {
             try
             {
-                var operatorId = await _operatorClient.GetOperatorIdAsync();
-
+                var operatorId = _operatorClient.GetOperatorId();
                 var beginDateTime = new DateTime(year, month, 1);
                 var days = DateTime.DaysInMonth(year, month);
                 var endDateTime = new DateTime(year, month, days);

@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">    
-    <link rel="stylesheet" href="/css/bootstrap.css" asp-append-version="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" asp-fallback-href="/lib/bootstrap/css/bootstrap.min.css" asp-fallback-test-class="visually-hidden" asp-fallback-test-property="position" asp-fallback-test-value="absolute" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" asp-fallback-href="/lib/fontawesome/css/all.min.css" asp-fallback-test-class="fa" asp-fallback-test-property="font-style" asp-fallback-test-value="normal" asp-append-version="true" />
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
     <title>@ViewData["Title"]</title>
+
+    <script src="/js/site.js" asp-append-version="true"></script>
 </head>
 <body class="d-grid vh-100" style="grid-template-rows: min-content 1fr;">
     <header class="sticky-top">
@@ -45,15 +47,15 @@
                             <li class="nav-item ps-1">
                                 <a class="nav-link rounded-2" is-active-route asp-controller="AdminAgency" asp-action="Statistics">Statistics</a>
                             </li>
-@*                            <li class="nav-item ps-1">
-                                <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
-                            </li>
-                            <li class="nav-item ps-1">
-                                <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
-                            </li>
-                            <li class="nav-item ps-1">
-                                <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
-                            </li> *@
+                            @*                            <li class="nav-item ps-1">
+                        <a class="nav-link rounded-2" is-active-route asp-controller="Chats" asp-action="Index">Чаты</a>
+                        </li>
+                        <li class="nav-item ps-1">
+                        <a class="nav-link rounded-2" is-active-route asp-controller="Ice" asp-action="Index">Айсы</a>
+                        </li>
+                        <li class="nav-item ps-1">
+                        <a class="nav-link rounded-2" is-active-route asp-controller="Autoresponders" asp-action="Index">Автоответы</a>
+                        </li> *@
                         }
                         else if (User.IsInRole(Role.Operator.ToString()))
                         {
@@ -76,12 +78,11 @@
             </div>
         </nav>
     </header>
-    
+
     @RenderBody()
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
-    <script src="/js/bootstrap.bundle.js" asp-append-version="true"></script>
-    <script src="/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.min.js" asp-fallback-src="/lib/bootstrap/js/bootstrap.bundle.min.js" asp-fallback-test="window.bootstrap" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

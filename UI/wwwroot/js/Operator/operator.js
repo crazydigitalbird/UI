@@ -1,18 +1,5 @@
 ﻿let dateTypeChart = moment().startOf('month');
 let dateBalancesAllMonth = moment().startOf('month');
-//let dataTypeChart;
-//let dataBalancesAllMonth;
-
-/*$('body').css('overflow', 'hidden');*/
-
-//$(window).resize(function () {
-//    let typeChart = Chart.getChart('typeChart');
-//    let balanceMonthChart = Chart.getChart('balanceMonthChart');
-//    typeChart.destroy();
-//    balanceMonthChart.destroy();
-//    drawTypeChat(dataTypeChart);
-//    drawBalanceMonthChat(dataBalancesAllMonth);
-//});
 
 $(function () {
     $('#operatorTable').on('reset-view.bs.table', function (e) {
@@ -42,8 +29,6 @@ function initTable() {
     $('#operatorTable').bootstrapTable();
 
     setHeight();
-
-    //$table.bootstrapTable('uncheckAll');
 }
 
 function setHeight() {
@@ -52,7 +37,6 @@ function setHeight() {
     if (adminAgencyTableHeight > freeAreaHeight) {
         setTimeout(() => {
             $('#operatorTable').bootstrapTable("refreshOptions", {
-                /*stickyHeaderOffsetY: $('#navMenu').outerHeight(),*/
                 height: freeAreaHeight
             })
         }, 10);
@@ -71,28 +55,6 @@ function balanceFormatter(value, row) {
                                 </div>
                              </div>`;
     return balanceFormatHtml;
-}
-
-function commentsFormatter(value, row) {
-    var notViewComments = JSON.parse(value.toLowerCase());
-    if (notViewComments) {
-        return `<a href="#" role="button" class="position-relative me-1" onclick="showComments(event, ${row['id']})" title="Comments">
-                    <i class="fa-solid fa-headset fa-xl text-warning"></i>
-                    <span class="position-absolute top-0 translate-middle p-1 bg-danger border botder-light rounded-circle text" style="left: 90%">
-                        <span class="visually-hidden">Unread comments</span>
-                    </span>
-                </a>
-                <a href="/Chat/Index?sheetId=${row['id']}" role="button" title="Chats">
-                    <i class="fa-regular fa-comments fa-xl"></i>
-                </a>`;
-    } else {
-        return `<a href="#" role="button" class="position-relative me-1" onclick="showComments(event, ${row['id']})" title="Comments">
-                    <i class="fa-solid fa-headset fa-xl text-warning"></i>
-                </a>
-                <a href="/Chat/Index?sheetId=${row['id']}" role="button" title="Chats">
-                    <i class="fa-regular fa-comments fa-xl"></i>
-                </a>`;
-    }
 }
 
 function updateBalance(e, interval) {
@@ -127,61 +89,6 @@ function updateBalance(e, interval) {
     }
 }
 
-$('#modalComments').on('shown.bs.modal', function () {
-    $('.modal-body')[0].scrollTo(0, $('.list-unstyled').outerHeight());
-});
-
-function showComments(event, sheetId) {
-    $.get('Operator/Comments', { sheetId: sheetId }, function (data) {
-        $('#modalComments').find('.modal-content').html(data);
-        var row = $('#operatorTable').bootstrapTable('getRowByUniqueId', sheetId);
-        $('#modalComments').find('.modal-tittle').text(`${row['name']} ${row['lastName']}`);
-        $('#modalComments').modal('show');
-
-        if ($(event.target)) {
-            $('#operatorTable').bootstrapTable('updateCellByUniqueId', {
-                id: sheetId,
-                field: 'comments',
-                value: 'false',
-                reinit: false
-            });
-        }
-
-    }).fail(function (error) {
-        failure(error.responseText);
-    });
-}
-
-function addComment(sheetId) {
-    var $textAreaComment = $('#textAreaComment');
-    if ($textAreaComment.val()) {
-        $.post('Operator/AddComment', { sheetId: sheetId, text: $textAreaComment.val() }, function (data) {
-            /*${new Date(data.created).toLocaleDateString()}*/
-            $('.list-unstyled').append(`<li classs="d-flex justify-content-between mb-4">
-                                            <div class="mask-custom card w-100">
-                                                <div class="card-header d-flex justify-content-between p-3" style="border-bottom: 1px solid rgba(255, 255, 255, .3);">
-                                                    <p class="fw-bold mb-0"><i class="fa-solid fa-check text-success"></i> ${data.member.user.login}</p>
-                                                    <p class="text-light small mb-0"><i class="fa-solid fa-clock"></i> now</p>
-                                                </div>
-                                                <div class="card-body">
-                                                    <p class="mb-0">
-                                                        ${data.content}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </li>`);
-            $textAreaComment.val('');
-            $('.modal-body')[0].scrollTo(0, $('.list-unstyled').outerHeight());
-            var noComments = $('#noComments');
-            if (noComments) {
-                noComments.remove();
-            }
-        }).fail(function (error) {
-            failure(error.responseText);
-        });
-    }
-}
-
 function failure(error) {
 
     $('#toastBody').html(error)
@@ -206,7 +113,7 @@ function drawTypeChat(data) {
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Чаты', 'Чаты фото', 'Чаты видео', 'Чаты аудио', 'Стикеры', 'Письма', 'Другое'],
+            labels: ['Чаты', 'Фото', 'Видео', 'Аудио', 'Стикеры', 'Письма', 'Другое'],
             datasets: [{
                 data: data,
                 backgroundColor: ['#7D6AF0', '#55DEA9', '#57A2FB', '#FFCA41', '#388B15', '#D4681B', '#EB5858'],

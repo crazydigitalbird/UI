@@ -8,9 +8,20 @@
     var rnd = new Random();
 }
 
-<link rel="stylesheet" href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" />
-<link rel="stylesheet" href="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" />
-<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/bootstrap-table.min.css"
+      asp-fallback-href="/lib/bootstrap-table/dist/bootstrap-table.min.css"
+      asp-fallback-test-class="fullscreen"
+      asp-fallback-test-property="position"
+      asp-fallback-test-value="fixed"
+      asp-append-version="true" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/extensions/sticky-header/bootstrap-table-sticky-header.min.css"
+      asp-fallback-href="/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css"
+      asp-fallback-test-class="fix-sticky"
+      asp-fallback-test-property="position"
+      asp-fallback-test-value="fixed !important"
+      asp-append-version="true" />
 
 <input id="initialBalancesByMessageType" type="hidden" value="@ViewData["balancesByMessageType"]" />
 <input id="initialBalancesMonth" type="hidden" value="@ViewData["balancesMonth"]" />
@@ -40,27 +51,13 @@
                     <th data-field="media" class="text-center">Медиа материалы</th>
                     <th data-field="detailedBalance" class="text-center">
                         <div class="d-flex">
-                            <div class="col p-0">
-                                Чаты
-                            </div>
-                            <div class="col p-0">
-                                Чаты фото
-                            </div>
-                            <div class="col p-0">
-                                Чаты видео
-                            </div>
-                            <div class="col p-0">
-                                Чаты аудио
-                            </div>
-                            <div class="col p-0">
-                                Стикеры
-                            </div>
-                            <div class="col p-0">
-                                Письма
-                            </div>
-                            <div class="col p-0">
-                                Другое
-                            </div>
+                            <div class="col p-0">Чаты</div>
+                            <div class="col p-0">Фото</div>
+                            <div class="col p-0">Видео</div>
+                            <div class="col p-0">Аудио</div>
+                            <div class="col p-0">Стикеры</div>
+                            <div class="col p-0">Письма</div>
+                            <div class="col p-0">Другое</div>
                         </div>
                     </th>
                     <th data-field="id" data-visible="false">ID</th>
@@ -91,20 +88,6 @@
                                         }
                                     </div>
                                 </div>
-                                @*                                    @switch (sheet.Status)
-                        {
-                        case Status.Online:
-                        <i class="fa-solid fa-circle text-success"></i>
-                        break;
-
-                        case Status.Offline:
-                        <i class="fa-solid fa-circle text-danger"></i>
-                        break;
-
-                        default:
-                        <i class="fa-solid fa-circle text-warning"></i>
-                        break;
-                        }*@
                             </td>
 
                             <td class="text-start ps-2">@sheet.FirstName</td>
@@ -152,27 +135,13 @@
 
                             <td>
                                 <div class="d-flex">
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
-                                    <div class="col p-0">
-                                        @rnd.Next(0, 5000)
-                                    </div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
+                                    <div class="col p-0">@rnd.Next(0, 5000)</div>
                                 </div>
                             </td>
 
@@ -266,13 +235,27 @@
 </div>
 
 @section Scripts{
-    @*<--- Moment --->*@
-    <script src="/js/moment-with-locales.min.js" asp-append-version="true"></script>
-
-    <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js" asp-append-version="true"></script>
-    <script src="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" asp-append-version="true"></script>
-    <script asp-src-include="/js/Operator/operator.js" asp-append-version="true"></script>
-    <script asp-src-include="/js/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"
+        asp-fallback-src="/js/moment-with-locales.min.js"
+        asp-fallback-test="window.moment"
+        asp-append-version="true">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/bootstrap-table.min.js"
+        asp-fallback-src="/lib/bootstrap-table/dist/bootstrap-table.min.js"
+        asp-fallback-test="window.BootstrapTable"
+        asp-append-version="true">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/extensions/sticky-header/bootstrap-table-sticky-header.min.js"
+        asp-fallback-src="/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"
+        asp-fallback-test="window.BootstrapTable.DEFAULTS.stickyHeader"
+        asp-append-version="true">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.min.js"
+        asp-fallback-src="/js/chart.min.js"
+        asp-fallback-test="window.Chart"
+        asp-append-version="true">
+    </script>
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/workingShift.js" asp-append-version="true"></script>
+    <script src="/js/Operator/operator.js" asp-append-version="true"></script>
+    <script src="/js/workingShift.js" asp-append-version="true"></script>
 }

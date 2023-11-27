@@ -1,7 +1,7 @@
 ﻿<div class="large-block__body-footer d-flex">
     <div class="textarea-block h-100 w-100">
         <div class="form-floating position-relative">
-            <textarea id="newMessage" class="large-block__textarea rounded h-100 ms-1 ps-5 pt-3 pb-3 text-white" value="" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter()" onkeypress="sendEnter(event)"></textarea>
+            <textarea id="newMessage" class="large-block__textarea rounded h-100 w-100 ms-1 ps-5 pt-3 pb-3 text-white" value="" placeholder="Type something..." maxlength="300" rows="5" oninput="changeCounter()" onkeypress="sendEnter(event)"></textarea>
             <p class="textarea-counter text-white position-absolute bottom-0 ms-3 mb-2">
                 <span id="messageLength">0</span>/300
             </p>
@@ -19,7 +19,7 @@
                 <div>
                     <img id="btnStickers" src="~/image/layout/Note.svg" alt="Smile" class="textarea-icon rounded-circle" onclick="showHidenStickers()">
                     <div class="position-relative">
-                        <div id="stickers" class="position-absolute bottom-100 start-100 ms-1 rounded p-2 d-none" style="background-color: #131334;" data-load="false">  
+                        <div id="stickers" class="position-absolute bg-haiti bottom-100 start-100 ms-1 rounded p-2 d-none" data-load="false">
                         </div>
                     </div>
                 </div>
@@ -28,7 +28,7 @@
                 <div>
                     <img id="btnGifts" src="~/image/layout/Present.svg" alt="Smile" class="textarea-icon-disabled rounded-circle" onclick="showHidenGifts()">
                     <div class="position-relative">
-                        <div id="gifts" class="position-absolute bottom-100 start-100 ms-1 rounded p-2 d-none" style="background-color: #131334;" data-load="false">
+                        <div id="gifts" class="position-absolute bg-haiti bottom-100 start-100 ms-1 rounded p-2 d-none" data-load="false">
                         </div>
                     </div>
                 </div>
@@ -45,17 +45,17 @@
             <div class="first-button-group">
                 <button id="btnSendMessage" type="button" class="btn answer-button chat-button rounded text-white" onclick="sendMessage()">
                     <img src="~/image/layout/Paper Plane.svg" alt="">
-                    <span class="answer-button__text">Отправить в чат</span>
+                    <span class="answer-button__text fw-bold">Отправить в чат</span>
                 </button>
                 <button id="attachment" type="button" class="btn answer-button attach-button rounded text-white mt-2">
                     <img src="~/image/layout/Attachment.svg" alt="">
-                    <span class="answer-button__text">Прикрепить файл</span>
+                    <span class="answer-button__text fw-bold">Прикрепить файл</span>
                 </button>
             </div>
 
             <button id="createMail" type="button" class="btn answer-button attach-button rounded text-white ">
                 <img src="~/image/layout/Envelope Closed.svg" alt="">
-                <span class="answer-button__text answer-mail-text">Создать письмо</span>
+                <span class="answer-button__text answer-mail-text fw-bold">Создать письмо</span>
             </button>
         </div>
     </div>

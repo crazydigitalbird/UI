@@ -16,7 +16,7 @@
         {
             info = JsonConvert.DeserializeObject<SheetInfo>(sheet.Info);
             info.SheetId = sheet.Id;
-            <div class="accordion-item tab-content-item py-1 rounded mb-2" onclick="clickMessageHistory(event)">
+            <div class="accordion-item tab-content-item cursor-pointer py-1 rounded mb-2" onclick="clickMessageHistory(event)">
                 <div class="accordion-item-button bottom-blockbody__item d-flex flex-row text-white row p-1 rounded w-100 collapsed ms-0"
          data-bs-target="@($"#flush-collapse-history-{dialog.LastMessage.Id}")"
          aria-expanded="false"
@@ -32,11 +32,11 @@
 
                         @if (dialog.LastMessage.Type == MessageType.System)
                         {
-                            <p name="date-created" class="user-block-name-text small-text-wrapp" data-date="@dialog.DateUpdated.ToString("O")"></p>
+                            <p name="date-created" class="user-block-name-text text-white-50" data-date="@dialog.DateUpdated.ToString("O")"></p>
                         }
                         else
                         {
-                            <p name="date-created" class="user-block-name-text small-text-wrapp" data-date="@dialog.LastMessage.DateCreated.ToString("O")"></p>
+                            <p name="date-created" class="user-block-name-text text-white-50" data-date="@dialog.LastMessage.DateCreated.ToString("O")"></p>
                         }
                     </div>
                     <div class="message-block col-6 text-start px-1 h-100">
@@ -104,7 +104,7 @@
                             }
                         </p>
                     </div>
-                    <div class="user-block d-flex align-items-center rounded col-4 px-1">
+                    <div class="user-block d-flex align-items-center rounded col-4 px-1 bg-martinique">
                         <p name="interlocutorId" class="d-none">@dialog.IdInterlocutor</p>
                         <div class="position-relative px-1">
                             <img name="interlocutorAvatar" src="@dialog.Avatar" alt="avatar" class="standart-image rounded">
@@ -415,9 +415,9 @@ else
 
 @if (!string.IsNullOrWhiteSpace(Model.Cursor) && !isNew)
 {
-    <div id="@($"btn-loading-history")" class="accordion-body-item rounded w-100 p-2 justify-content-between align-items-center text-center">
+    <div id="@($"btn-loading-history")" class="accordion-body-item rounded w-100 p-2 justify-content-between align-items-center text-center bg-martinique">
         <button type="button" class="btn answer-button chat-button rounded text-white" onclick="getHistory('@Model.Cursor')">
-            <span class="answer-button__text">Загрузить историю</span>
+            <span class="answer-button__text fw-bold">Загрузить историю</span>
         </button>
     </div>
 }

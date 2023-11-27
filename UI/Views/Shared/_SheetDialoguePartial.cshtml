@@ -1,9 +1,9 @@
 ﻿@model Dialogue
 
-<div name="dialogue" onclick="goToChatFromSheetDialogues(event)" class="accordion-body-item rounded w-100 py-2 row"
+<div name="dialogue" onclick="goToChatFromSheetDialogues(event)" class="accordion-body-item rounded w-100 py-2 row bg-martinique"
      data-id-interlocutor="@Model.IdInterlocutor">
     <div class="col-4 d-flex justify-content-start align-items-center ps-2 pe-0">
-        <img name="interlocutorAvatar" src="@Model.Avatar" alt="No person" class="accordion-body-image rounded me-2">
+        <img name="interlocutorAvatar" src="@Model.Avatar" alt="No person" class="small-image rounded me-2">
         <p name="interlocutorName" class="accordion-body-text text-start">@Model.UserName</p>
     </div>
     <div class="accordion-body-icons-block col-5 d-flex justify-content-center align-items-center p-0">
@@ -43,6 +43,6 @@
         </span>
     </div>
     <div class="accordion-body-time-block col-3 d-flex align-items-center">
-        <p name="date-created" class="large-block__body-item-small-text" data-date="@Model.DateUpdated.ToString("O")"></p>
+        <p name="date-created" class="text-small text-white-50 text-nowrap" data-date="@Model.DateUpdated.ToString("O")"></p>
     </div>
 </div>

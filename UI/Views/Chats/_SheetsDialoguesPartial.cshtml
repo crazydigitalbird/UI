@@ -5,7 +5,7 @@
     int operatorId = (int)ViewData["operatorId"];
 }
 
-<div id="sheetsDialogues" class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-2">
+<div id="sheetsDialogues" class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-2 bg-martinique">
 
         <div class="bottom-block-header mb-3">
             <ul class="d-flex justify-content-between text-white" id="sheetsDialogues" role="tablist">
@@ -45,7 +45,7 @@
                     <div class="d-flex gap-2">
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                            <span class="input-group-text p-0 border-0 h-100 bg-martinique">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('active')">
+                            <span class="input-group-text p-0 border-0 h-100 cursor-pointer bg-martinique" onclick="searchMan('active')">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -78,7 +78,7 @@
                             @foreach (var sheetOperator in Model)
                             {
                                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
-                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                            <div class="accordion-item tab-content-item cursor-pointer p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-active-{sheetOperator.Sheet.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
                                             <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
@@ -132,7 +132,7 @@
                     <div class="d-flex gap-2">
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                            <span class="input-group-text p-0 border-0 h-100 bg-martinique">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -145,7 +145,7 @@
                         </div>
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('bookmarked')">
+                            <span class="input-group-text p-0 border-0 h-100 cursor-pointer bg-martinique" onclick="searchMan('bookmarked')">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -165,7 +165,7 @@
                             @foreach (var sheetOperator in Model)
                             {
                                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
-                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                            <div class="accordion-item tab-content-item cursor-pointer p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-bookmarked-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
                                         <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
@@ -215,7 +215,7 @@
                     <div class="d-flex gap-2">
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                            <span class="input-group-text p-0 border-0 h-100 bg-martinique">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -228,7 +228,7 @@
                         </div>
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('premium')">
+                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer bg-martinique" onclick="searchMan('premium')">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -248,7 +248,7 @@
                             @foreach (var sheetOperator in Model)
                             {
                                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
-                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                            <div class="accordion-item tab-content-item cursor-pointer p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-premium-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
                                         <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
@@ -298,7 +298,7 @@
                     <div class="d-flex gap-2">
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100" style="background-color: #252548;">
+                            <span class="input-group-text p-0 border-0 h-100 bg-martinique">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -311,7 +311,7 @@
                         </div>
                         <div class="input-group input-group-sm rounded m-1" style="border: 1px solid #454563;">
                             <div class="input-group-prepend p-1">
-                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer" style="background-color: #252548;" onclick="searchMan('active')">
+                                <span class="input-group-text p-0 border-0 h-100 cursor-pointer bg-martinique" onclick="searchMan('active')">
                                     <img src="~/image/layout/Zoom (Minus).svg" alt="Zoom">
                                 </span>
                             </div>
@@ -331,7 +331,7 @@
                             @foreach (var sheetOperator in Model)
                             {
                                 var info = JsonConvert.DeserializeObject<SheetInfo>(sheetOperator.Sheet.Info);
-                                <div class="accordion-item tab-content-item p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
+                            <div class="accordion-item tab-content-item cursor-pointer p-2 rounded mb-2" data-sheet-identity="@sheetOperator.Sheet.Identity" data-sheet-id="@sheetOperator.Sheet.Id">
                                     <div class="accordion-item-button collapsed" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse-trash-{sheetOperator.Sheet.Id}")" aria-expanded="true" aria-controls="@($"flush-collapse-{sheetOperator.Sheet.Id}")" role="button">
                                         <div class="position-relative">
                                         <img name="ownerAvatar" src="@info?.Personal?.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">

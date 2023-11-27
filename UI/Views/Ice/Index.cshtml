@@ -28,7 +28,7 @@
 </svg>
 
 <div class="d-grid h-100 overflow-hidden gap-2 p-2 text-white text-center" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3">
+    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3 bg-martinique">
         <div class="refresh text-start d-none">
             <button class="refresh__btn mb-2">Обновить айсы</button>
         </div>
@@ -40,7 +40,7 @@
                 </svg>
             </div>
             <div class="flex-fill h-100">
-                <input type="text" class="w-100 h-100 text-white" placeholder="Искать по оператору" oninput="searchOperator(this)">
+                <input type="text" class="w-100 h-100 text-white bg-martinique" placeholder="Искать по оператору" oninput="searchOperator(this)">
             </div>
             <span class="d-flex justify-content-center align-items-center border rounded h-100 text-white-50">
                 0
@@ -54,7 +54,7 @@
                 </svg>
             </div>
             <div class="flex-fill h-100">
-                <input type="text" class="w-100 h-100 text-white" placeholder="Искать анкету" oninput="searchSheet(this)">
+                <input type="text" class="w-100 h-100 text-white bg-martinique" placeholder="Искать анкету" oninput="searchSheet(this)">
             </div>
             <span class="d-flex justify-content-center align-items-center border rounded h-100 text-white-50">
                 @(Model?.Count ?? 0)
@@ -70,7 +70,7 @@
                     var iceInfo = icesInfo.FirstOrDefault(i => i.IdTrustedUser == info.Id);
 
                     <div name="sheet" class="sheet-card d-flex align-items-center justify-content-between border rounded cursor-pointer mb-2 p-2" data-sheet-id="@sheet.Id">
-                        <div class="sheet-girl col-4 d-flex align-items-center rounded p-2">
+                        <div class="sheet-girl col-4 d-flex align-items-center rounded p-2 bg-martinique">
                             <div class="avatar position-relative">
                                 <img src="@info.Personal.AvatarSmall" alt="" class="w-100 h-100 rounded">
                                 @if (iceInfo == null)
@@ -95,7 +95,7 @@
                         </div>
 
                         <div class="col">
-                            <div class="sheet-ice-counters d-grid gap-1 rounded p-1">
+                            <div class="sheet-ice-counters d-grid gap-1 rounded p-1 bg-martinique">
                                 <div class="row">
                                     <div class="col-6 d-flex align-items-center justify-content-end p-0">
                                         <svg width="20" height="18" viewBox="0 0 20 18">
@@ -129,8 +129,8 @@
         </div>
     </div>
 
-    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3">
-        <div class="middle-head d-flex justify-content-between align-items-center p-2 rounded mb-3">
+    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3 bg-martinique">
+        <div class="middle-head d-flex justify-content-between align-items-center p-2 rounded mb-3 bg-port_gore">
             <div class="middle-head-left d-flex rounded">
                 <span class="d-flex justify-content-center align-items-center w-50">
                     <svg class="cursor-pointer" width="20" height="18" viewBox="0 0 20 18" onclick="filterIce(this, 'Message')">
@@ -154,7 +154,7 @@
                 </select>
             </div>
 
-            <button class="add__btn fw-bold rounded">
+            <button class="add__btn fw-bold rounded bg-martinique">
                 <svg class="me-1" width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7.68018 1.58825L7.77564 14.4116" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                     <path d="M1.31622 7.95221L14.1396 8.04767" stroke="#7D6AF0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -166,19 +166,19 @@
         </div>
     </div>
 
-    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3">
-        <div class="progress-head d-flex align-items-center justify-content-between rounded px-3 py-2 mb-3">
-            <span class="progress-head__text">In progress</span>
-            <span class="view-trash">View Trash</span>
+    <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3 bg-martinique">
+        <div class="progress-head d-flex align-items-center justify-content-between rounded px-3 py-2 mb-3 fw-bold bg-port_gore">
+            <span>In progress</span>
+            <span class="view-trash cursor-pointer">View Trash</span>
         </div>
-        <div class="progress-box h-100">
+        <div class="progress-box overflow-y-auto h-100">
         </div>
     </div>
 </div>
 
 <!-- pop-up tarsh -->
 <div class="pop-up trash d-none">
-    <div class="pop-up-content w-50 h-75 d-flex flex-column">
+    <div class="pop-up-content w-50 h-75 d-flex flex-column bg-port_gore">
         <p class="trash__title">Trash</p>
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="pop-up__close">
             <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -191,7 +191,7 @@
 
 <!-- pop-up add chat and mail -->
 <div class="pop-up chatAndMail d-none">
-    <div class="pop-up-content w-50">
+    <div class="pop-up-content w-50 bg-port_gore">
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="pop-up__close">
             <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             <path d="M10 1L1 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -261,7 +261,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end">
-                <button id="sendToModeration" class="sumbit" type="button">
+                <button id="sendToModeration" class="submit bg-cornflower_blue text-white fw-bold rounded" type="button">
                     <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M14.17 6.85999L9.39998 11.75C9.04998 12.11 8.49998 12.19 8.05998 11.95L2.29997 8.79999C1.44997 8.33999 1.55 7.09999 2.45 6.76999L18.76 0.819989C19.65 0.499989 20.52 1.35999 20.2 2.24999L14.39 18.51C14.07 19.4 12.87 19.52 12.38 18.72L10.21 15.17" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>

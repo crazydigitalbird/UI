@@ -86,7 +86,7 @@
         <div class="row gx-3">
 
             <div class="@*col-6*@ col-12">
-                <div class="area-top rounded-4 h-100">
+                <div class="area-top rounded-4 h-100 bg-martinique">
                     <p class="fw-bold p-3">Топ: Операторов этого месяца</p>
                     <div class="px-3 pb-2 overflow-y-auto">
                         <table class="table table-sm table-dark table-bordered table-hover text-center m-0">
@@ -129,7 +129,7 @@
             </div>
 
             <div class="col-6 d-none">
-                <div class="area-top rounded-4 h-100">
+                <div class="area-top rounded-4 h-100 bg-martinique">
                     <p class="fw-bold p-3">Топ: Админов этого месяца</p>
                     <div class="px-3 pb-2 overflow-y-auto">
                         <table class="table table-sm table-dark table-bordered table-hover text-center m-0">
@@ -195,14 +195,14 @@
     <div class="container-fluid last-container p-0 py-3 h-100">
         <div class="row gx-3 h-100">
             <div class="col-8 h-100">
-                <div class="area-top rounded-4 h-100 px-3">
+                <div class="area-top rounded-4 h-100 px-3 bg-martinique">
                     <input id="initialBalancesLastMonth" type="hidden" value="@string.Join(";", Model?.BalanceStatisticAgency?.BalancesLastMonth ?? new decimal[0]).Replace(",", ".")" />
                     <input id="initialBalancesCurrentMonth" type="hidden" value="@string.Join(";", Model?.BalanceStatisticAgency?.BalancesCurrentMonth ?? new decimal[0]).Replace(",", ".")" />
                     <canvas id="balanceMonthsChart"></canvas>
                 </div>
             </div>
             <div class="col-4 h-100">
-                <div class="area-top rounded-4 h-100 d-grid overflow-auto">
+                <div class="area-top rounded-4 h-100 d-grid overflow-auto bg-martinique">
                     <p class="px-3 pt-3 pb-2 fw-bold">Распределение заработка относительно прошлого месяца</p>
 
                     @if (Model != null)

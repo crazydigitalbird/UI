@@ -35,7 +35,7 @@
 
             <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
 
-            <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
+            <p name="interlocutorName" class="user-block-name-text text-white-50">
                 @ds.Dialogue.UserName
             </p>
         </div>
@@ -91,7 +91,7 @@
             <p name="date-created" class="user-block-name-text opacity-50" data-date="@ds.Dialogue.LastMessage.DateCreated.ToString("O")">
             </p>
         </div>
-        <div class="user-block d-flex align-items-center rounded col-4 px-2">
+        <div class="user-block d-flex align-items-center rounded col-4 px-2 bg-martinique">
             <div class="position-relative mx-1">
                 <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" loading="lazy" alt="avatar" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                 <span name="online-status-@ds.SheetInfo.SheetId" class="rounded-circle position-absolute bottom-0 end-0"></span>

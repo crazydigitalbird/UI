@@ -218,7 +218,7 @@
                             break;
 
                         case MessageType.Post:
-                            <div name="message" onclick="previewHistoryPost('@($"post_{m.Content.IdPost}")')" class="@(isOwner ? "rounded-start" : "rounded-end") post d-flex align-items-center justify-content-start rounded-top" data-id-message="@m.Id" style="max-width: 50%;">
+                            <div name="message" onclick="previewHistoryPost('@($"post_{m.Content.IdPost}")')" class="@(isOwner ? "rounded-start" : "rounded-end") d-flex align-items-center justify-content-start rounded-top cursor-pointer" data-id-message="@m.Id" style="max-width: 50%;">
                                 <p class="text-white large-block__body-item-text">
                                     @try
                                     {
@@ -363,7 +363,7 @@
                             break;
                     }
                 </div>
-                <p name="date-created" class="large-block__body-item-small-text @(isOwner? "text-end" : "text-start")" data-date="@m.DateCreated.ToString("O")"></p>
+                <p name="date-created" class="text-small text-white-50 text-nowrap @(isOwner? "text-end" : "text-start")" data-date="@m.DateCreated.ToString("O")"></p>
             </div>
         }
     }

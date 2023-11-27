@@ -4,7 +4,7 @@
     var avatarUrl = ViewData["avatarUrl"];
 }
 
-<div name="@Model.Id" class="middle-item d-flex align-items-start justify-content-between" data-type="@Model.Type" data-number-of-sent="@Model.NumberOfSent" data-created="@Model.DateCreated.ToString("O")" data-efficiency="@Model.Efficiency.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("en-US"))">
+<div name="@Model.Id" class="middle-item d-flex align-items-start justify-content-between rounded" data-type="@Model.Type" data-number-of-sent="@Model.NumberOfSent" data-created="@Model.DateCreated.ToString("O")" data-efficiency="@Model.Efficiency.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("en-US"))">
     <div class="middle-item-left">
         <div class="middle-item-title d-flex align-items-center">
             <div class="avatar">

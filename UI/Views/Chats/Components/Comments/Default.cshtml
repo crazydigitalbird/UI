@@ -5,7 +5,7 @@
 {
     @foreach (var comment in Model.OrderByDescending(c => c.Created))
     {
-        <div class="accordion-item tab-content-item py-1 rounded mb-2">
+        <div class="accordion-item tab-content-item cursor-pointer py-1 rounded mb-2">
             <div class="accordion-item-button bottom-blockbody__item d-flex text-white p-1 rounded collapsed"
          data-bs-toggle="collapse"
          data-bs-target="@($"#flush-collapse-comment-{comment.Id}")"
@@ -17,7 +17,7 @@
                         @(comment.Member.User.Login ?? comment.Member.User.Email)
                     </p>
                 </div>
-                <div class="user-block d-flex align-items-center rounded col-4 px-1 justify-content-center">
+                <div class="user-block d-flex align-items-center rounded col-4 px-1 justify-content-center bg-martinique">
                     <p name="interlocutorName" class="user-block-name-text">
                         @comment.Created.ToString("HH:mm dd.MM.yyy")
                     </p>

@@ -37,7 +37,7 @@
                 @*<p name="interlocutorName" class="d-none">@ds.Dialogue.UserName</p>*@
                 <p name="interlocutorId" class="d-none">@ds.Dialogue.IdInterlocutor</p>
 
-                <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
+                <p name="interlocutorName" class="user-block-name-text text-white-50">
                     @ds.Dialogue.UserName
                 </p>
             </div>
@@ -94,7 +94,7 @@
                     @ds.Dialogue.LastMessage.DateCreated.Humanize()
                 </p>
             </div>
-            <div class="user-block d-flex align-items-center rounded col-4 p-2">
+            <div class="user-block d-flex align-items-center rounded col-4 p-2 bg-martinique">
                 <div class="me-3 position-relative">
                     <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" loading="lazy" alt="Person image" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                     @*                    @if (sd.SheetInfo.IsOnline)
@@ -137,7 +137,7 @@
                     }
                 </div>
 
-                <p name="interlocutorName" class="user-block-name-text small-text-wrapp">
+                <p name="interlocutorName" class="user-block-name-text text-white-50">
                     @ds.Dialogue.UserName
                 </p>
 
@@ -204,7 +204,7 @@
                     }
                 </p>
             </div>
-            <div class="user-block d-flex align-items-center rounded col-4 p-2">
+            <div class="user-block d-flex align-items-center rounded col-4 p-2 bg-martinique">
                 <div class="me-3 position-relative">
                     <img name="ownerAvatar" src="@ds.SheetInfo.Personal.AvatarSmall" loading="lazy" alt="Person image" class="standart-image rounded" onerror="errorLoadAvatar(this)">
                     @*                   @if (sd.SheetInfo.IsOnline)

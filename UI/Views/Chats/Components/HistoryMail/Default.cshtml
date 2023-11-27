@@ -11,7 +11,7 @@
     foreach (var mailMessage in Model.Data.History)
     {
         bool isOwner = mailMessage.IdUserFrom == ownerInfo.Id;
-        <div class="accordion-item tab-content-item py-1 rounded mb-2">
+        <div class="accordion-item tab-content-item cursor-pointer py-1 rounded mb-2">
             <div class="accordion-item-button bottom-blockbody__item d-flex flex-row text-white row p-1 rounded w-100 collapsed ms-0"
          data-bs-toggle="collapse"
          data-bs-target="@($"#flush-collapse-mail-{mailMessage.Id}")"
@@ -22,7 +22,7 @@
                     <div class="position-relative d-inline-block">
                         <img name="ownerAvatar" src="@(isOwner ? ownerInfo?.Personal.AvatarSmall : regularInfo.Personal.AvatarSmall)" alt="avatar" class="standart-image rounded">
                     </div>
-                    <p name="date-created" class="user-block-name-text small-text-wrapp" data-date="@mailMessage.DateCreated.ToString("O")"></p>
+                    <p name="date-created" class="user-block-name-text text-white-50" data-date="@mailMessage.DateCreated.ToString("O")"></p>
                 </div>
                 <div class="message-block col-6 text-start px-1 h-100">
                     <p class="other-name-text">
@@ -32,7 +32,7 @@
                         @mailMessage.Title
                     </p>
                 </div>
-                <div class="user-block d-flex align-items-center rounded col-4 px-1">
+                <div class="user-block d-flex align-items-center rounded col-4 px-1 bg-martinique">
                     <div class="position-relative px-1">
                         <img name="interlocutorAvatar" src="@(isOwner ?  regularInfo.Personal.AvatarSmall : ownerInfo?.Personal.AvatarSmall)" alt="avatar" class="standart-image rounded">
                     </div>

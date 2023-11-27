@@ -324,18 +324,6 @@ middle-item:hover {
     background: rgba(32, 32, 32, 0.61);
     -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
 }
 
 .pop-up-content {
@@ -841,14 +829,6 @@ middle-item:hover {
     .pop-up.gallery .pop-up-content .gallery-filter {
         width: 100%;
         height: 44px;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-align: center;
-        -webkit-align-items: center;
-        -ms-flex-align: center;
-        align-items: center;
         margin-top: 22px;
         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     }
@@ -885,19 +865,10 @@ middle-item:hover {
 
         .pop-up.gallery .pop-up-content .gallery-filter .filter__lab {
             color: #fff;
-            cursor: pointer;
             z-index: 2;
             opacity: 0.5;
             width: 100%;
             height: 100%;
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-align: center;
-            -webkit-align-items: center;
-            -ms-flex-align: center;
-            align-items: center;
         }
 
         .pop-up.gallery .pop-up-content .gallery-filter .filter__inp:checked ~ svg path {
@@ -953,10 +924,6 @@ middle-item:hover {
     }
 
     .pop-up.gallery .pop-up-content .gallery-item {
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
-        display: flex;
         -webkit-box-pack: safe;
         -webkit-justify-content: safe;
         -ms-flex-pack: safe;
@@ -1094,11 +1061,6 @@ middle-item:hover {
 
     .pop-up.preview .pop-up-content .preview__title {
         font-size: 20px;
-        font-weight: 600;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
-        display: flex;
     }
 
         .pop-up.preview .pop-up-content .preview__title span {

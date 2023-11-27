@@ -364,10 +364,6 @@ middle-item:hover {
     overflow-y: auto;
 }
 
-    .pop-up.trash .trash-box::-webkit-scrollbar {
-        background-color: #1E1E42;
-    }
-
 .pop-up.trash .trash__title {
     text-align: center;
     font-size: 24px;
@@ -438,10 +434,6 @@ middle-item:hover {
     color: #fff;
     overflow-y: auto;
 }
-
-    .pop-up.create-post .pop-up-content::-webkit-scrollbar {
-        background: #1E1E42;
-    }
 
 .pop-up.create-post .create-post__title {
     font-size: 20px;
@@ -521,10 +513,6 @@ middle-item:hover {
 
 .pop-up.chatAndMail .uploaded-file {
     scrollbar-color: gray black;
-}
-
-.pop-up .uploaded-file::-webkit-scrollbar {
-    background: #1E1E42;
 }
 
 .pop-up .uploaded-file .file {
@@ -627,10 +615,6 @@ middle-item:hover {
     width: auto;
 }
 
-    .pop-up.create-post .history-posts::-webkit-scrollbar {
-        background: #1E1E42;
-    }
-
 .pop-up.create-post .history__title {
     font-weight: 600;
     text-align: center;
@@ -646,10 +630,6 @@ middle-item:hover {
     overflow-y: auto;
     background: #15143E;
 }
-
-    .pop-up.create-post .history-item::-webkit-scrollbar {
-        background: #1E1E42;
-    }
 
     .pop-up.create-post .history-item .history-head,
     .pop-up.create-post .history-item .history-main {
@@ -972,10 +952,6 @@ middle-item:hover {
         overflow-y: auto;
     }
 
-        .pop-up.gallery .pop-up-content .gallery-box::-webkit-scrollbar {
-            background: #1E1E42;
-        }
-
     .pop-up.gallery .pop-up-content .gallery-item {
         display: -webkit-box;
         display: -webkit-flex;
@@ -1149,10 +1125,6 @@ middle-item:hover {
 
         .pop-up.preview .pop-up-content .preview-body img {
             cursor: pointer;
-        }
-
-        .pop-up.preview .pop-up-content .preview-body::-webkit-scrollbar {
-            background: #1E1E42;
         }
 
         .pop-up.preview .pop-up-content .preview-body .preview-card {
@@ -1641,10 +1613,6 @@ em-emoji-picker {
     -webkit-border-radius: 8px;
     border-radius: 8px;
 }
-
-    .history-item::-webkit-scrollbar {
-        background: #1E1E42;
-    }
 
     .history-item .history-head,
     .history-item .history-main {

@@ -10,6 +10,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [AutoValidateAntiforgeryToken]
     [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class AdminAgencyController : Controller
     {
@@ -31,6 +32,7 @@ namespace UI.Controllers
             IGroupClient groupClient,
             ISiteClient siteClient,
             IStatisticClient statisticClient,
+
             ILogger<AdminAgencyController> logger)
         {
             _adminAgencyClient = adminAgencyClient;
@@ -69,7 +71,6 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddSheet(int siteId, string login, string password)
         {
             var sheet = await _sheetClient.AddAsync(siteId, login, password);
@@ -130,7 +131,6 @@ namespace UI.Controllers
             return StatusCode(500, $"For sheet id: {sheetId}, the cabinet value has not been changed");
         }
 
-        [HttpPost]
         [ServiceFilter(typeof(GetAgencyIdFilter))]
         public IActionResult GetOperators(int sheetId, int agencyId)
         {
@@ -165,7 +165,12 @@ namespace UI.Controllers
             ViewData["agencyId"] = agencyId;
             ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
-            ViewData["returnUrl"] = Request.Headers.Referer.ToString();
+            var returnUrl = Request.Headers.Referer.ToString();
+            if (!Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = "/";
+            }
+            ViewData["returnUrl"] = returnUrl;
             return View(agency);
         }
 
@@ -177,7 +182,14 @@ namespace UI.Controllers
                 if (await _adminAgencyClient.UpdateAgency(agency, originalUsers))
                 {
                     TempData["Message"] = $"The '{agency.Name}' agency has been updated";
-                    return Redirect(returnUrl);
+                    if (Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 TempData["Error"] = $"'{agency.Name}' agency update error";
             }
@@ -216,7 +228,7 @@ namespace UI.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteUser(int userId)
         {
-            if ( await _adminAgencyClient.DeleteUserAgency(userId))
+            if (await _adminAgencyClient.DeleteUserAgency(userId))
             {
                 return Ok();
             }

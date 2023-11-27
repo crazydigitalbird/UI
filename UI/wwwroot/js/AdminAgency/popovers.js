@@ -56,7 +56,7 @@ $('#adminAgencyTable').on('reset-view.bs.table', function (e) {
             var agencyId = $('#agencyId').val();
             $.ajax({
                 async: false,
-                method: "POST",
+                method: "GET",
                 url: '/AdminAgency/GetOperators',
                 data: { sheetId: id, agencyId: agencyId },
             })

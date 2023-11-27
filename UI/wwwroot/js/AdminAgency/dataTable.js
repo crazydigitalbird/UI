@@ -7,6 +7,12 @@ $(function () {
     $(window).resize(function () {
         setHeight();
     });
+
+    $.ajaxSetup({
+        headers: {
+            RequestVerificationToken: $('[name=__RequestVerificationToken]').first().val()
+        }
+    });
 });
 
 function initTable() {

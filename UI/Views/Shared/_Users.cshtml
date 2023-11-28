@@ -32,12 +32,15 @@
     }
 </div>
 
-<table class="table table-sm table-hover">
+<table class="table table-sm table-hover table-dark">
     <thead>
         <tr>
             <th class="fw-bold">Email</th>
             <th class="fw-bold text-center">Role</th>
             <th class="fw-bold text-center">Action</th>
+        </tr>
+        <tr>
+            <th class="p-0" colspan="3"></th>
         </tr>
     </thead>
     <tbody>
@@ -50,7 +53,7 @@
                     <input type="hidden" name="Users[@counter].Id" value="@user.Id" />
                     <td name="email">@user.Email</td>
                     <td class="w-25">
-                        <select class="form-select form-select-sm" name="Users[@counter].Role" asp-items="@roles.Select(r => new SelectListItem(r.Text, r.Value, user.Role.ToString() == r.Text))"></select>
+                        <select class="form-control select-custom" name="Users[@counter].Role" asp-items="@roles.Select(r => new SelectListItem(r.Text, r.Value, user.Role.ToString() == r.Text))"></select>
                     </td>
                     <td class="text-center" style="width: 80px;">
                         <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(event, @user.Id)">Delete</button>

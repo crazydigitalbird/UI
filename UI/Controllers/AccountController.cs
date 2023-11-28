@@ -31,7 +31,7 @@ namespace UI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogIn(LoginModel loginModel)
+        public async Task<IActionResult> LogIn(LoginModel loginModel, string returnUrl)
         {
             HttpContext.Session.Clear();
             if (!ModelState.IsValid)
@@ -49,7 +49,14 @@ namespace UI.Controllers
 
             await SignInAsync(user);
 
-            return LocalRedirect("/");
+            if(!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost]

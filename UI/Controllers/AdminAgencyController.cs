@@ -19,7 +19,6 @@ namespace UI.Controllers
         private readonly ISheetClient _sheetClient;
         private readonly IBalanceClient _balanceClient;
         private readonly IGroupClient _groupClient;
-        private readonly ISiteClient _siteClient;
         private readonly IStatisticClient _statisticClient;
         private readonly ILogger<AdminAgencyController> _logger;
 
@@ -30,7 +29,6 @@ namespace UI.Controllers
             ISheetClient sheetClient,
             IBalanceClient balanceClient,
             IGroupClient groupClient,
-            ISiteClient siteClient,
             IStatisticClient statisticClient,
 
             ILogger<AdminAgencyController> logger)
@@ -40,7 +38,6 @@ namespace UI.Controllers
             _sheetClient = sheetClient;
             _balanceClient = balanceClient;
             _groupClient = groupClient;
-            _siteClient = siteClient;
             _statisticClient = statisticClient;
             _logger = logger;
         }
@@ -166,11 +163,9 @@ namespace UI.Controllers
             ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();
             ViewData["Roles"] = _roles;
             var returnUrl = Request.Headers.Referer.ToString();
-            if (!Url.IsLocalUrl(returnUrl))
-            {
-                returnUrl = "/";
-            }
-            ViewData["returnUrl"] = returnUrl;
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+            var localUrl = returnUrl.Replace(baseUrl, "");
+            ViewData["returnUrl"] = localUrl;
             return View(agency);
         }
 
@@ -182,7 +177,7 @@ namespace UI.Controllers
                 if (await _adminAgencyClient.UpdateAgency(agency, originalUsers))
                 {
                     TempData["Message"] = $"The '{agency.Name}' agency has been updated";
-                    if (Url.IsLocalUrl(returnUrl))
+                    if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return Redirect(returnUrl);
                     }
@@ -191,7 +186,7 @@ namespace UI.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
-                TempData["Error"] = $"'{agency.Name}' agency update error";
+                //TempData["Error"] = $"'{agency.Name}' agency update error";
             }
             ViewData["agencyId"] = agency.Id;
             ViewData["FreeUsers"] = await _adminAgencyClient.GetNonAgencyUsers();

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Users";
+    Layout = "_LayoutGrid";
 }
 
 <div class="container mt-5">
@@ -13,13 +14,13 @@
     <form id="formAgency" method="post" asp-controller="AdminAgency" asp-action="Users">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="Name" />
-        <input type="hidden" name=returnUrl value="@ViewData["returnUrl"]" />
+        <input type="hidden" name="returnUrl" value="@ViewData["returnUrl"]" />
 
         <partial name="_Users" model="Model.Users" />
 
-        <a class="btn btn-sm btn-danger" href="@ViewData["returnUrl"]">Cancel</a>
+        <a class="btn btn-sm btn-outline-danger" href="@ViewData["returnUrl"]">Cancel</a>
 
-        <button type="submit" class="btn btn-sm btn-success">Save</button>
+        <button type="submit" class="btn btn-sm btn-outline-success">Save</button>
     </form>
 </div>
 

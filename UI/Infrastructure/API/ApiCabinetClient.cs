@@ -136,7 +136,7 @@ namespace UI.Infrastructure.API
 
         #region Bind cabinet to operator
 
-        public async Task<bool> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId)
+        public async Task<int> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId)
         {
             var sessionGuid = GetSessionGuid();
             try
@@ -150,7 +150,7 @@ namespace UI.Infrastructure.API
                         var agencyOperatorSession = await AddAgencyOperatorSession(operatorId, agencySession.Id, sessionGuid);
                         if (agencyOperatorSession != null)
                         {
-                            return true;
+                            return cabinetId;
                         }
                     }
                 }
@@ -159,7 +159,7 @@ namespace UI.Infrastructure.API
             {
                 _logger.LogError(ex, "Error adding the operator with Id: {operatorId} in cabinet with Id: {cabinetId}.", operatorId, cabinetId);
             }
-            return false;
+            return 0;
         }
 
         private async Task<AgencySession> AddAgencySession(int agencyId, string sessionGuid)
@@ -257,7 +257,7 @@ namespace UI.Infrastructure.API
                 var responseAgencyOperatorSessions = await httpClient.GetAsync($"Agencies/Operators/GetCabinetAgencyOperatorSessions?cabinetId={cabinetId}&sessionGuid={sessionGuid}");
                 if (responseAgencyOperatorSessions.IsSuccessStatusCode)
                 {
-                    var agencyOperatorSessions = (await responseAgencyOperatorSessions.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>());
+                    var agencyOperatorSessions = await responseAgencyOperatorSessions.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>();
                     var agencyCurrentOperatorSessions = agencyOperatorSessions.Where(s => s.Operator.Id == operatorId && s.Session.Cabinets.Count > 0);
                     if (agencyCurrentOperatorSessions.Any())
                     {
@@ -315,7 +315,7 @@ namespace UI.Infrastructure.API
     {
         Task<IEnumerable<AgencyCabinet>> GetCabinetsAsync(int agencyId);
         Task<AgencyCabinet> AddAsync(int agencyId, string name);
-        Task<bool> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId);
+        Task<int> BindCabinetToOperatorAsync(int agencyId, int cabinetId, int operatorId);
         Task<bool> UnbindCabinetToUserAsync(int cabinetId, int userId);
     }
 }

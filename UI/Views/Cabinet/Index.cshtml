@@ -3,34 +3,33 @@
 
 @{
     ViewData["Title"] = "Cabinets";
+    Layout = "_LayoutGrid";
     var operatorSessionsView = (IEnumerable<OperatorSessionsView>)ViewData["operators"];
 }
 
-<div class="row">
-
-    <div class="col-md-12 col-lg-4 mb-3">
-
-        <div id="toolbarTableCabinets" class="row mb-3 pt-3">
-            <div class="col pe-0">
-                <div class="input-group rounded">
-                    <span class="input-group-text border-0" id="search-addon-cabinets">
-                        <i class="fa-solid fa-search"></i>
-                    </span>
-                    <input type="search" id="searchCabinets" class="form-control rounded" oninput="searchTable(event, 'tableCabinets')" placeholder="Search" aria-label="search" aria-describedby="search-addon-cabinets" autocomplete="off" />
+<div class="container-fluid my-3 overflow-hidden">
+    <div class="row h-100">
+        <div class="grid col-4 h-100">
+            <div id="toolbarTableCabinets" class="row mb-3 pt-1">
+                <div class="col pe-0">
+                    <div class="input-group rounded">
+                        <span class="input-group-text border-0" id="search-addon-cabinets">
+                            <i class="fa-solid fa-search"></i>
+                        </span>
+                        <input type="search" id="searchCabinets" class="form-control rounded text-white" oninput="searchTable(event, 'tableCabinets')" placeholder="Search" aria-label="search" aria-describedby="search-addon-cabinets" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="button" id="addCabinet" class="btn btn-outline-success" style="min-width: 142px;">
+                        <i class="fa-solid fa-plus"></i>
+                        Add cabinet
+                    </button>
                 </div>
             </div>
-            <div class="col-auto">
-                <button type="button" id="addCabinet" class="btn btn-primary" style="min-width: 142px;">
-                    <i class="fa-solid fa-plus"></i>
-                    Add cabinet
-                </button>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-12 tableFixedHead">
-                <table id="tableCabinets" class="table table-sm table-bordered table-hover text-center">
-                    <thead>
+            <div class="col-12 tableFixedHead overflow-y-auto">
+                <table id="tableCabinets" class="table table-sm table-bordered table-hover table-dark text-center mb-0">
+                    <thead class="sticky-top">
                         <tr>
                             <th style="width: 0px;">Id</th>
                             <th class="w-100">Cabinet</th>
@@ -69,40 +68,38 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-12 col-lg-8">
-        <div class="row mb-3 pt-3">
-            <div class="col pe-0">
-                <div class="input-group rounded">
-                    <span class="input-group-text border-0" id="search-addon-users">
-                        <i class="fa-solid fa-search"></i>
-                    </span>
-                    <input type="search" id="searchUsers" class="form-control rounded" oninput="searchTable(event, 'tableUsers')" placeholder="Search" aria-label="search" aria-describedby="search-addon-users" />
+        <div class="grid col-8 h-100">
+            <div class="row mb-3 pt-1">
+                <div class="col pe-0">
+                    <div class="input-group rounded">
+                        <span class="input-group-text border-0" id="search-addon-users">
+                            <i class="fa-solid fa-search"></i>
+                        </span>
+                        <input type="search" id="searchUsers" class="form-control rounded text-white" oninput="searchTable(event, 'tableUsers')" placeholder="Search" aria-label="search" aria-describedby="search-addon-users" />
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <a id="addUser" class="btn btn-outline-success" asp-controller="AdminAgency" asp-action="Users" asp-route-agencyId="@(ViewData["agencyId"] ?? "0")" asp-route-returnUrl="@ViewData["returnUrl"]" style="min-width: 142px;">
+                        <i class="fa-solid fa-plus"></i>
+                        Add user
+                    </a>
                 </div>
             </div>
-            <div class="col-auto">
-                <a id="addUser" class="btn btn-primary" asp-controller="AdminAgency" asp-action="Users" asp-route-agencyId="@(ViewData["agencyId"] ?? "0")" asp-route-returnUrl="@ViewData["returnUrl"]" style="min-width: 142px;">
-                    <i class="fa-solid fa-plus"></i>
-                    Add user
-                </a>
-            </div>
-        </div>
 
-        <div class="row h-100">
-            <div class="col-12 tableFixedHead">
-                <table id="tableUsers" class="table table-sm table-bordered table-hover text-center">
-                    <thead>
+            <div class="col-12 tableFixedHead overflow-y-auto">
+                <table id="tableUsers" class="table table-sm table-bordered table-hover table-dark text-center mb-0">
+                    <thead class="sticky-top">
                         <tr>
                             <th>№</th>
                             <th>Role</th>
                             <th>Name</th>
                             <th>Mail</th>
                             <th>Cabinets</th>
-                            <th>Rights</th>
+                            @*<th>Rights</th>*@
                         </tr>
                         <tr>
-                            <th class="p-0" colspan="6"></th>
+                            <th class="p-0" colspan="5"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -117,92 +114,39 @@
                                     <td>operator</td>
                                     <td>@osv.Operator.Member.User.Login</td>
                                     <td>@osv.Operator.Member.User.Email</td>
-                                    <td name="cabinets" class="text-start py-1">
-                                        @if (userCabinets.Count() < 5)
+                                    <td name="cabinets" class="text-start">
+                                        @foreach (var cabinet in userCabinets)
                                         {
-                                            <div class="d-grid d-md-block gap-1">
-                                                @foreach (var cabinet in userCabinets)
-                                                {
-                                                    <div id="@($"container_{osv.Operator.Id}_{cabinet.Id}")" class="btn-group" style="display: contents;">
-                                                        <button id="@($"{osv.Operator.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded dropdown-toggle btn-size-fixed py-1" data-mdb-toggle="dropdown" aria-expanded="false" data-mdb-ripple-color="primary">@($"C{cabinet.Id}")</button>
-                                                        <ul class="dropdown-menu dropdown-menu-width" aria-labelledby="@($"{osv.Operator.Id}_{cabinet.Id}")">
-                                                            <li class="btn-size-fixed bg-danger">
-                                                                <button class="dropdown-item btn bg-danger text-center" onclick="unbindCabinetToUser(@cabinet.Id, @osv.Operator.Id)">
-                                                                    <i class="fa-solid fa-trash"></i>
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                }
-                                                <button type="button" class="btn btn-sm btn-success btn-rounded btn-size-fixed p-1" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
-                                                    <i class="fa-solid fa-plus"></i>
-                                                </button>
-                                            </div>
+                                            <button id="@($"{osv.Operator.Id}_{cabinet.Id}")" type="button" class="btn btn-sm btn-outline-success btn-trash text-white my-1" onclick="unbindCabinetToUser(@cabinet.Id, @osv.Operator.Id)">
+                                                <span>
+                                                    @($"C{cabinet.Id}")
+                                                </span>
+                                            </button>
                                         }
-                                        else
-                                        {
-                                            <div class="row">
-                                                <div class="dropdown" style="width: 200px;">
-                                                    <a role="button" href="#" id="@($"button_dropdown_{osv.Operator.Id}")" type="button" class="btn btn-sm btn-primary btn-rounded btn-block dropdown-toggle py-1" data-mdb-toggle="dropdown" aria-expanded="false">@($"Total Cabinets {userCabinets.Count()}")</a>
-                                                    <ul class="dropdown-menu w-100" aria-labelledby="@osv.Operator.Id">
-                                                        @foreach (var cabinet in userCabinets)
-                                                        {
-                                                            <li id="@($"container_{osv.Operator.Id}_{cabinet.Id}")">
-                                                                <div class="dropdown-item">
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col">
-                                                                            @($"C{cabinet.Id}")
-                                                                        </div>
-                                                                        <div class="col-auto">
-                                                                            <button type="button" class="btn btn-danger btn-sm" onclick="unbindCabinetToUser(@cabinet.Id, @osv.Operator.Id)">
-                                                                                <i class="fa-solid fa-trash"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </li>
-                                                        }
-                                                        <li>
-                                                            <div class="dropdown-item">
-                                                                <div class="row align-items-center">
-                                                                    <div class="col">Add cabinet</div>
-                                                                    <div class="col-auto">
-                                                                        <button type="button" class="btn btn-success btn-sm" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
-                                                                            <i class="fa-solid fa-plus"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        }
-                                    </td>
-                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-success my-1" onclick="bindCabinetToUser(this, @osv.Operator.Id, '@osv.Operator.Member.User.Email')">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 count++;
                             }
                         }
                         <tr class="tr-placeholder">
-                            <td colspan="6">No users</td>
+                            <td colspan="5">No users</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
-
 </div>
 
-<div class="modal fade" id="modalBindCabinet" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="modalBindCabinet" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Bind Cabinets</h5>
-                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-port_gore border-custom">
+            <div class="modal-header p-2">
+                <h5 class="modal-title text-white">Bind Cabinets</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formBindCabinet" asp-action="BindCabinetsToUser" method="post" data-ajax="true" data-ajax-success="successBindCabinets" data-ajax-failure="failureBindCabinets" data-ajax-loading="#spinnerBindCabinets" novalidate="novalidate">
                 <div class="modal-body">
@@ -211,15 +155,15 @@
                     <input type="hidden" id="userName" name="userName" />
                     @foreach (var c in Model)
                     {
-                        <div class="form-check d-flex align-items-center">
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="@c.Id" name="cabinets" value="@c.Id" />
-                            <label class="form-check-label" for="@c.Id">@c.Name</label>
+                            <label class="form-check-label text-white" for="@c.Id">@c.Name</label>
                         </div>
                     }
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary" data-mdb-dismiss="modal">Close</button>
-                    <button id="btnBindCabinets" type="submit" class="btn btn-sm btn-success">
+                <div class="modal-footer p-2">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                    <button id="btnBindCabinets" type="submit" class="btn btn-sm btn-outline-success">
                         <i class="fa-solid fa-save"></i>
                         Save
                         <span id="spinnerBindCabinets" class="spinner-border spinner-border-sm" style="display: none;"></span>
@@ -229,7 +173,6 @@
         </div>
     </div>
 </div>
-
 
 <partial name="_AddCabinet" />
 <partial name="_Toast" />

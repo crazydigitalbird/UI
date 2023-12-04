@@ -9,6 +9,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [AutoValidateAntiforgeryToken]
     [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class CabinetController : Controller
     {
@@ -23,29 +24,28 @@ namespace UI.Controllers
             _logger = logger;
         }
 
+        [ServiceFilter(typeof(GetAgencyIdFilter))]
         public async Task<IActionResult> Index(int agencyId = 0)
         {
-            if (agencyId == 0)
-            {
-                agencyId = await _adminAgencyClient.GetAgencyId();
-            }
+            var getAgencyOperatorsTask = _adminAgencyClient.GetAgencyOperators(agencyId);
+            var getCabinetsTask = _cabinetClient.GetCabinetsAsync(agencyId);
+            await Task.WhenAll(getAgencyOperatorsTask, getCabinetsTask);
             ViewData["agencyId"] = agencyId;
-            ViewData["operators"] = await _adminAgencyClient.GetAgencyOperators(agencyId);
-            var cabinets = await _cabinetClient.GetCabinetsAsync(agencyId);
-            return View(cabinets);
+            ViewData["operators"] = getAgencyOperatorsTask.Result;
+            return View(getCabinetsTask.Result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(int agencyId, [Required] string name)
+        public async Task<IActionResult> Add([Required]int agencyId, [Required] string nameCabinet)
         {
             if (ModelState.IsValid)
             {
-                var cabinet = await _cabinetClient.AddAsync(agencyId, name);
+                var cabinet = await _cabinetClient.AddAsync(agencyId, nameCabinet);
                 if (cabinet != null)
                 {
                     return Ok(cabinet);
                 }
-                return StatusCode(500, $"Error adding the {name} cabinet");
+                return StatusCode(500, $"Error adding the {nameCabinet} cabinet");
             }
             else
             {
@@ -54,20 +54,31 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BindCabinetsToUser(int agencyId, List<int> cabinets, [Required] int operatorId, [Required] string userName)
+        public async Task<IActionResult> BindCabinetsToUser([Required] int agencyId, List<int> cabinets, [Required] int operatorId, [Required] string userName)
         {
             if (ModelState.IsValid)
             {
-                foreach (var cabinet in cabinets)
+                if(cabinets.Count == 0)
                 {
-                    if (!await _cabinetClient.BindCabinetToOperatorAsync(agencyId, cabinet, operatorId))
+                    return Ok();
+                }
+                var bindCabinetsToOperatorTasks = cabinets.Select(cabinetId => _cabinetClient.BindCabinetToOperatorAsync(agencyId, cabinetId, operatorId)).ToArray();
+                await Task.WhenAll(bindCabinetsToOperatorTasks);
+
+                var bindedCabinets = new List<int>();
+                foreach (var task in bindCabinetsToOperatorTasks)
+                {
+                    if (task.Result > 0)
                     {
-                        return BadRequest($"Error when binding cabinets from the user {userName}");
+                        bindedCabinets.Add(task.Result);
                     }
                 }
-                var context = new { userId = operatorId, userName = userName, cabinets = cabinets };
-                var contextJson = JsonConvert.SerializeObject(context);
-                return Ok(contextJson);
+                if (bindedCabinets.Any())
+                {
+                    var errorBindCabinets = cabinets.Except(bindedCabinets);
+                    var context = new { userId = operatorId, userName, cabinets, errorBindCabinets };
+                    return Ok(context);
+                }
             }
             return BadRequest($"Error when binding cabinets from the user {userName}");
         }

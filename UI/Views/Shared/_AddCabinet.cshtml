@@ -1,22 +1,19 @@
-﻿<div class="modal fade" id="modalAddCabinet" tabindex="-1" role="dialog" data-mdb-backdrop="static" aria-hidden="true">
+﻿<div class="modal fade" id="modalAddCabinet" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Cabinet</h5>
-                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-port_gore border-custom">
+            <div class="modal-header p-2">
+                <h5 class="modal-title text-white">Add Cabinet</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formAddCabinet" asp-action="Add" method="post" data-ajax="true" data-ajax-success="successAddCabinet" data-ajax-failure="failureAddCabinet" data-ajax-loading="#spinnerAddCabinet" novalidate="novalidate">
                 <div class="modal-body">
                     <input type="hidden" name="agencyId" value="@ViewData["agencyId"]" />
-                    <div class="form-outline">
-                        <input id="name" name="name" type="text" class="form-control" autocomplete="off" data-val="true" data-val-required="The New cabinet name field is requird." />
-                        <label class="form-label" for="name">New cabinet name</label>
+                    <input id="nameCabinet" name="nameCabinet" type="text" class="form-control text-white" autocomplete="off" data-val="true" data-val-required="The New cabinet name field is requird." placeholder="New cabinet name" style="font-size: 1rem !important;" />
                         <span class="field-validation-valid" data-valmsg-for="name" data-valmsg-replace="true"></span>
-                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-danger" data-mdb-dismiss="modal">Close</button>
-                    <button id="btnSaveCabinet" type="submit" class="btn btn-sm btn-success">
+                <div class="modal-footer p-2">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                    <button id="btnSaveCabinet" type="submit" class="btn btn-sm btn-outline-success">
                         <i class="fa-solid fa-save"></i>
                         Save
                         <span id="spinnerAddCabinet" class="spinner-border spinner-border-sm" style="display: none;"></span>

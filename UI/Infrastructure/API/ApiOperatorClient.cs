@@ -103,7 +103,7 @@ namespace UI.Infrastructure.API
                 var response = await httpClient.PostAsync($"Agencies/Operators/GetSheets?sessionGuid={sessionGuid}", null);
                 if (response.IsSuccessStatusCode)
                 {
-                    var sheetOperatorCommunication = (await response.Content.ReadFromJsonAsync<List<SheetOperatorCommunication>>()).Where(soc => soc.Sheet.IsActive).ToList();
+                    var sheetOperatorCommunication = (await response.Content.ReadFromJsonAsync<IEnumerable<SheetOperatorCommunication>>()).Where(soc => soc.Sheet.IsActive).ToList();
                     return sheetOperatorCommunication;
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)

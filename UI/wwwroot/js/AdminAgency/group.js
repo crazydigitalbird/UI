@@ -74,21 +74,7 @@ function changeGroup(event, sheetId) {
             });
         }
     ).fail(function (error) {
-
-        $('#toastBody').html(error.responseText)
-
-        var toast = $('#toast');
-
-        if (toast.hasClass('bg-cornflower_blue')) {
-            toast.removeClass('bg-cornflower_blue');
-        }
-
-        if (!toast.hasClass('bg-danger')) {
-            toast.addClass('bg-danger');
-        }
-
+        showToast('bg-danger', 'bg-cornflower_blue', error.responseText);
         event.target.value = privatePreviousOldGroupSelect;
-
-        bootstrap.Toast.getOrCreateInstance(toast).show();
     });
 }

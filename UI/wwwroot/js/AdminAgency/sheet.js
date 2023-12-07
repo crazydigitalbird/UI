@@ -33,20 +33,7 @@ function deleteSheets() {
     });
     $.post("/AdminAgency/DeleteSheets", { sheetsId: sheetsId }, function (errorDeletingSheets) {
         if (errorDeletingSheets.length > 0) {
-            $('#toastBody').html(`Error deleting sheets: ${errorDeletingSheets.join(", ")}.`)
-
-            var toast = $('#toast');
-
-            if (toast.hasClass('bg-cornflower_blue')) {
-                toast.removeClass('bg-cornflower_blue');
-            }
-
-            if (!toast.hasClass('bg-danger')) {
-                toast.addClass('bg-danger');
-            }
-
-            bootstrap.Toast.getOrCreateInstance(toast).show();
-
+            showToast('bg-danger', 'bg-cornflower_blue', `Error deleting sheets: ${errorDeletingSheets.join(", ")}.`);
             sheetsId = sheetsId.filter(function (id) { return !errorDeletingSheets.includes(id); });
         }
 
@@ -57,19 +44,7 @@ function deleteSheets() {
 
         setHeight();
     }).fail(function () {
-        $('#toastBody').html("Error deleting sheets.")
-
-        var toast = $('#toast');
-
-        if (toast.hasClass('bg-cornflower_blue')) {
-            toast.removeClass('bg-cornflower_blue');
-        }
-
-        if (!toast.hasClass('bg-danger')) {
-            toast.addClass('bg-danger');
-        }
-
-        bootstrap.Toast.getOrCreateInstance(toast).show();
+        showToast('bg-danger', 'bg-cornflower_blue', "Error deleting sheets.");
     })
     $("#modalDeleteSheets").modal('hide');
 }
@@ -155,20 +130,4 @@ function hidenAlert() {
     if (!$alert.hasClass('d-none')) {
         $alert.addClass('d-none');
     }
-}
-
-function showToast(addClass, removeClass, text) {
-    $('#toastBody').html(text)
-
-    var toast = $('#toast');
-
-    if (toast.hasClass(removeClass)) {
-        toast.removeClass(removeClass);
-    }
-
-    if (!toast.hasClass(addClass)) {
-        toast.addClass(addClass);
-    }
-
-    bootstrap.Toast.getOrCreateInstance(toast).show();
 }

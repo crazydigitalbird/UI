@@ -46,7 +46,7 @@
     $('#cardAddSheet').after(newCard);
     new mdb.Input($(`#password${sheet.id}`).closest('div')[0]).init();
 
-    showToast('bg-success', 'bg-danger', `The  ${fullName} sheet has been added successfully`)
+    showToast('bg-cornflower_blue', 'bg-danger', `The  ${fullName} sheet has been added successfully`);
 
     $('#login').val('');
     $('#password').val('');
@@ -61,9 +61,9 @@ function removeSheet(e, sheetId) {
     var fullName = $(e).closest('div').siblings('.card-title').text();
     $.post("/User/DeleteSheet", { sheetId: sheetId }, function () {
         e.closest('div .col').remove();
-        showToast('bg-success', 'bg-danger', `${fullName}'s sheet has been deleted`);
+        showToast('bg-cornflower_blue', 'bg-danger', `${fullName}'s sheet has been deleted`);
     }).fail(function () {
-        showToast('bg-danger', 'bg-success', `Error deleting the sheet of ${fullName}`);
+        showToast('bg-danger', 'bg-cornflower_blue', `Error deleting the sheet of ${fullName}`);
     });
 }
 
@@ -85,9 +85,9 @@ function changePassword(e, sheetId) {
         var fullName = $(e).closest('.card-body').find('.card-title').text();
 
         $.post("/User/ChangePassword", { sheetId: sheetId, password: $inputPassword.val() }, function () {
-            showToast('bg-success', 'bg-danger', `${fullName}'s sheet password has been changed`);
+            showToast('bg-cornflower_blue', 'bg-danger', `${fullName}'s sheet password has been changed`);
         }).fail(function () {
-            showToast('bg-danger', 'bg-success', `Error change password the sheet of ${fullName}`);
+            showToast('bg-danger', 'bg-cornflower_blue', `Error change password the sheet of ${fullName}`);
         });
         $(`#password${sheetId}`).val('');
     }
@@ -114,20 +114,4 @@ function hidenAlert() {
     //if (!$alert.hasClass('d-none')) {
     //    $alert.addClass('d-none');
     //}
-}
-
-function showToast(addClass, removeClass, text) {
-    $('#toastBody').html(text)
-
-    var toast = $('#toast');
-
-    if (toast.hasClass(removeClass)) {
-        toast.removeClass(removeClass);
-    }
-
-    if (!toast.hasClass(addClass)) {
-        toast.addClass(addClass);
-    }
-
-    bootstrap.Toast.getOrCreateInstance(toast).show();
 }

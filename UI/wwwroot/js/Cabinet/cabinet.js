@@ -48,7 +48,7 @@ function successAddCabinet(cabinet) {
 
 function failureAddCabinet(error) {
     $('#modalAddCabinet').modal('hide');
-    toastShowError(error.responseText);
+    showToast('bg-danger', 'bg-cornflower_blue', error.responseText);
 }
 
 function searchTable(e, tableId) {
@@ -175,14 +175,14 @@ function successBindCabinets(userCabinets) {
         $tdUserCabinets.closest('tr').removeData('cabinets', undefined).attr('data-cabinets', userCabinets.cabinets.join(','));
 
         if (userCabinets.errorBindCabinets.length > 0) {
-            toastShowError(``);
+            showToast('bg-danger', 'bg-cornflower_blue', `Error bind cabinetss: ${userCabinets.errorBindCabinets.join(", ")}.`);
         }
     }
 }
 
 function failureBindCabinets(error) {
     $('#modalBindCabinet').modal('hide');
-    toastShowError(error.responseText);
+    showToast('bg-danger', 'bg-cornflower_blue', error.responseText);
 }
 
 function unbindCabinetToUser(cabinetId, operatorId) {
@@ -209,22 +209,6 @@ function unbindCabinetToUser(cabinetId, operatorId) {
 
     }).fail(function (error) {
         $(`#${operatorId}_${cabinetId}`).removeClass('d-none');
-        toastShowError(error.responseText);
+        showToast('bg-danger', 'bg-cornflower_blue', error.responseText);
     });
-}
-
-function toastShowError(message) {
-    $('#toastBody').html(message)
-
-    var toast = $('#toast');
-
-    if (toast.hasClass('bg-cornflower_blue')) {
-        toast.removeClass('bg-cornflower_blue');
-    }
-
-    if (!toast.hasClass('bg-danger')) {
-        toast.addClass('bg-danger');
-    }
-
-    bootstrap.Toast.getOrCreateInstance(toast).show();
 }

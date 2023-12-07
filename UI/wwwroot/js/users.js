@@ -121,7 +121,7 @@ function successAddUser(user) {
         toast.addClass('bg-success');
     }
 
-    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+    setTimeout(() => bootstrap.Toast.getOrCreateInstance(toast).show(), 500);
 }
 
 function failureAddUser(error) {
@@ -137,7 +137,7 @@ function failureAddUser(error) {
         toast.addClass('bg-danger');
     }
 
-    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+    setTimeout(() => bootstrap.Toast.getOrCreateInstance(toast).show(), 500);
 }
 
 function updateCounterUsers() {

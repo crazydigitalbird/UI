@@ -24,46 +24,47 @@ namespace UI.Controllers
          // GET: UserController
         public async Task<ActionResult> Index()
         {
-            ViewData["Sites"] = await _siteClient.GetSites();
-            return View(await _sheetClient.GetSheetsAsync());
+            //ViewData["Sites"] = await _siteClient.GetSites();
+            //return View(await _sheetClient.GetSheetsAsync());
+            return Ok();
         }
 
-        // POST: UserController/AddProfile
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AddSheet(int siteId, string login, string password)
-        {
-            var sheet = await _sheetClient.AddAsync(siteId, login, password);
-            if(sheet != null)
-            {
-                return Ok(sheet);
-            }
-            return StatusCode(500, $"Error adding a {login} sheet");
-        }
-
-        // POST: UserController/Edit/5
-        [HttpPost]
+        //// POST: UserController/AddProfile
+        //[HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<ActionResult> ChangePassword(int sheetId, string password)
-        {
-            var sheet = await _sheetClient.UpdateAsync(sheetId, password);
-            if (sheet != null)
-            {
-                return Ok(sheet);
-            }
-            return StatusCode(500, $"Error updating a sheet with id: {sheetId}");
-        }
+        //public async Task<ActionResult> AddSheet(int siteId, string login, string password)
+        //{
+        //    var sheet = await _sheetClient.AddAsync(siteId, login, password);
+        //    if(sheet != null)
+        //    {
+        //        return Ok(sheet);
+        //    }
+        //    return StatusCode(500, $"Error adding a {login} sheet");
+        //}
 
-        // POST: UserController/DeleteProfile/5
-        [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteSheet(int sheetId)
-        {
-            if (await _sheetClient.DeleteAsync(sheetId))
-            {
-                return Ok();
-            }
-            return StatusCode(500);
-        }
+        //// POST: UserController/Edit/5
+        //[HttpPost]
+        ////[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> ChangePassword(int sheetId, string password)
+        //{
+        //    var sheet = await _sheetClient.UpdateAsync(sheetId, password);
+        //    if (sheet != null)
+        //    {
+        //        return Ok(sheet);
+        //    }
+        //    return StatusCode(500, $"Error updating a sheet with id: {sheetId}");
+        //}
+
+        //// POST: UserController/DeleteProfile/5
+        //[HttpPost]
+        ////[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> DeleteSheet(int sheetId)
+        //{
+        //    if (await _sheetClient.DeleteAsync(sheetId))
+        //    {
+        //        return Ok();
+        //    }
+        //    return StatusCode(500);
+        //}
     }
 }

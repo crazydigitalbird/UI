@@ -103,7 +103,7 @@ function failure(error) {
         toast.addClass('bg-danger');
     }
 
-    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+    setTimeout(() => bootstrap.Toast.getOrCreateInstance(toast).show(), 500);
 }
 
 function drawTypeChat(data) {

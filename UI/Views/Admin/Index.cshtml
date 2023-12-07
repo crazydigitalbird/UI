@@ -6,23 +6,26 @@
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             @TempData["Message"]
-            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             @TempData["Error"]
-            <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <table class="table table-sm table-hover">
+    <table class="table table-dark table-sm table-hover">
         <thead>
             <tr>
                 <th class="fw-bold">Name</th>
                 <th class="fw-bold">Description</th>
                 <th class="fw-bold text-center">Actions</th>
+            </tr>
+            <tr>
+                <th colspan="3"></th>
             </tr>
         </thead>
         <tbody>
@@ -35,11 +38,11 @@
                         <td class="col-sm-4">@agency.Description</td>
                         <td class="col-sm-5 text-center align-middle">
                             <div class="d-grid gap-2 d-xl-block">
-                                <a class="btn btn-sm btn-info" asp-controller="AdminAgency" asp-action="Index" asp-route-agencyId="@agency.Id">Sheets</a>
-                                <a class="btn btn-sm btn-dark" asp-controller="AdminAgency" asp-action="Statistics" asp-route-agencyId="@agency.Id">Statistics</a>
-                                <a class="btn btn-sm btn-primary" asp-controller="Cabinet" asp-action="Index" asp-route-agencyId="@agency.Id">Cabinets</a>
-                                <a class="btn btn-sm btn-warning" asp-controller="Admin" asp-action="EditAgency" asp-route-agencyId="@agency.Id">Edit</a>
-                                <a class="btn btn-sm btn-danger" onclick="confirm(@agency.Id, '@agency.Name')">Delete</a>
+                                <a class="btn btn-sm btn-outline-success" asp-controller="AdminAgency" asp-action="Index" asp-route-agencyId="@agency.Id">Sheets</a>
+                                <a class="btn btn-sm btn-outline-info" asp-controller="AdminAgency" asp-action="Statistics" asp-route-agencyId="@agency.Id">Statistics</a>
+                                <a class="btn btn-sm btn-outline-primary" asp-controller="Cabinet" asp-action="Index" asp-route-agencyId="@agency.Id">Cabinets</a>
+                                <a class="btn btn-sm btn-outline-warning" asp-controller="Admin" asp-action="EditAgency" asp-route-agencyId="@agency.Id">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" onclick="confirm(@agency.Id, '@agency.Name')">Delete</a>
                             </div>
                         </td>
                     </tr>
@@ -54,7 +57,7 @@
         </tbody>
     </table>
 
-    <a class="btn btn-sm btn-success" asp-controller="Admin" asp-action="AddAgency">Add Agency</a>
+    <a class="btn btn-sm btn-outline-success" asp-controller="Admin" asp-action="AddAgency">Add Agency</a>
 
 </div>
 

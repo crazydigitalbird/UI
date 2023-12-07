@@ -3,17 +3,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/css/mdb.dark.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" asp-fallback-href="/lib/bootstrap/css/bootstrap.min.css" asp-fallback-test-class="visually-hidden" asp-fallback-test-property="position" asp-fallback-test-value="absolute" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" asp-fallback-href="/lib/fontawesome/css/all.min.css" asp-fallback-test-class="fas" asp-fallback-test-property="font-family" asp-fallback-test-value="Font Awesome 6 Free" asp-append-version="true" />
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
     <title>@ViewData["Title"]</title>
+
+    <script src="/js/site.js" asp-append-version="true"></script>
 </head>
-<body class="bg-port_gore">
+<body class="d-grid vh-100 bg-port_gore" style="grid-template-rows: min-content 1fr;">
     <header class="sticky-top">
         <nav id="navMenu" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow bg-haiti">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DC</a>
-                <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa-solid fa-bars text-secondary"></i>
                 </button>
@@ -77,13 +79,10 @@
         </nav>
     </header>
 
-    <div class="container-fluid">
-        @RenderBody()
-    </div>
+    @RenderBody()
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" asp-fallback-src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
-    <script src="~/lib/MDB5-STANDARD-UI-KIT-Free-6.0.1/js/mdb.min.js" asp-append-version="true"></script>    
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.min.js" asp-fallback-src="/lib/bootstrap/js/bootstrap.bundle.min.js" asp-fallback-test="window.bootstrap" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

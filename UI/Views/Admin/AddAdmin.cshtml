@@ -12,7 +12,7 @@
         <form method="post" asp-controller="Admin" asp-action="AddAdmin">
             <div class="form-outline mb-3">
                 <input id="userId" name="userId" type="hidden" required />
-                <input id="email" type="text" class="form-control" list="users" autocomplete="off" onchange="setUserId()" />
+                <input id="email" type="text" class="form-control text-white" list="users" autocomplete="off" onchange="setUserId()" style="font-size: 1rem;" />
                 <datalist id="users">
                     @foreach (var user in Model)
                     {
@@ -21,15 +21,15 @@
                 </datalist>
             </div>
 
-            <a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="Admins">Cancel</a>
-            <button type="submit" class="btn btn-sm btn-success">Add</button>
+            <a class="btn btn-sm btn-outline-danger" asp-controller="Admin" asp-action="Admins">Cancel</a>
+            <button type="submit" class="btn btn-sm btn-outline-success">Add</button>
         </form>
 
     }
     else
     {
         <div class="alert alert-danger">No users</div>
-        <a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="Admins">Cancel</a>
+        <a class="btn btn-sm btn-outline-danger" asp-controller="Admin" asp-action="Admins">Cancel</a>
     }
 </div>
 

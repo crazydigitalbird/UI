@@ -22,7 +22,7 @@ namespace UI.Controllers
         private readonly IStatisticClient _statisticClient;
         private readonly ILogger<AdminAgencyController> _logger;
 
-        private readonly List<SelectListItem> _roles = new() { new("Admin Agency", "1"), new("Operator", "2")/*, new("User", "3")*/ };
+        private readonly List<SelectListItem> _roles = new() { new("Admin Agency", "1"), new("Operator", "2"), new("User", "3") };
 
         public AdminAgencyController(IAdminAgencyClient adminAgencyClient,
             IAuthenticationClient authenticationClient,

@@ -8,11 +8,14 @@
 <div class="container mt-5">
     <partial name="_AlertsPartial" />
 
-    <table class="table table-sm table-hover">
+    <table class="table table-sm table-dark table-hover">
         <thead>
             <tr>
                 <th class="fw-bold">Login</th>
                 <th class="fw-bold text-center">Action</th>
+            </tr>
+            <tr>
+                <th colspan="2"></th>
             </tr>
         </thead>
         <tbody>
@@ -23,7 +26,7 @@
                     <tr>
                         <td>@(admin.User.Login ?? admin.User.Email)</td>
                         <td style="width: 80px;">
-                            <a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="DeleteAdmin" asp-route-adminId="@admin.Id" asp-route-email="@(admin.User.Login ?? admin.User.Email)">Delete</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-controller="Admin" asp-action="DeleteAdmin" asp-route-adminId="@admin.Id" asp-route-email="@(admin.User.Login ?? admin.User.Email)">Delete</a>
                         </td>
                     </tr>
                 }
@@ -34,5 +37,5 @@
         </tbody>
     </table>
 
-    <a class="btn btn-sm btn-success" asp-controller="Admin" asp-action="AddAdmin">Add admin</a>
+    <a class="btn btn-sm btn-outline-success" asp-controller="Admin" asp-action="AddAdmin">Add admin</a>
 </div>

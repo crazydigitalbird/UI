@@ -71,7 +71,7 @@ function editSheet(e, sheetId) {
     var $divParent = $(e).closest('div');
     $divParent.addClass('d-none');
     $divParent.siblings('div').removeClass('d-none');
-    mdb.Input.getInstance($(`#password${sheetId}`).closest('div')[0]).update();    
+    bootstrap.Input.getOrCreateInstance($(`#password${sheetId}`).closest('div')[0]).update();    
 }
 
 function changePassword(e, sheetId) {
@@ -129,5 +129,5 @@ function showToast(addClass, removeClass, text) {
         toast.addClass(addClass);
     }
 
-    mdb.Toast.getInstance(toast).show();
+    bootstrap.Toast.getOrCreateInstance(toast).show();
 }

@@ -1,5 +1,4 @@
-﻿using Core.Models.Agencies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +10,7 @@ namespace UI.Controllers
 {
     [Authorize]
     [APIAuthorize]
+    [AutoValidateAntiforgeryToken]
     [ServiceFilter(typeof(UpdateSessionAttribute))]
     public class AdminController : Controller
     {
@@ -51,7 +51,6 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddAgency(AgencyView agency)
         {
             if (ModelState.IsValid)
@@ -85,7 +84,6 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAgency(AgencyView agency, List<ApplicationUser> originalUsers)
         {
             if (ModelState.IsValid)

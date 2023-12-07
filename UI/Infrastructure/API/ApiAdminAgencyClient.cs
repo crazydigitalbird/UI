@@ -421,7 +421,7 @@ namespace UI.Infrastructure.API
                 var responseAgencyOperatorSessions = await httpClient.GetAsync($"Agencies/Operators/GetSheetAgencyOperatorSessions?sheetId={sheetId}&sessionGuid={sessionGuid}");
                 if (responseAgencyOperatorSessions.IsSuccessStatusCode)
                 {
-                    var agencyOperatorSessions = (await responseAgencyOperatorSessions.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>());
+                    var agencyOperatorSessions = await responseAgencyOperatorSessions.Content.ReadFromJsonAsync<IEnumerable<AgencyOperatorSession>>();
                     var agencyCurrentOperatorSessions = agencyOperatorSessions.Where(s => s.Operator.Id == operatorId && s.Session.Sheets.Count > 0);
                     if (agencyCurrentOperatorSessions.Any())
                     {

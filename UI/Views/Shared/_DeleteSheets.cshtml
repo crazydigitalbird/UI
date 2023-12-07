@@ -1,16 +1,16 @@
-﻿<div class="modal fade" id="modalDeleteSheets" tabindex="-1" role="dialog" data-mdb-backdrop="static" aria-labelledby="modalHeader" aria-hidden="true">
+﻿<div class="modal fade" id="modalDeleteSheets" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-labelledby="modalHeader" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 id="modalHeader" class="modal-title"></h5>
-                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-port_gore border-custom">
+            <div class="modal-header p-2">
+                <h5 id="modalHeader text-white" class="modal-title"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p id="modalBody"></p>
+                <p id="modalBody" class="text-white"></p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-danger" data-mdb-dismiss="modal">Close</button>
-                <button id="btnSuccess" type="button" class="btn btn-sm btn-danger" onclick="deleteSheets()">
+            <div class="modal-footer p-2">
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                <button id="btnSuccess" type="button" class="btn btn-sm btn-outline-success" onclick="deleteSheets()">
                     <i class='fa-solid fa-trash'></i>
                     Delete
                 </button>

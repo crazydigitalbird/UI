@@ -3,31 +3,44 @@
 @{
     ViewData["Title"] = "Sheets";
     int counter = 1;
+    Layout = "_LayoutGrid";
 }
 
-<link rel="stylesheet" href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" />
-<link rel="stylesheet" href="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" />
-<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/bootstrap-table.min.css"
+      asp-fallback-href="/lib/bootstrap-table/dist/bootstrap-table.min.css"
+      asp-fallback-test-class="fullscreen"
+      asp-fallback-test-property="position"
+      asp-fallback-test-value="fixed"
+      asp-append-version="true" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/extensions/sticky-header/bootstrap-table-sticky-header.min.css"
+      asp-fallback-href="/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css"
+      asp-fallback-test-class="fix-sticky"
+      asp-fallback-test-property="position"
+      asp-fallback-test-value="fixed !important"
+      asp-append-version="true" />
+<link rel="stylesheet" href="~/css/site.css" />
 
 <partial name="_AlertsPartial" />
 
 <input type="hidden" asp-for="AgencyId" />
 
-<div id="tableDiv" class="d-none">
+<div id="tableDiv" class="d-none mx-3 mb-3">
 
     <div id="toolbar" class="d-flex">
         <div>
-            <input type="text" id="customSearch" class="form-control form-control-sm h-100" placeholder="Search" />
+            <input type="text" id="customSearch" class="form-control form-control-sm text-white h-100" placeholder="Search" />
         </div>
         <div class="ms-2">
-            <button id="deleteBtn" class="btn btn-sm btn-danger">
+            <button id="deleteBtn" class="btn btn-sm btn-outline-danger">
                 <i class="fa-solid fa-trash fa-xl"></i>
             </button>
-            <button id="addGroup" class="btn btn-sm btn-primary">
+            <button id="addGroup" class="btn btn-sm btn-outline-primary">
                 <i class="fa-solid fa-plus"></i>
                 Add Group
             </button>
-            <button id="addSheet" class="btn btn-sm btn-success">
+            <button id="addSheet" class="btn btn-sm btn-outline-success">
                 <i class="fa-solid fa-plus"></i>
                 Add Sheets
             </button>
@@ -35,7 +48,7 @@
         </div>
     </div>
 
-    <table id="adminAgencyTable" class="table table-sm table-hover table-bordered"
+    <table id="adminAgencyTable" class="table table-sm table-dark table-hover table-bordered"
            data-toggle="true"
            data-sticky-header="true"
            data-checkbox-header="true"
@@ -59,12 +72,12 @@
                 <th data-field="media" class="text-center">Media materials</th>
                 <th data-field="operators" data-formatter="operatorsFormatter" class="text-center">Operators</th>
                 <th data-field="group" data-formatter="groupFormatter" data-width="200">
-                    <select id="groupsSelect" name="groupHeader" class="form-select form-select-sm" asp-items="@Model?.Groups" onchange="filterGroup(event)">
+                    <select id="groupsSelect" name="groupHeader" class="form-control select-custom" asp-items="@Model?.Groups" onchange="filterGroup(event)">
                         <option value="0">All Groups</option>
                     </select>
                 </th>
                 <th data-field="cabinet" data-formatter="cabinetFormatter" data-width="200">
-                    <select id="cabinetsSelect" name="cabinetHeader" class="form-select form-select-sm" asp-items="@Model?.Cabinets" onchange="filterCabinet(event)">
+                    <select id="cabinetsSelect" name="cabinetHeader" class="form-control select-custom" asp-items="@Model?.Cabinets" onchange="filterCabinet(event)">
                         <option selected value="0">All Cabinets</option>
                     </select>
                 </th>
@@ -83,7 +96,7 @@
                         <td class="p-1">
                             <div class="d-flex justify-content-center">
                                 <div class="position-relative d-inline-flex">
-                                    <img src="@sheet.Avatar" alt="avatar" class="rounded" style="width:38px;">
+                                    <img src="@sheet.Avatar" alt="avatar" class="avatar rounded" loading="lazy" onerror="errorLoadAvatar(this)">
                                     @if (sheet.Status == Status.Online)
                                     {
                                         <span class="status-circle-green rounded-circle position-absolute bottom-0 end-0"></span>
@@ -156,9 +169,16 @@
 <partial name="_Toast" />
 
 @section Scripts{
-    <script src="~/lib/bootstrap-table/dist/bootstrap-table.min.js" asp-append-version="true"></script>
-    <script src="~/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" asp-append-version="true"></script>
-    @*<script src="~/lib/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/bootstrap-table.min.js"
+        asp-fallback-src="/lib/bootstrap-table/dist/bootstrap-table.min.js"
+        asp-fallback-test="window.BootstrapTable"
+        asp-append-version="true">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.1/extensions/sticky-header/bootstrap-table-sticky-header.min.js"
+        asp-fallback-src="/lib/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"
+        asp-fallback-test="window.BootstrapTable.DEFAULTS.stickyHeader"
+        asp-append-version="true">
+    </script>
     <script src="~/js/AdminAgency/dataTable.js" asp-append-version="true"></script>
     <script src="~/js/AdminAgency/group.js" asp-append-version="true"></script>
     <script src="~/js/AdminAgency/shift.js" asp-append-version="true"></script>

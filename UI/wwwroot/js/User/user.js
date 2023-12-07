@@ -54,7 +54,7 @@
 
 function failureAddSheet(error) {
     //showAlert('alert-danger', 'alert-success', error.responseText);
-    showAlert('bg-danger', 'bg-success', error.responseText);
+    showAlert('alert-danger', 'alert-success', error.responseText);
 }
 
 function removeSheet(e, sheetId) {
@@ -109,11 +109,11 @@ function showAlert(addClass, removeClass, text) {
 
 function hidenAlert() {
     var $alert = $('#alertAddSheet');
-    $alert.text('');
+    $alert.find('p').text('');
 
-    if (!$alert.hasClass('d-none')) {
-        $alert.addClass('d-none');
-    }
+    //if (!$alert.hasClass('d-none')) {
+    //    $alert.addClass('d-none');
+    //}
 }
 
 function showToast(addClass, removeClass, text) {

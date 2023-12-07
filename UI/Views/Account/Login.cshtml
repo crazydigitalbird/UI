@@ -8,6 +8,9 @@
     <div class="w-25 p-5 bg-martinique rounded-4">
         <form method="post" asp-action="LogIn">
             <input type="hidden" name="ReturnUrl" value="@Context.Request.Query["ReturnUrl"]" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             <div class="d-grid gap-4">
                 <div>
                     <input type="text" class="form-control text-white" asp-for="LoginModel.Login" placeholder="login" />

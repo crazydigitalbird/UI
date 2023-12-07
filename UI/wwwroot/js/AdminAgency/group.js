@@ -18,8 +18,8 @@ function successAddGroup(group) {
         toast.removeClass('bg-danger');
     }
 
-    if (!toast.hasClass('bg-success')) {
-        toast.addClass('bg-success');
+    if (!toast.hasClass('bg-cornflower_blue')) {
+        toast.addClass('bg-cornflower_blue');
     }
 
     $('select[name="groupHeader"]').each(function (i, item) {
@@ -31,7 +31,7 @@ function successAddGroup(group) {
 
     $table.bootstrapTable('refresh');
 
-    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+    setTimeout(() => bootstrap.Toast.getOrCreateInstance(toast).show(), 500);
 }
 
 function failureAddGroup(error) {
@@ -41,15 +41,15 @@ function failureAddGroup(error) {
 
     var toast = $('#toast');
 
-    if (toast.hasClass('bg-success')) {
-        toast.removeClass('bg-success');
+    if (toast.hasClass('bg-cornflower_blue')) {
+        toast.removeClass('bg-cornflower_blue');
     }
 
     if (!toast.hasClass('bg-danger')) {
         toast.addClass('bg-danger');
     }
 
-    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+    setTimeout(() => bootstrap.Toast.getOrCreateInstance(toast).show(), 500);
 }
 
 function getValueSelect(event) {
@@ -79,8 +79,8 @@ function changeGroup(event, sheetId) {
 
         var toast = $('#toast');
 
-        if (toast.hasClass('bg-success')) {
-            toast.removeClass('bg-success');
+        if (toast.hasClass('bg-cornflower_blue')) {
+            toast.removeClass('bg-cornflower_blue');
         }
 
         if (!toast.hasClass('bg-danger')) {
@@ -89,6 +89,6 @@ function changeGroup(event, sheetId) {
 
         event.target.value = privatePreviousOldGroupSelect;
 
-        mdb.Toast.getInstance(toast).show();
+        bootstrap.Toast.getOrCreateInstance(toast).show();
     });
 }

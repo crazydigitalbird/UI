@@ -1,5 +1,5 @@
 ﻿$(function () {
-    var myDefaultAllowList = mdb.Tooltip.Default.allowList;
+    var myDefaultAllowList = bootstrap.Tooltip.Default.allowList;
 
     var ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i
     myDefaultAllowList['*'].push(ARIA_ATTRIBUTE_PATTERN);
@@ -13,16 +13,16 @@
 
     myDefaultAllowList.ul = ['aria-labelledby'];
     myDefaultAllowList.li = [];
-    myDefaultAllowList.input = ['onkeyup', 'placeholder', 'type', 'value', 'name'];
+    myDefaultAllowList.input = ['onkeyup', 'placeholder', 'type', 'value', 'name', 'style'];
 
-    myDefaultAllowList.button = ['data-mdb-toggle'];
+    myDefaultAllowList.button = ['data-bs-toggle'];
 
     myDefaultAllowList['a'].push('onclick');
 });
 
 //Closing the popover when clicked outside of it 
 $(document).on('click', function (e) {
-    $('[data-mdb-toggle="popover"],[data-original-title]').each(function () {
+    $('[data-bs-toggle="popover"],[data-original-title]').each(function () {
         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
             if ($(this).attr('popover-show') == 1) {
                 $(this).popover('hide');
@@ -36,16 +36,16 @@ $('#adminAgencyTable').on('reset-view.bs.table', function (e) {
     //Deleting all popovers. Eliminates the unpinned popover effect
     $('.popover').remove();
 
-    //Initialize all popovers on a page would be to select them data-mdb-toggle attribute
-    $('[data-mdb-toggle="popover"]').popover({
+    //Initialize all popovers on a page would be to select them data-bs-toggle attribute
+    $('[data-bs-toggle="popover"]').popover({
         html: true
     }).on('show.bs.popover', function (event) { // This event fires immediately the show instance method is called
 
         //Hide all popover
-        $('[data-mdb-toggle="popover"]').popover('hide');
+        $('[data-bs-toggle="popover"]').popover('hide');
 
         //Get a popover associated with an element
-        var popover = mdb.Popover.getInstance(event.target);
+        var popover = bootstrap.Popover.getInstance(event.target);
         var id = $(event.target).data('idField');
 
         //Check installed content in popover
@@ -90,7 +90,7 @@ $('#adminAgencyTable').on('reset-view.bs.table', function (e) {
 
 //Handler for clicking on the btn-close in popover
 function popoverClose(e) {
-    mdb.Popover.getInstance($('[popover-show=1]')).hide();
+    bootstrap.Popover.getInstance($('[popover-show=1]')).hide();
 }
 
 //Deleting an operator from the list and adding an operator to the list free operators
@@ -145,10 +145,10 @@ function addOperator(e) {
 
         $addRow.find('td').last().before(`<td name="Team">${team}</td>`);
         $addRow.find('td').last().after(`<td name="Action">
-                            <a role="button" class="btn btn-sm btn-info" onclick="addTempOperator(event)">
+                            <a role="button" class="btn btn-sm btn-outline-info" onclick="addTempOperator(event)">
                                 <i class="fa-solid fa-clock fa-xl"></i>
                             </a>
-                            <a role="button" class="btn btn-sm btn-danger" onclick="deleteOperator(event, ${operatorId})">
+                            <a role="button" class="btn btn-sm btn-outline-danger" onclick="deleteOperator(event, ${operatorId})">
                                 <i class="fa-solid fa-trash fa-xl"></i>
                             </a>
                           </td>`);
@@ -171,13 +171,13 @@ function failurePopover(error) {
 
     var toast = $('#toast');
 
-    if (toast.hasClass('bg-success')) {
-        toast.removeClass('bg-success');
+    if (toast.hasClass('bg-cornflower_blue')) {
+        toast.removeClass('bg-cornflower_blue');
     }
 
     if (!toast.hasClass('bg-danger')) {
         toast.addClass('bg-danger');
     }
 
-    setTimeout(() => mdb.Toast.getInstance(toast).show(), 500);
+    setTimeout(() => bootstrap.Toast.getOrCreateInstance(toast).show(), 500);
 }

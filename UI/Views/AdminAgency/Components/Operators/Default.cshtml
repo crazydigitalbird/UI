@@ -7,7 +7,7 @@
 
 <div>
     <input name="popoverProfileId" type="hidden" value="@ViewData["sheetId"]" />
-    <table name="operators" class="table table-sm table-hover">
+    <table name="operators" class="table table-dark table-sm table-hover">
         <thead>
             <tr>
                 <th class="fw-bold">№</th>
@@ -32,17 +32,19 @@
                         {
                             <tr>
                                 <td>@osv.Operator.Id</td>
-                                <td>@(osv.Operator.Member.User.Login ?? osv.Operator.Member.User.Email)
+                                <td>
+                                    @(osv.Operator.Member.User.Login ?? osv.Operator.Member.User.Email)
                                 </td>
                                 <td class="text-end">Time</td>
-                                <td name="Team">@(s.Creator.Member.User.Login ?? s.Creator.Member.User.Email)
+                                <td name="Team">
+                                    @(s.Creator.Member.User.Login ?? s.Creator.Member.User.Email)
                                 </td>
                                 <td class="text-center">@osv.CountSheets()</td>
                                 <td name="Action">
-                                    <a role="button" class="btn btn-sm btn-info" onclick="addTempOperator(event)">
+                                    <a role="button" class="btn btn-sm btn-outline-info" onclick="addTempOperator(event)">
                                         <i class="fa-solid fa-clock fa-xl"></i>
                                     </a>
-                                    <a role="button" class="btn btn-sm btn-danger" onclick="deleteOperator(event, @osv.Operator.Id)">
+                                    <a role="button" class="btn btn-sm btn-outline-danger" onclick="deleteOperator(event, @osv.Operator.Id)">
                                         <i class="fa-solid fa-trash fa-xl"></i>
                                     </a>
                                 </td>
@@ -61,12 +63,9 @@
                                 </td>
                                 <td class="text-center">@osv.CountSheets()</td>
                                 <td name="Action">
-                                    <a role="button" class="btn btn-sm btn-info btn-block" onclick="addTempOperator(event)">
+                                    <a role="button" class="btn btn-sm btn-outline-info w-100" onclick="addTempOperator(event)">
                                         <i class="fa-solid fa-clock fa-xl"></i>
                                     </a>
-@*                                    <a role="button" class="btn btn-sm btn-danger" onclick="deleteOperator(event, @osv.Operator.Id)">
-                                        <i class="fa-solid fa-trash fa-xl"></i>
-                                    </a>*@
                                 </td>
                             </tr>
                         }
@@ -78,13 +77,13 @@
     </table>
 
     <div id="dropdownOperators" class="dropdown">
-        <button type="button" class="btn btn-sm btn-success dropdown-toggle btn-block" id="dropdownMenuAddOperator" data-mdb-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="btn btn-sm btn-outline-success dropdown-toggle w-100" id="dropdownMenuAddOperator" data-bs-toggle="dropdown" aria-expanded="false">
             Add Operator
         </button>
-        <div class="dropdown-menu dropdown-menu-gray w-100 border border-success p-1 bg-port_gore" aria-labelledby="dropdownMenuAddOperator">
-            <input class="form-control" placeholder="Search" onkeyup="searchOperator(event)" />
+        <div class="dropdown-menu dropdown-menu-gray w-100 border border-custom p-1 bg-port_gore" aria-labelledby="dropdownMenuAddOperator">
+            <input class="form-control text-white my-2" placeholder="Search" onkeyup="searchOperator(event)" style="font-size: 1rem !important;" />
             <div class="overflow-auto dropdown-table-max-height">
-                <table name="freeOperators" class="table table-sm table-hover mb-0">
+                <table name="freeOperators" class="table table-dark table-sm table-hover mb-0">
                     <tbody>
                         <tr class="tr-placeholder text-center">
                             <td colspan="4">Not free operators</td>

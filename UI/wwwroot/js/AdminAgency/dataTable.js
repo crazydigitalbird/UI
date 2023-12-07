@@ -33,7 +33,10 @@ function setHeight() {
             $table.bootstrapTable("refreshOptions", {
                 stickyHeaderOffsetY: $('#navMenu').outerHeight(),
                 height: freeAreaHeight
-            })
+            });
+            $table.find('input[type=checkbox]').each(function () {
+                $(this).addClass('form-check-input');
+            });
         }, 10);
     }
     else {
@@ -41,7 +44,10 @@ function setHeight() {
             $table.bootstrapTable("refreshOptions", {
                 stickyHeaderOffsetY: $('#navMenu').outerHeight(),
                 height: 0
-            })
+            });
+            $table.find('input[type=checkbox]').each(function () {
+                $(this).addClass('form-check-input');
+            });
         }, 10);
     }
     //var initialTableHeight = $('#tableDiv').outerHeight() + 2;
@@ -53,8 +59,8 @@ function operatorsFormatter(value, row) {
                         ${value}
                     </div>
                     <div class="col-6 text-start pe-0">
-                        <a role="button" title="<div class='row'><div name='popoverProfileId' class='d-none'>${row['id']}</div><div class='col-10'>${row['name']} ${row['lastName']}</div><div class='col-2 text-end'><a href='#' role='button' class='btn-close' aria-label='Close' onclick='popoverClose(event)'></a></div></div>" data-mdb-toggle="popover" data-id-field="${row['id']}">
-                            <i class="fa-solid fa-circle-info text-primary"></i>
+                        <a role="button" title="<div class='row'><div name='popoverProfileId' class='d-none'>${row['id']}</div><div class='col-10'>${row['name']} ${row['lastName']}</div><div class='col-2 text-end'><a href='#' role='button' class='btn-close btn-close-white' aria-label='Close' onclick='popoverClose(event)'></a></div></div>" data-bs-toggle="popover" data-id-field="${row['id']}">
+                            <i class="fa-solid fa-circle-info" style="color: var(--cornflower_blue);"></i>
                         </a>
                     </div>
                 </div>`;

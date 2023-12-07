@@ -27,8 +27,8 @@ function changeCabinet(event, sheetId) {
 
         var toast = $('#toast');
 
-        if (toast.hasClass('bg-success')) {
-            toast.removeClass('bg-success');
+        if (toast.hasClass('bg-cornflower_blue')) {
+            toast.removeClass('bg-cornflower_blue');
         }
 
         if (!toast.hasClass('bg-danger')) {
@@ -37,6 +37,6 @@ function changeCabinet(event, sheetId) {
 
         event.target.value = privatePreviousCabinetSelect;
 
-        mdb.Toast.getInstance(toast).show();
+        bootstrap.Toast.getOrCreateInstance(toast).show();
     });
 }

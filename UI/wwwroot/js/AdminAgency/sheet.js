@@ -37,15 +37,15 @@ function deleteSheets() {
 
             var toast = $('#toast');
 
-            if (toast.hasClass('bg-success')) {
-                toast.removeClass('bg-success');
+            if (toast.hasClass('bg-cornflower_blue')) {
+                toast.removeClass('bg-cornflower_blue');
             }
 
             if (!toast.hasClass('bg-danger')) {
                 toast.addClass('bg-danger');
             }
 
-            mdb.Toast.getInstance(toast).show();
+            bootstrap.Toast.getOrCreateInstance(toast).show();
 
             sheetsId = sheetsId.filter(function (id) { return !errorDeletingSheets.includes(id); });
         }
@@ -61,15 +61,15 @@ function deleteSheets() {
 
         var toast = $('#toast');
 
-        if (toast.hasClass('bg-success')) {
-            toast.removeClass('bg-success');
+        if (toast.hasClass('bg-cornflower_blue')) {
+            toast.removeClass('bg-cornflower_blue');
         }
 
         if (!toast.hasClass('bg-danger')) {
             toast.addClass('bg-danger');
         }
 
-        mdb.Toast.getInstance(toast).show();
+        bootstrap.Toast.getOrCreateInstance(toast).show();
     })
     $("#modalDeleteSheets").modal('hide');
 }
@@ -127,11 +127,11 @@ function successAddSheet(sheet) {
 
     $('#adminAgencyTable').bootstrapTable('scrollTo', 'bottom');
 
-    showToast('bg-success', 'bg-danger', `The  ${fullName} sheet has been added successfully`);
+    showToast('bg-cornflower_blue', 'bg-danger', `The  ${fullName} sheet has been added successfully`);
 }
 
 function failureAddSheet(error) {
-    showAlert('bg-danger', 'bg-success', error.responseText);
+    showAlert('alert-danger', 'alert-success', error.responseText);
 }
 
 function showAlert(addClass, removeClass, text) {
@@ -170,5 +170,5 @@ function showToast(addClass, removeClass, text) {
         toast.addClass(addClass);
     }
 
-    mdb.Toast.getInstance(toast).show();
+    bootstrap.Toast.getOrCreateInstance(toast).show();
 }

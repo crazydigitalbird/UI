@@ -1,9 +1,9 @@
-﻿<div class="modal" id="modalPopover" tabindex="-1" role="dialog"  data-mdb-modal-non-invasive="true">
+﻿<div class="modal" id="modalPopover" tabindex="-1" role="dialog"  data-bs-modal-non-invasive="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Operators</h5>
-                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formPopover" asp-action="AddGroup" method="post" data-ajax="true" data-ajax-success="successAddGroup" data-ajax-failure="failureAddGroup" data-ajax-loading="#spinnerAddGroup" novalidate="novalidate">
                 <div class="modal-body"> 
@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button id="btnSaveGroup" type="submit" class="btn btn-success">
                         <i class="fa-solid fa-save"></i>
                         Save

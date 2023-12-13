@@ -3,7 +3,6 @@ using Core.Models.Users;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Net;
 using UI.Infrastructure.API;
 using UI.Infrastructure.Hubs;
 using UI.Infrastructure.Repository;
@@ -11,20 +10,16 @@ using UI.Models;
 
 namespace UI.Infrastructure.Services
 {
-    public class ChatServices : IHostedService, IDisposable
+    public class ChatServices : BackgroundService
     {
-        private Timer _timer;
-        private static volatile bool _started;
         private static string sessionGuid;
+        private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
 
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IChatClient _chatClient;
         private readonly ILogger<ChatServices> _logger;
 
-        private readonly IChatClient _chatClient;
-        private readonly IAuthenticationClient _authenticationClient;
-        private readonly IAdminClient _adminClient;
-        private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
 
 #if DEBUG
         Stopwatch stopwatch1 = new Stopwatch();
@@ -36,57 +31,22 @@ namespace UI.Infrastructure.Services
             IHttpClientFactory httpClientFactory,
             ILogger<ChatServices> logger,
             IChatClient chatClient,
-            IAuthenticationClient authenticationClient,
-            IAdminClient adminClient,
             IDictionaryRepository<SheetDialogKey, NewMessage> dictionary)
         {
             _serviceProvider = serviceProvider;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
             _chatClient = chatClient;
-            _authenticationClient = authenticationClient;
-            _adminClient = adminClient;
             _dictionary = dictionary;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(UpdateOnlineStatus, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _timer?.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
-        }
-
-        public async void UpdateOnlineStatus(object state)
-        {
-            if (_started)
-            {
-                return;
-            }
-            _started = true;
-            try
+            while(!stoppingToken.IsCancellationRequested)
             {
                 await GetNewMessage();
-                //await _hubContext.Clients.All.SendAsync("Recive", "Hellow");
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "{ExceptionMessage}", ex.Message);
-            }
-            finally
-            {
-                _started = false;
-            }
-        }
-
-        public void Dispose()
-        {
-            _timer?.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         public async Task GetNewMessage()
@@ -176,7 +136,7 @@ namespace UI.Infrastructure.Services
                     }
                 }
 
-                if (_dictionary.SheetsIsOnline?.Count > 0)
+                if (_dictionary.SheetsIsOnline?.Any() ?? false)
                 {
                     sheetId = _dictionary.SheetsIsOnline.FirstOrDefault(s => s.Value).Key;
                 }
@@ -268,7 +228,7 @@ namespace UI.Infrastructure.Services
 
         private async Task FillingInNewDialoguesProfiles(Sheet sheet, IEnumerable<KeyValuePair<SheetDialogKey, NewMessage>> dictionary)
         {
-            if (dictionary.Count() == 0)
+            if (!dictionary.Any())
             {
                 return;
             }
@@ -317,32 +277,6 @@ namespace UI.Infrastructure.Services
                     //}
                 }
             }
-        }
-
-        private async Task<KeyValuePair<int, List<Dialogue>>> LoadDialogues(Sheet sheet, string criteria, int? days, int operatorId, int limit)
-        {
-            //Вычисляем пороговое значение даты. Это дата до которой будут загружаться диалоги.
-            //Все диалоги у которых значение поля DateUpdate страше dateThreshodl, будут отбрасывтаься.
-            //Если days равно null, то критерий прогового значения даты не учитывается и загружаются все имеющиеся диалоги.
-            DateTime? dateThreshold = null;
-            if (days.HasValue)
-            {
-                dateThreshold = DateTime.Now - TimeSpan.FromDays(days.Value);
-            }
-            var dialogues = new List<Dialogue>();
-            Messenger messanger = null;
-
-            do
-            {
-                messanger = await _chatClient.GetMessangerAsync(sheet, criteria, messanger?.Cursor, limit, operatorId);
-                if (messanger == null || messanger.Dialogs == null || messanger.Dialogs.Count == 0)
-                {
-                    break;
-                }
-                dialogues = dialogues.Union(messanger.Dialogs).ToList();
-            } while (messanger.Dialogs.Count == limit); //&& IsLoadDialogues(messanger, dateThreshold)
-
-            return new KeyValuePair<int, List<Dialogue>>(sheet.Id, dialogues.Where(d => !d.IsBlocked).ToList());
         }
 
         private async Task LoadActiveDialogues(Sheet sheet, ConcurrentDictionary<SheetDialogKey, NewMessage> dictionary, DateTime dateThreshold, int limit)
@@ -424,7 +358,7 @@ namespace UI.Infrastructure.Services
             try
             {
                 var response = await client.PutAsync($"Users/AddSession?userLogin={login}&userPassword={passowrd}&sessionLength={int.MaxValue}", null);
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (response.IsSuccessStatusCode)
                 {
                     var userSession = await response.Content.ReadFromJsonAsync<UserSession>();
                     return userSession.Guid;

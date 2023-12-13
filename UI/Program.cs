@@ -22,8 +22,7 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonO
 
 builder.Services.AddSingleton<IDictionaryRepository<SheetDialogKey, NewMessage>, DictionaryChatRepository>();
 
-builder.Services.AddSingleton<ChatServices>();
-builder.Services.AddHostedService<BackgroundServiceStarter<ChatServices>>();
+builder.Services.AddHostedService<ChatServices>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 

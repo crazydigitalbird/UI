@@ -5,38 +5,11 @@ namespace UI.Infrastructure.Repository
 {
     public class DictionaryChatRepository : IDictionaryRepository<SheetDialogKey, NewMessage>
     {
-        private Dictionary<SheetDialogKey, NewMessage> _dictionaryActive = new Dictionary<SheetDialogKey, NewMessage>();
+        public Dictionary<SheetDialogKey, NewMessage> Active { get; set; } = new Dictionary<SheetDialogKey, NewMessage>();
 
-        private ConcurrentDictionary<int, int> _dictionaryOnline = new ConcurrentDictionary<int, int>();
+        public ConcurrentDictionary<int, int> CounterManOnline { get; set; } = new ConcurrentDictionary<int, int>();
 
-        private ConcurrentDictionary<int, bool> _sheetsIsOnline = new ConcurrentDictionary<int, bool>();
-
-        public Dictionary<SheetDialogKey, NewMessage> Active
-        {
-            get => _dictionaryActive;
-            set
-            {
-                _dictionaryActive = value;
-            }
-        }
-
-        public ConcurrentDictionary<int, int> CounterManOnline
-        {
-            get => _dictionaryOnline;
-            set
-            {
-                _dictionaryOnline = value;
-            }
-        }
-
-        public ConcurrentDictionary<int, bool> SheetsIsOnline
-        { 
-            get => _sheetsIsOnline; 
-            set
-            {
-                _sheetsIsOnline = value;
-            } 
-        }
+        public ConcurrentDictionary<int, bool> SheetsIsOnline { get; set; } = new ConcurrentDictionary<int, bool>();
     }
 
     public struct SheetDialogKey : IEqualityComparer<SheetDialogKey>

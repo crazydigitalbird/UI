@@ -1,5 +1,6 @@
 ﻿using Core.Models.Sheets;
 using Core.Models.Users;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace UI.Infrastructure.Services
     public class ChatServices : BackgroundService
     {
         private static string sessionGuid;
+        private readonly AdminAccount _adminAccount;
         private readonly IDictionaryRepository<SheetDialogKey, NewMessage> _dictionary;
 
         private readonly IServiceProvider _serviceProvider;
@@ -29,20 +31,22 @@ namespace UI.Infrastructure.Services
 
         public ChatServices(IServiceProvider serviceProvider,
             IHttpClientFactory httpClientFactory,
-            ILogger<ChatServices> logger,
             IChatClient chatClient,
-            IDictionaryRepository<SheetDialogKey, NewMessage> dictionary)
+            IDictionaryRepository<SheetDialogKey, NewMessage> dictionary,
+            IOptions<AdminAccount> options,
+            ILogger<ChatServices> logger)
         {
             _serviceProvider = serviceProvider;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
             _chatClient = chatClient;
             _dictionary = dictionary;
+            _adminAccount = options.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while(!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 await GetNewMessage();
                 await Task.Delay(TimeSpan.FromSeconds(10));
@@ -63,7 +67,7 @@ namespace UI.Infrastructure.Services
 
             if (string.IsNullOrWhiteSpace(sessionGuid))
             {
-                sessionGuid = await LogInAsync("admin", "admin");
+                sessionGuid = await LogInAsync(_adminAccount.Login, _adminAccount.Password);
             }
 
             List<SheetChat> sheets = await GetSheetsFast(sessionGuid);

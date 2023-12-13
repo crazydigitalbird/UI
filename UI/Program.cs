@@ -8,6 +8,7 @@ using UI.Infrastructure.Filters;
 using UI.Infrastructure.Hubs;
 using UI.Infrastructure.Repository;
 using UI.Infrastructure.Services;
+using UI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ builder.Services.AddHostedService<ChatServices>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.Configure<AdminAccount>(builder.Configuration.GetSection("AdminAccount"));
 
 builder.Services.AddSingleton<IAuthenticationClient, ApiAuthenticationClient>();
 builder.Services.AddSingleton<IAdminClient, ApiAdminClient>();

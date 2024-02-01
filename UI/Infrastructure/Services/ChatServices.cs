@@ -68,9 +68,17 @@ namespace UI.Infrastructure.Services
             if (string.IsNullOrWhiteSpace(sessionGuid))
             {
                 sessionGuid = await LogInAsync(_adminAccount.Login, _adminAccount.Password);
+                if (string.IsNullOrWhiteSpace(sessionGuid))
+                {
+                    return;
+                }
             }
 
             List<SheetChat> sheets = await GetSheetsFast(sessionGuid);
+            if(sheets is null || !sheets.Any())
+            {
+                return;
+            }
 
             sheets.ForEach(sheet => sheet.Site = new SheetSite { Configuration = "https://talkytimes.com/" });
 

@@ -7,12 +7,15 @@
 <div class="container mt-5">
     <partial name="_AlertsPartial" />
 
-    <table class="table table-sm table-hover">
+    <table class="table table-dark table-sm table-hover">
         <thead>
             <tr>
                 <th class="fw-bold">Name</th>
                 <th class="fw-bold">Description</th>
                 <th class="fw-bold text-center">Action</th>
+            </tr>
+            <tr>
+                <th colspan="3"></th>
             </tr>
         </thead>
         <tbody>
@@ -24,8 +27,8 @@
                         <td>@site.Name</td>
                         <td>@site.Description</td>
                         <td style="width: 160px;">
-                            <a class="btn btn-sm btn-primary" asp-controller="Site" asp-action="Edit" asp-route-siteId="@site.Id" >Edit</a>
-                            <a class="btn btn-sm btn-danger" onclick="confirm(@site.Id, '@site.Name')">Delete</a>
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Site" asp-action="Edit" asp-route-siteId="@site.Id" >Edit</a>
+                            <a class="btn btn-sm btn-outline-danger" onclick="confirm(@site.Id, '@site.Name')">Delete</a>
                             @*<a class="btn btn-sm btn-danger" asp-controller="Site" asp-action="Delete" asp-route-siteId="@site.Id" asp-route-name="@site.Name">Delete</a>*@
                         </td>
                     </tr>
@@ -37,7 +40,7 @@
         </tbody>
     </table>
 
-    <a class="btn btn-sm btn-success" asp-controller="Site" asp-action="Add">Add site</a>
+    <a class="btn btn-sm btn-outline-success" asp-controller="Site" asp-action="Add">Add site</a>
 </div>
 
 <partial name="_Confirm" />

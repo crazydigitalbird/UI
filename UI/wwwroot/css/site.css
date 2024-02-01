@@ -204,7 +204,7 @@ select#selectIce,
 }
 
 .wrapper-item .middle-head {
-    /*min-height: 50px;*/
+    min-height: 50px;
     height: 7%;
 }
 
@@ -2220,6 +2220,10 @@ textarea#newMessage:focus-within {
     width: 174px;
     padding: 0.2rem;
 }
+
+    .answer-button:hover {
+        border-color: var(--cornflower_blue);
+    }
 
 .chat-button {
     background-color: #7D6AF0;

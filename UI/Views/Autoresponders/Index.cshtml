@@ -25,7 +25,7 @@
                     <div name="sheet" class="found-chat d-flex align-items-center justify-content-between cursor-pointer rounded mb-2" onclick="autoresponders(this, @sheet.Id)">
                         <div class="d-flex align-items-center">
                             <div class="avatar">
-                                <img src="@info.Personal.AvatarSmall" alt="" class="avatar__img">
+                                <img src="@info.Personal.AvatarSmall" alt="" class="avatar__img" loading="lazy" onerror="errorLoadAvatar(this)">
                                 @if (autoresponderInfo != null)
                                 {
                                     <div name="status" class="status-circle-green rounded-circle position-absolute end-0 bottom-0"></div>

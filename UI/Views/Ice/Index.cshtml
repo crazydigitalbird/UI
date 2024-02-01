@@ -71,7 +71,7 @@
                     <div name="sheet" class="sheet-card d-flex align-items-center justify-content-between border rounded cursor-pointer mb-2 p-2" data-sheet-id="@sheet.Id">
                         <div class="sheet-girl col-4 d-flex align-items-center rounded p-2 bg-martinique">
                             <div class="avatar position-relative">
-                                <img src="@info.Personal.AvatarSmall" alt="" class="w-100 h-100 rounded">
+                                <img src="@info.Personal.AvatarSmall" alt="" class="w-100 h-100 rounded" loading="lazy" onerror="errorLoadAvatar(this)">
                                 @if (iceInfo == null)
                                 {
                                     <div class="status-circle-red rounded-circle position-absolute end-0 bottom-0"></div>
@@ -129,7 +129,7 @@
     </div>
 
     <div class="wrapper-item d-flex flex-column overflow-y-auto rounded border p-3 bg-martinique">
-        <div class="middle-head d-flex justify-content-between align-items-center p-2 rounded mb-3 bg-port_gore">
+        <div class="middle-head d-flex justify-content-between align-items-center gap-2 p-2 rounded mb-3 bg-port_gore">
             <div class="middle-head-left d-flex rounded">
                 <span class="d-flex justify-content-center align-items-center w-50">
                     <svg class="cursor-pointer" width="20" height="18" viewBox="0 0 20 18" onclick="filterIce(this, 'Message')">
@@ -189,7 +189,7 @@
 </div>
 
 <!-- pop-up add chat and mail -->
-<div class="pop-up chatAndMail d-none">
+<div class="pop-up chatAndMail d-flex justify-content-center align-items-center d-none">
     <div class="pop-up-content w-50 bg-port_gore">
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" class="pop-up__close">
             <path d="M1 1L10 10" stroke="#9B9BAB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
